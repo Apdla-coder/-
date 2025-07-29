@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>العهدة - نظام الطلبات</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="bar.css">
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --secondary: #059669;
+      --dark: #1f2937;
+      --light: #f9fafb;
+      --gray: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --waiting: #8b5cf6;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+    }
+    body {
+      background-color: #f3f4f6;
+      color: var(--dark);
+      direction: rtl;
+      text-align: right;
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .nav-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-item {
+      margin: 0;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      color: #d1d5db;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-right: 3px solid transparent;
+    }
+    .nav-link:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+    .nav-link.active {
+      background: rgba(249, 115, 22, 0.1);
+      color: var(--primary);
+      border-right: 3px solid var(--primary);
+    }
+    .nav-link i {
+      margin-left: 0.75rem;
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+    .logout-btn {
+      margin-top: auto;
+      padding: 1rem 1.5rem;
+      background: rgba(255,255,255,0.05);
+      color: #f87171;
+      border: none;
+      border-radius: 0;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-align: right;
+      display: flex;
+      align-items: center;
+    }
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .logout-btn i {
+      margin-left: 0.75rem;
+    }
+    /* Main Content Styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .custody-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .custody-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      text-align: center;
+    }
+    .custody-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .custody-card {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .custody-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    .custody-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .custody-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #dc2626);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+    .btn-secondary {
+      background: var(--gray);
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+    .form-container {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      max-width: 800px;
+      margin: 0 auto 2rem;
+    }
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      border: 2px solid var(--border);
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-col {
+      flex: 1;
+    }
+    .form-footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      padding: 1rem 2rem;
+      border-radius: 0.8rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    .notification-success {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+    .notification-error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    .notification-warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .custody-history {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .history-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      text-align: center;
+    }
+    .history-table-container {
+      overflow-x: auto;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .history-table th, .history-table td {
+      padding: 1rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    .history-table th {
+      background-color: #f9fafb;
+      font-weight: 600;
+    }
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status-active {
+      background: #05966915;
+      color: #059669;
+    }
+    .status-inactive {
+      background: #ef444415;
+      color: #ef4444;
+    }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .main-content {
+        margin-right: 0;
+        margin-top: 0;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .form-footer {
+        flex-direction: column;
+      }
+      .custody-summary {
+        grid-template-columns: 1fr;
+      }
+      .custody-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
+        <h2>المكتب</h2>
+      </div>
+      <a class="nav-link active" href="./dashboard.html">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>لوحة التحكم</span>
+      </a>
+      <a class="nav-link" href="./add-order.html">
+        <i class="fas fa-plus-circle"></i>
+        <span>اضافة طلب يدويا</span>
+      </a>
+      <a class="nav-link" href="./customers.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./covenant.html">
+        <i class="fas fa-users"></i>
+        <span>نظام العهدة </span>
+      </a>
+      <a class="nav-link" href="./captain-preformans.html">
+        <i class="fas fa-chart-line"></i>
+        <span>أداء الكباتن</span>
+      </a>
+      <a class="nav-link" href="./history-mange.html">
+        <i class="fas fa-history"></i>
+        <span>سجل الطلبات</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <div>
+          <h1><i class="fas fa-wallet"></i> نظام إدارة العهدة</h1>
+          <p>إدارة العهدة بكفاءة وسهولة</p>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+      </div>
+      
+      <!-- Custody Summary Section -->
+      <div class="custody-section">
+        <h2 class="custody-title">ملخص العهدة</h2>
+        <div class="custody-summary">
+          <div class="custody-card">
+            <h3>إجمالي العهدة النشطة</h3>
+            <div class="custody-amount" id="total-active-custody">0.00 ج.م</div>
+            <p>العهدة الحالية قيد الاستخدام</p>
+          </div>
+          <div class="custody-card">
+            <h3>إجمالي العهدة المسلمة</h3>
+            <div class="custody-amount" id="total-delivered-custody">0.00 ج.م</div>
+            <p>العهدة التي تم تسليمها للإدارة</p>
+          </div>
+          <div class="custody-card">
+            <h3>عدد الكباتن</h3>
+            <div class="custody-amount" id="total-captains">0</div>
+            <p>الكباتن المسجلون في النظام</p>
+          </div>
+        </div>
+        
+        <div class="custody-actions">
+          <button class="btn btn-primary" onclick="showAddCustodyForm()">
+            <i class="fas fa-plus-circle"></i> إضافة عهدة جديدة
+          </button>
+          <button class="btn btn-secondary" onclick="loadCustodyHistory()">
+            <i class="fas fa-history"></i> عرض سجل العهدة
+          </button>
+        </div>
+      </div>
+      
+      <!-- Add Custody Form -->
+      <div class="form-container" id="addCustodyForm" style="display: none;">
+        <h2 class="form-title">إضافة عهدة جديدة</h2>
+        <form id="custodyForm">
+          <div class="form-group">
+            <label for="captainSelect">اختيار الكابتن *</label>
+            <select class="form-control" id="captainSelect" required>
+              <option value="">جارٍ تحميل الكباتن...</option>
+            </select>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="custodyAmount">مبلغ العهدة (ج.م) *</label>
+                <input type="number" class="form-control" id="custodyAmount" placeholder="0.00" min="0" step="0.01" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="custodyDate">تاريخ العهدة *</label>
+                <input type="date" class="form-control" id="custodyDate" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="custodyNotes">ملاحظات</label>
+            <textarea class="form-control" id="custodyNotes" rows="3" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+          </div>
+          
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary" id="submitCustodyBtn">
+              <span id="submitCustodyText">إضافة العهدة</span>
+              <div class="loading-spinner" id="submitCustodySpinner"></div>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="hideAddCustodyForm()">
+              <i class="fas fa-times"></i> إلغاء
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Custody History -->
+      <div class="custody-history" id="custodyHistory" style="display: none;">
+        <h2 class="history-title">سجل العهدة</h2>
+        <div class="history-table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>الكابتن</th>
+                <th>المبلغ</th>
+                <th>التاريخ</th>
+                <th>الحالة</th>
+                <th>الملاحظات</th>
+              </tr>
+            </thead>
+            <tbody id="custodyHistoryBody">
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;">
+                  <div class="loading-spinner" style="margin: 0 auto;"></div>
+                  <p style="margin-top: 1rem;">جارٍ تحميل سجل العهدة...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    
+    // إنشاء عميل Supabase
+    const supabase = createClient(
+      'https://vrngqopmdvdmdayswlos.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
+    );
+    
+    // Global variables
+    let captains = [];
+    let currentUser = null;
+    
+    // Show add custody form
+    window.showAddCustodyForm = function() {
+      const form = document.getElementById("addCustodyForm");
+      if (form) {
+        form.style.display = "block";
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("custodyDate").value = today;
+      }
+    }
+    
+    // Hide add custody form
+    window.hideAddCustodyForm = function() {
+      const form = document.getElementById("addCustodyForm");
+      if (form) {
+        form.style.display = "none";
+        // Reset form
+        document.getElementById("custodyForm").reset();
+      }
+    }
+    
+    // Load captains
+    async function loadCaptains() {
+      try {
+        console.log("🔄 جاري تحميل الكباتن...");
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "captain");
+        
+        if (error) {
+          console.error('خطأ في تحميل الكباتن:', error);
+          showError('حدث خطأ في تحميل الكباتن');
+          return;
+        }
+        
+        captains = data || [];
+        console.log(`✅ تم تحميل ${captains.length} كابتن`);
+        
+        // Populate captain select
+        const captainSelect = document.getElementById("captainSelect");
+        if (captainSelect) {
+          captainSelect.innerHTML = '<option value="">اختر كابتن</option>';
+          captains.forEach(captain => {
+            const option = document.createElement("option");
+            option.value = captain.id;
+            option.textContent = captain.full_name;
+            captainSelect.appendChild(option);
+          });
+        }
+        
+        // Update total captains in summary
+        document.getElementById("total-captains").textContent = captains.length;
+        
+      } catch (error) {
+        console.error('خطأ في تحميل الكباتن:', error);
+        showError('حدث خطأ في تحميل الكباتن: ' + error.message);
+      }
+    }
+    
+    // Add custody
+    async function addCustody(event) {
+      event.preventDefault();
+      
+      // Get form values
+      const captainId = document.getElementById("captainSelect").value;
+      const custodyAmount = parseFloat(document.getElementById("custodyAmount").value);
+      const custodyDate = document.getElementById("custodyDate").value;
+      const custodyNotes = document.getElementById("custodyNotes").value.trim();
+      
+      // Validate form
+      if (!captainId || isNaN(custodyAmount) || !custodyDate) {
+        showError('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+      
+      // Show loading state
+      const submitBtn = document.getElementById("submitCustodyBtn");
+      const submitText = document.getElementById("submitCustodyText");
+      const submitSpinner = document.getElementById("submitCustodySpinner");
+      
+      submitBtn.disabled = true;
+      submitText.textContent = 'جاري الإضافة...';
+      submitSpinner.style.display = 'inline-block';
+      
+      try {
+        console.log("🔄 جاري إضافة العهدة...");
+        
+        // Insert custody into database
+        const { data, error } = await supabase
+          .from("custodies")
+          .insert({
+            captain_id: captainId,
+            amount: custodyAmount,
+            custody_date: custodyDate,
+            notes: custodyNotes || null,
+            status: 'مفعلة'
+          })
+          .select();
+        
+        if (error) {
+          console.error('خطأ في إضافة العهدة:', error);
+          throw error;
+        }
+        
+        console.log('✅ تم إضافة العهدة بنجاح:', data);
+        showSuccess('تم إضافة العهدة بنجاح');
+        
+        // Reset form and hide it
+        document.getElementById("custodyForm").reset();
+        hideAddCustodyForm();
+        
+        // Refresh summary
+        loadCustodySummary();
+        
+      } catch (error) {
+        console.error('خطأ في إضافة العهدة:', error);
+        showError('حدث خطأ في إضافة العهدة: ' + error.message);
+      } finally {
+        // Hide loading state
+        submitBtn.disabled = false;
+        submitText.textContent = 'إضافة العهدة';
+        submitSpinner.style.display = 'none';
+      }
+    }
+    
+    // Load custody summary
+    async function loadCustodySummary() {
+      try {
+        console.log("🔄 جاري تحميل ملخص العهدة...");
+        
+        // Get active custodies
+        const { data: activeCustodies, error: activeError } = await supabase
+          .from("custodies")
+          .select("amount")
+          .eq("status", "مفعلة");
+        
+        if (activeError) {
+          console.error('خطأ في تحميل العهدة النشطة:', activeError);
+          return;
+        }
+        
+        // Get delivered custodies
+        const { data: deliveredCustodies, error: deliveredError } = await supabase
+          .from("custodies")
+          .select("amount")
+          .eq("status", "مسلمة");
+        
+        if (deliveredError) {
+          console.error('خطأ في تحميل العهدة المسلمة:', deliveredError);
+          return;
+        }
+        
+        // Calculate totals
+        const totalActive = activeCustodies.reduce((sum, custody) => sum + (custody.amount || 0), 0);
+        const totalDelivered = deliveredCustodies.reduce((sum, custody) => sum + (custody.amount || 0), 0);
+        
+        // Update UI
+        document.getElementById("total-active-custody").textContent = `${totalActive.toFixed(2)} ج.م`;
+        document.getElementById("total-delivered-custody").textContent = `${totalDelivered.toFixed(2)} ج.م`;
+        
+        console.log("📊 ملخص العهدة محدث:", {
+          totalActive,
+          totalDelivered
+        });
+      } catch (error) {
+        console.error('خطأ في تحميل ملخص العهدة:', error);
+      }
+    }
+    
+    // Load custody history
+    window.loadCustodyHistory = async function() {
+      const historySection = document.getElementById("custodyHistory");
+      const historyBody = document.getElementById("custodyHistoryBody");
+      
+      if (historySection) {
+        historySection.style.display = "block";
+      }
+      
+      if (historyBody) {
+        historyBody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 2rem;">
+              <div class="loading-spinner" style="margin: 0 auto;"></div>
+              <p style="margin-top: 1rem;">جارٍ تحميل سجل العهدة...</p>
+            </td>
+          </tr>
+        `;
+      }
+      
+      try {
+        console.log("🔄 جاري تحميل سجل العهدة...");
+        
+        // Get custody history with captain names
+        const { data: custodies, error } = await supabase
+          .from("custodies")
+          .select(`
+            id,
+            amount,
+            custody_date,
+            notes,
+            status,
+            captain_id,
+            users (full_name)
+          `)
+          .order("custody_date", { ascending: false });
+        
+        if (error) {
+          console.error('خطأ في تحميل سجل العهدة:', error);
+          throw error;
+        }
+        
+        if (historyBody) {
+          if (custodies && custodies.length > 0) {
+            historyBody.innerHTML = custodies.map(custody => `
+              <tr>
+                <td>${custody.users?.full_name || "غير محدد"}</td>
+                <td>${(custody.amount || 0).toFixed(2)} ج.م</td>
+                <td>${formatDate(custody.custody_date)}</td>
+                <td>
+                  <span class="status-badge ${custody.status === 'مفعلة' ? 'status-active' : 'status-inactive'}">
+                    ${custody.status}
+                  </span>
+                </td>
+                <td>${custody.notes || "لا توجد ملاحظات"}</td>
+              </tr>
+            `).join('');
+          } else {
+            historyBody.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;">
+                  <p>لا توجد سجلات عهدة متاحة</p>
+                </td>
+              </tr>
+            `;
+          }
+        }
+        
+        console.log(`✅ تم تحميل ${custodies ? custodies.length : 0} سجل عهدة`);
+      } catch (error) {
+        console.error('خطأ في تحميل سجل العهدة:', error);
+        if (historyBody) {
+          historyBody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
+                <p>حدث خطأ في تحميل سجل العهدة: ${error.message}</p>
+              </td>
+            </tr>
+          `;
+        }
+      }
+    }
+    
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return "غير محدد";
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+      } catch (error) {
+        console.error('خطأ في تنسيق التاريخ:', error);
+        return "تاريخ غير صحيح";
+      }
+    }
+    
+    // Show success message
+    function showSuccess(message) {
+      showNotification(message, 'success');
+    }
+    
+    // Show error message
+    function showError(message) {
+      showNotification(message, 'error');
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notif => notif.remove());
+      
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease-in forwards';
+        setTimeout(() => notification.remove(), 4000);
+      }, 4000);
+    }
+    
+    // Logout function
+    window.logout = async function () {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './index.html';
+      } catch (error) {
+        console.error('خطأ في تسجيل الخروج:', error);
+        showError('حدث خطأ في تسجيل الخروج');
+      }
+    }
+    
+    // Load initial data
+    async function loadInitialData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = './index.html';
+          return;
+        }
+        currentUser = user;
+        console.log("✅ المستخدم مُصادق عليه");
+        
+        // Load captains
+        await loadCaptains();
+        
+        // Load custody summary
+        await loadCustodySummary();
+        
+        console.log("✅ تم تحميل جميع البيانات الأولية");
+        showSuccess('مرحبًا بك في نظام إدارة العهدة');
+        
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+        showError('حدث خطأ في تحميل البيانات: ' + error.message);
+      }
+    }
+    
+    // Initialize application
+    async function initializeApp() {
+      try {
+        console.log('🚀 بدء تهيئة تطبيق العهدة...');
+        await loadInitialData();
+        
+        // Add event listener for custody form
+        const custodyForm = document.getElementById("custodyForm");
+        if (custodyForm) {
+          custodyForm.addEventListener("submit", addCustody);
+        }
+        
+        console.log('✅ تم تحميل تطبيق العهدة بنجاح');
+      } catch (error) {
+        console.error('خطأ في تهيئة التطبيق:', error);
+        showError('حدث خطأ في تحميل التطبيق: ' + error.message);
+      }
+    }
+    
+    // Start the application
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>

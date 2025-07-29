@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>سجل الطلبات - مكتب الدليفري</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="bar.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fdfcfb 0%, #f7f7f7 100%);
+      display: flex;
+      color: #1f2937;
+      min-height: 100vh;
+    }
+    
+    .content {
+      flex: 1;
+      margin-right: 0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    .dashboard-header {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: #111827;
+      text-align: center;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .controls-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    .filter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .filter-btn {
+      background: #f8fafc;
+      color: #4b5563;
+      padding: 0.7rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    .filter-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border-color: #f97316;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+    .search-input {
+      padding: 0.8rem 1.2rem;
+      border-radius: 0.8rem;
+      border: 2px solid #e5e7eb;
+      flex-grow: 1;
+      max-width: 300px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .orders-section {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      padding: 1.2rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: right;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    td {
+      color: #4b5563;
+      font-size: 0.95rem;
+    }
+    .order-row {
+      transition: all 0.3s ease;
+    }
+    .order-row:hover {
+      background: #f9fafb;
+    }
+    .details-btn {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      min-width: 70px;
+    }
+    .details-btn:hover {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .modal h4 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid #f97316;
+      padding-bottom: 0.5rem;
+    }
+    .modal-details {
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .modal-details strong {
+      color: #374151;
+      font-weight: 600;
+    }
+    .close-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 0.8rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    .close-btn:hover {
+      background: linear-gradient(135deg, #4b5563, #374151);
+    }
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+      font-size: 1.1rem;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #f97316;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status-delivered {
+      background: #05966915;
+      color: #059669;
+    }
+    .status-pending {
+      background: #6b728015;
+      color: #6b7280;
+    }
+    .status-delivering {
+      background: #f59e0b15;
+      color: #f59e0b;
+    }
+    .status-failed {
+      background: #ef444415;
+      color: #ef4444;
+    }
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .content {
+        margin-right: 220px;
+      }
+    }
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        border-left: none;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .sidebar a {
+        display: inline-block;
+        margin-left: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+      .content {
+        margin-right: 0;
+        padding: 1rem;
+      }
+      .dashboard-header {
+        font-size: 1.5rem;
+      }
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-input {
+        max-width: none;
+      }
+      .table-container {
+        font-size: 0.85rem;
+      }
+      th, td {
+        padding: 0.8rem 0.5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
+        <h2>المكتب</h2>
+      </div>
+      <a class="nav-link active" href="./dashboard.html">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>لوحة التحكم</span>
+      </a>
+      <a class="nav-link" href="./add-order.html">
+        <i class="fas fa-plus-circle"></i>
+        <span>اضافة طلب يدويا</span>
+      </a>
+      <a class="nav-link" href="./customers.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./covenant.html">
+        <i class="fas fa-users"></i>
+        <span>نظام العهدة </span>
+      </a>
+      <a class="nav-link" href="./captain-preformans.html">
+        <i class="fas fa-chart-line"></i>
+        <span>أداء الكباتن</span>
+      </a>
+      <a class="nav-link" href="./history-mange.html">
+        <i class="fas fa-history"></i>
+        <span>سجل الطلبات</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+  <div class="content">
+    <div class="dashboard-header">سجل الطلبات</div>
+    <div class="controls-section">
+      <div class="filter-controls">
+        <button class="filter-btn active" data-status="all" onclick="setFilterStatus('all', event)">عرض الكل</button>
+        <button class="filter-btn" data-status="تم التوصيل" onclick="setFilterStatus('تم التوصيل', event)">تم التوصيل</button>
+        <button class="filter-btn" data-status="قيد التوزيع" onclick="setFilterStatus('قيد التوزيع', event)">قيد التوزيع</button>
+        <button class="filter-btn" data-status="جاري التوصيل" onclick="setFilterStatus('جاري التوصيل', event)">جاري التوصيل</button>
+        <button class="filter-btn" data-status="فشل التوصيل" onclick="setFilterStatus('فشل التوصيل', event)">فشل التوصيل</button>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="ابحث بالاسم، الهاتف، العنوان، المطعم..."
+          oninput="handleSearch()"
+        />
+      </div>
+    </div>
+    <div class="orders-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          جميع الطلبات
+          <span id="orders-count" style="color: #f97316; font-weight: 700;">(0)</span>
+        </h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>رقم الطلب</th>
+              <th>اسم العميل</th>
+              <th>اسم المطعم</th>
+              <th>تاريخ الطلب</th>
+              <th>السعر الإجمالي</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body">
+            <tr>
+              <td colspan="7" class="loading-state">
+                <div class="loading-spinner"></div>
+                جارٍ تحميل الطلبات...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h4>تفاصيل الطلب</h4>
+      <div id="modal-details" class="modal-details"></div>
+      <button class="close-btn" onclick="closeModal()">إغلاق</button>
+    </div>
+  </div>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabase = createClient(
+      'https://vrngqopmdvdmdayswlos.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
+    );
+
+    // Global variables
+    let currentStatusFilter = "all";
+    let currentSearchText = "";
+    let allOrders = [];
+    let displayedOrders = [];
+    let captains = [];
+    let restaurants = [];
+
+    // Filter status function
+    window.setFilterStatus = function (status, event) {
+      currentStatusFilter = status;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.status === status) {
+          btn.classList.add('active');
+        }
+      });
+      
+      filterAndDisplayOrders();
+    }
+
+    // Search handler
+    window.handleSearch = function () {
+      const searchInput = document.getElementById("searchInput");
+      currentSearchText = searchInput ? searchInput.value.trim() : "";
+      filterAndDisplayOrders();
+    }
+
+    // Load initial data
+    async function loadInitialData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = './index.html';
+          return;
+        }
+
+        // Load captains and restaurants first
+        await Promise.all([
+          loadCaptains(),
+          loadRestaurants()
+        ]);
+
+        // Then load orders
+        await loadOrders();
+        
+        console.log("✅ تم تحميل جميع البيانات");
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+        showError('حدث خطأ في تحميل البيانات: ' + error.message);
+      }
+    }
+
+    // Load captains
+    async function loadCaptains() {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "captain");
+          
+        if (error) {
+          console.error('خطأ في تحميل الكباتن:', error);
+          captains = [];
+        } else {
+          captains = data || [];
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل الكباتن:', error);
+        captains = [];
+      }
+    }
+
+    // Load restaurants
+    async function loadRestaurants() {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "restaurant");
+          
+        if (error) {
+          console.error('خطأ في تحميل المطاعم:', error);
+          restaurants = [];
+        } else {
+          restaurants = data || [];
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل المطاعم:', error);
+        restaurants = [];
+      }
+    }
+
+    // Load all orders
+    async function loadOrders() {
+      try {
+        showLoadingState();
+        
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            restaurant_id,
+            captain_id,
+            status,
+            order_price,
+            service_price,
+            commission_percent,
+            created_at
+          `)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        allOrders = orders || [];
+        displayedOrders = [...allOrders];
+        filterAndDisplayOrders();
+        
+        console.log(`✅ تم تحميل ${allOrders.length} طلب`);
+      } catch (error) {
+        console.error('خطأ في تحميل الطلبات:', error);
+        showError('حدث خطأ في تحميل الطلبات: ' + error.message);
+        showErrorState(error.message);
+      }
+    }
+
+    // Filter and display orders
+    function filterAndDisplayOrders() {
+      let filtered = [...allOrders];
+
+      // Apply status filter
+      if (currentStatusFilter !== "all") {
+        filtered = filtered.filter(order => order.status === currentStatusFilter);
+      }
+
+      // Apply search filter
+      if (currentSearchText) {
+        const searchLower = currentSearchText.toLowerCase();
+        filtered = filtered.filter(order => {
+          const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+          return (
+            (order.custom_name && order.custom_name.toLowerCase().includes(searchLower)) ||
+            (order.custom_phone && order.custom_phone.includes(currentSearchText)) ||
+            (order.custom_address && order.custom_address.toLowerCase().includes(searchLower)) ||
+            (restaurant?.full_name && restaurant.full_name.toLowerCase().includes(searchLower))
+          );
+        });
+      }
+
+      displayedOrders = filtered;
+      displayOrders(filtered);
+      updateOrdersCount(filtered.length);
+    }
+
+    // Show loading state
+    function showLoadingState() {
+      const tbody = document.getElementById("orders-body");
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="loading-state">
+              <div class="loading-spinner"></div>
+              جارٍ تحميل الطلبات...
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Show error state
+    function showErrorState(errorMessage) {
+      const tbody = document.getElementById("orders-body");
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="loading-state" style="color: #ef4444;">
+              ❌ خطأ في تحميل الطلبات: ${errorMessage}
+              <br>
+              <button onclick="loadOrders()" 
+                      style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                إعادة المحاولة
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Update orders count display
+    function updateOrdersCount(count) {
+      const ordersCountEl = document.getElementById("orders-count");
+      if (ordersCountEl) {
+        ordersCountEl.textContent = `(${count})`;
+      }
+    }
+
+    // Display orders
+    function displayOrders(orders) {
+      const tbody = document.getElementById("orders-body");
+      if (!tbody) return;
+
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="loading-state">
+              لا توجد طلبات متاحة حاليًا
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = "";
+      orders.forEach(order => {
+        const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+        const captain = captains.find(c => c.id === order.captain_id);
+        const totalPrice = (order.order_price || 0) + (order.service_price || 0);
+        const statusClass = getStatusClass(order.status);
+        
+        const row = document.createElement("tr");
+        row.classList.add("order-row");
+        
+        row.innerHTML = `
+          <td>#${order.id.toString().padStart(4, '0')}</td>
+          <td>${order.custom_name || "غير محدد"}</td>
+          <td>${restaurant?.full_name || "مطعم غير محدد"}</td>
+          <td>${formatDate(order.created_at)}</td>
+          <td>
+            <span style="color: #111827; font-weight: 600;">
+              ${totalPrice} ج.م
+            </span>
+          </td>
+          <td>
+            <span class="status-badge ${statusClass}">
+              ${order.status}
+            </span>
+          </td>
+          <td>
+            <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+              تفاصيل
+            </button>
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+    }
+
+    // Show order details
+    window.showOrderDetails = function (order) {
+      try {
+        const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+        const captain = captains.find(c => c.id === order.captain_id);
+        const totalPrice = (order.order_price || 0) + (order.service_price || 0);
+        const statusClass = getStatusClass(order.status);
+        
+        const html = `
+          <div style="text-align: right; line-height: 2;">
+            <p><strong>رقم الطلب:</strong> #${order.id.toString().padStart(4, '0')}</p>
+            <p><strong>اسم العميل:</strong> ${order.custom_name || "غير محدد"}</p>
+            <p><strong>رقم الهاتف:</strong> ${order.custom_phone || "غير محدد"}</p>
+            <p><strong>عنوان التوصيل:</strong> ${order.custom_address || "غير محدد"}</p>
+            <p><strong>اسم المطعم:</strong> ${restaurant?.full_name || "غير محدد"}</p>
+            <p><strong>الكابتن المُعيَّن:</strong> ${captain?.full_name || "لم يتم التعيين بعد"}</p>
+            <p><strong>حالة الطلب:</strong>
+              <span class="status-badge ${statusClass}">
+                ${order.status || "غير محدد"}
+              </span>
+            </p>
+            <p><strong>سعر الطلب:</strong>
+              <span style="color: #059669; font-weight: 600;">${order.order_price || 0} ج.م</span>
+            </p>
+            <p><strong>سعر التوصيل:</strong>
+              <span style="color: #f97316; font-weight: 600;">${order.service_price || 0} ج.م</span>
+            </p>
+            <p><strong>الإجمالي:</strong>
+              <span style="color: #111827; font-weight: 700; font-size: 1.1em;">
+                ${totalPrice} ج.م
+              </span>
+            </p>
+            <p><strong>نسبة العمولة:</strong> ${order.commission_percent || 20}%</p>
+            <p><strong>تاريخ الطلب:</strong> ${formatDate(order.created_at)}</p>
+          </div>
+        `;
+        
+        const modalDetailsEl = document.getElementById("modal-details");
+        const modalEl = document.getElementById("modal");
+        if (modalDetailsEl) modalDetailsEl.innerHTML = html;
+        if (modalEl) modalEl.style.display = "flex";
+      } catch (error) {
+        console.error('خطأ في عرض تفاصيل الطلب:', error);
+        showError('حدث خطأ في عرض تفاصيل الطلب');
+      }
+    }
+
+    // Get status class
+    function getStatusClass(status) {
+      const statusClasses = {
+        'تم التوصيل': 'status-delivered',
+        'جاري التوصيل': 'status-delivering',
+        'فشل التوصيل': 'status-failed',
+        'قيد التوزيع': 'status-pending'
+      };
+      return statusClasses[status] || 'status-pending';
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return "غير محدد";
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        console.error('خطأ في تنسيق التاريخ:', error);
+        return "تاريخ غير صحيح";
+      }
+    }
+
+    // Close modal
+    window.closeModal = function () {
+      const modalEl = document.getElementById("modal");
+      if (modalEl) modalEl.style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    const modalEl = document.getElementById("modal");
+    if (modalEl) {
+      modalEl.addEventListener("click", function (e) {
+        if (e.target === this) {
+          closeModal();
+        }
+      });
+    }
+
+    // Show error message
+    function showError(message) {
+      alert(`خطأ: ${message}`);
+    }
+
+    // Logout function
+    window.logout = async function () {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './index.html';
+      } catch (error) {
+        console.error('خطأ في تسجيل الخروج:', error);
+        showError('حدث خطأ في تسجيل الخروج');
+      }
+    }
+
+    // Initialize application
+    async function initializeApp() {
+      try {
+        console.log('🚀 بدء تهيئة سجل الطلبات...');
+        await loadInitialData();
+        console.log('✅ تم تحميل سجل الطلبات بنجاح');
+      } catch (error) {
+        console.error('خطأ في تهيئة التطبيق:', error);
+        showError('حدث خطأ في تحميل التطبيق: ' + error.message);
+      }
+    }
+
+    // Start the application
+    initializeApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>الملف الشخصي</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #fdfcfb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-field {
+      background: #f3f4f6;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: right;
+    }
+
+    .profile-field label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      color: #374151;
+    }
+
+    .profile-field span {
+      color: #1f2937;
+    }
+
+    .form-header {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    .back-link {
+      text-decoration: none;
+      font-weight: 600;
+      color: #f97316;
+      background: #fff7ed;
+      padding: 0.4rem 1rem;
+      border-radius: 0.8rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s, color 0.3s;
+      display: inline-block;
+    }
+
+    .back-link:hover {
+      background: #fde68a;
+      color: #b45309;
+    }
+
+    .logout {
+      background-color: #f97316;
+      color: white;
+      padding: 0.8rem;
+      width: 100%;
+      border: none;
+      border-radius: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .logout:hover {
+      background-color: #ea580c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-header">
+      <a href="captain.html" class="back-link">← العودة للرئيسية</a>
+    </div>
+
+    <h2>الملف الشخصي</h2>
+
+    <div class="profile-field">
+      <label>الاسم:</label>
+      <span id="name">—</span>
+    </div>
+    <div class="profile-field">
+      <label>رقم الهاتف:</label>
+      <span id="phone">—</span>
+    </div>
+    <div class="profile-field">
+      <label>الدور:</label>
+      <span id="role">—</span>
+    </div>
+    <div class="profile-field">
+      <label>البريد الإلكتروني:</label>
+      <span id="email">—</span>
+    </div>
+    <div class="profile-field">
+      <label>المعرف:</label>
+      <span id="id">—</span>
+    </div>
+    <button class="logout" onclick="logout()">تسجيل الخروج</button>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const supabase = createClient(
+      "https://vrngqopmdvdmdayswlos.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs"
+    );
+
+    async function loadProfile() {
+      const {
+        data: { user },
+        error
+      } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        alert("الرجاء تسجيل الدخول");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // جلب البيانات من جدول users (مفيهوش phone)
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("full_name, role")
+        .eq("id", user.id)
+        .single();
+
+      if (userError || !userData) {
+        alert("تعذر تحميل بيانات المستخدم");
+        return;
+      }
+
+      document.getElementById("name").innerText = userData.full_name || "—";
+      document.getElementById("role").innerText = userData.role || "—";
+      document.getElementById("email").innerText = user.email || "—";
+      document.getElementById("id").innerText = user.id;
+      document.getElementById("phone").innerText = "—"; // مفيش phone في الجدول
+    }
+
+    window.logout = async function () {
+      await supabase.auth.signOut();
+      window.location.href = "index.html";
+    };
+
+    loadProfile();
+  </script>
+</body>
+</html>

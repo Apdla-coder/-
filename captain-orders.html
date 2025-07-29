@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>طلبات الكابتن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+      margin-top: 2rem;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .back-link {
+      text-decoration: none;
+      font-weight: 600;
+      color: #667eea;
+      background: #f0f4ff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .back-link:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+    }
+
+    select, input {
+      padding: 0.6rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .refresh-btn {
+      background: #48bb78;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .refresh-btn:hover {
+      background: #38a169;
+      transform: translateY(-1px);
+    }
+
+    .order-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--status-color, #667eea);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .order-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin: 0;
+    }
+
+    .order-id {
+      font-size: 0.8rem;
+      color: #718096;
+      font-family: monospace;
+      background: #edf2f7;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .status-delivering {
+      background: #fed7aa;
+      color: #ea580c;
+    }
+
+    .status-delivered {
+      background: #bbf7d0;
+      color: #059669;
+    }
+
+    .status-failed {
+      background: #fecaca;
+      color: #dc2626;
+    }
+
+    .order-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    .detail-icon {
+      font-size: 1rem;
+    }
+
+    .detail-value {
+      font-weight: 500;
+      color: #2d3748;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .status-select {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .update-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .update-btn:hover:not(:disabled) {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    .update-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      color: #718096;
+      padding: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e2e8f0;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error, .empty {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+    }
+
+    .error {
+      background: #fed7d7;
+      color: #c53030;
+      border: 1px solid #feb2b2;
+    }
+
+    .empty {
+      background: #f0f4ff;
+      color: #667eea;
+      border: 1px solid #c3d9ff;
+    }
+
+    .total-earnings {
+      background: linear-gradient(135deg, #48bb78, #38a169);
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .total-earnings h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .total-earnings .amount {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .stats {
+        flex-direction: column;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filter-group {
+        min-width: unset;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .order-actions {
+        flex-direction: column;
+      }
+
+      .status-select {
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="captain.html" class="back-link">
+        <span>←</span>
+        العودة للرئيسية
+      </a>
+      <h2>📋 طلبات الكابتن</h2>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <span class="stat-number" id="total-orders">0</span>
+        <span class="stat-label">إجمالي الطلبات</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" id="delivered-orders">0</span>
+        <span class="stat-label">تم التوصيل</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" id="pending-orders">0</span>
+        <span class="stat-label">قيد التوصيل</span>
+      </div>
+    </div>
+
+    <div class="total-earnings" id="total-earnings" style="display: none;">
+      <h3>💰 إجمالي الأرباح</h3>
+      <div class="amount" id="earnings-amount">0 جنيه</div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>فلترة بالحالة:</label>
+        <select id="status-filter">
+          <option value="">جميع الحالات</option>
+          <option value="جاري التوصيل">جاري التوصيل</option>
+          <option value="تم التوصيل">تم التوصيل</option>
+          <option value="فشل التوصيل">فشل التوصيل</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>البحث:</label>
+        <input type="text" id="search-input" placeholder="ابحث بالاسم أو الهاتف...">
+      </div>
+      <button class="refresh-btn" onclick="loadOrders()">
+        <span>🔄</span>
+        تحديث
+      </button>
+    </div>
+
+    <div id="orders-container">
+      <p class="loading">جارٍ تحميل الطلبات...</p>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Supabase client with error handling
+    let supabase;
+    try {
+      supabase = window.supabase.createClient(
+        "https://vrngqopmdvdmdayswlos.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs"
+      );
+    } catch (error) {
+      console.error("Failed to initialize Supabase:", error);
+      document.getElementById("orders-container").innerHTML = `<p class="error">❌ فشل في الاتصال بقاعدة البيانات</p>`;
+    }
+
+    let allOrders = [];
+    let currentUser = null;
+
+    async function loadOrders() {
+      const container = document.getElementById("orders-container");
+      
+      try {
+        container.innerHTML = `<p class="loading">جارٍ تحميل الطلبات...</p>`;
+
+        // Check authentication
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          container.innerHTML = `<p class="error">❌ يرجى تسجيل الدخول أولاً</p>`;
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
+          return;
+        }
+
+        currentUser = user;
+
+        // Load orders with error handling and retry logic
+        let orders;
+        let error;
+        
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const result = await supabase
+            .from("orders")
+            .select("*")
+            .eq("captain_id", user.id)
+            .order("created_at", { ascending: false });
+          
+          orders = result.data;
+          error = result.error;
+          
+          if (!error) break;
+          
+          if (attempt < 2) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+          }
+        }
+
+        if (error) {
+          container.innerHTML = `<p class="error">❌ خطأ في تحميل البيانات: ${error.message}</p>`;
+          return;
+        }
+
+        allOrders = orders || [];
+        updateStats();
+        displayOrders(allOrders);
+
+      } catch (err) {
+        console.error("Error loading orders:", err);
+        container.innerHTML = `<p class="error">❌ حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.</p>`;
+      }
+    }
+
+    function updateStats() {
+      const totalOrders = allOrders.length;
+      const deliveredOrders = allOrders.filter(order => order.status === "تم التوصيل").length;
+      const pendingOrders = allOrders.filter(order => order.status === "جاري التوصيل").length;
+      
+      document.getElementById("total-orders").textContent = totalOrders;
+      document.getElementById("delivered-orders").textContent = deliveredOrders;
+      document.getElementById("pending-orders").textContent = pendingOrders;
+
+      // Calculate total earnings from delivered orders
+      const totalEarnings = allOrders
+        .filter(order => order.status === "تم التوصيل")
+        .reduce((sum, order) => sum + (order.service_price || 0), 0);
+
+      if (totalEarnings > 0) {
+        document.getElementById("total-earnings").style.display = "block";
+        document.getElementById("earnings-amount").textContent = `${totalEarnings} جنيه`;
+      } else {
+        document.getElementById("total-earnings").style.display = "none";
+      }
+    }
+
+    function displayOrders(orders) {
+      const container = document.getElementById("orders-container");
+
+      if (!orders || orders.length === 0) {
+        container.innerHTML = `<div class="empty">📭 لا توجد طلبات لعرضها</div>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => {
+        const name = order.custom_name || "غير محدد";
+        const phone = order.custom_phone || "غير محدد";
+        const address = order.custom_address || "غير محدد";
+        const orderPrice = order.order_price || 0;
+        const servicePrice = order.service_price || 0;
+        const status = order.status || "جاري التوصيل";
+        const createdAt = order.created_at ? new Date(order.created_at).toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : 'غير محدد';
+
+        let statusClass = "status-delivering";
+        let statusColor = "#ea580c";
+        if (status === "تم التوصيل") {
+          statusClass = "status-delivered";
+          statusColor = "#059669";
+        } else if (status === "فشل التوصيل") {
+          statusClass = "status-failed";
+          statusColor = "#dc2626";
+        }
+
+        return `
+          <div class="order-card" style="--status-color: ${statusColor}">
+            <div class="order-header">
+              <div>
+                <h3 class="order-title">${name}</h3>
+                <div class="order-id">ID: ${order.id.substring(0, 8)}</div>
+              </div>
+              <div class="status-badge ${statusClass}">${status}</div>
+            </div>
+
+            <div class="order-details">
+              <div class="detail-item">
+                <span class="detail-icon">📞</span>
+                <span class="detail-value">${phone}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">📍</span>
+                <span class="detail-value">${address}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">💰</span>
+                <span class="detail-value">الطلب: ${orderPrice} جنيه</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">🛠️</span>
+                <span class="detail-value">الخدمة: ${servicePrice} جنيه</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">📅</span>
+                <span class="detail-value">${createdAt}</span>
+              </div>
+            </div>
+
+            <div class="order-actions">
+              <select class="status-select" data-id="${order.id}">
+                <option value="جاري التوصيل" ${status === "جاري التوصيل" ? "selected" : ""}>جاري التوصيل</option>
+                <option value="تم التوصيل" ${status === "تم التوصيل" ? "selected" : ""}>تم التوصيل</option>
+                <option value="فشل التوصيل" ${status === "فشل التوصيل" ? "selected" : ""}>فشل التوصيل</option>
+              </select>
+              <button class="update-btn" onclick="updateStatus('${order.id}', this)">
+                <span>💾</span>
+                تحديث الحالة
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function filterOrders() {
+      const statusFilter = document.getElementById("status-filter").value;
+      const searchTerm = document.getElementById("search-input").value.toLowerCase();
+
+      let filteredOrders = allOrders;
+
+      if (statusFilter) {
+        filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+      }
+
+      if (searchTerm) {
+        filteredOrders = filteredOrders.filter(order => 
+          (order.custom_name || "").toLowerCase().includes(searchTerm) ||
+          (order.custom_phone || "").toLowerCase().includes(searchTerm)
+        );
+      }
+
+      displayOrders(filteredOrders);
+    }
+
+    window.updateStatus = async function (orderId, button) {
+      if (!supabase || !currentUser) {
+        alert("❌ خطأ في الاتصال بقاعدة البيانات");
+        return;
+      }
+
+      try {
+        const select = document.querySelector(`select[data-id='${orderId}']`);
+        const newStatus = select.value;
+        
+        // Save original state and update UI
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span>⏳</span> جارٍ التحديث...';
+        button.disabled = true;
+
+        // Update database with retry logic
+        let error;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const result = await supabase
+            .from("orders")
+            .update({ 
+              status: newStatus,
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", orderId);
+
+          error = result.error;
+          if (!error) break;
+          
+          if (attempt < 2) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Update local data
+        const orderIndex = allOrders.findIndex(order => order.id === orderId);
+        if (orderIndex !== -1) {
+          allOrders[orderIndex].status = newStatus;
+          updateStats();
+        }
+
+        // Show success message
+        button.innerHTML = '<span>✅</span> تم التحديث';
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.disabled = false;
+        }, 2000);
+
+      } catch (err) {
+        console.error("Error updating status:", err);
+        alert(`❌ فشل في تحديث الحالة: ${err.message}`);
+        
+        // Restore button state
+        button.innerHTML = '<span>💾</span> تحديث الحالة';
+        button.disabled = false;
+      }
+    };
+
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load orders with delay to ensure Supabase is ready
+      setTimeout(loadOrders, 200);
+
+      // Set up filters
+      document.getElementById("status-filter").addEventListener("change", filterOrders);
+      document.getElementById("search-input").addEventListener("input", filterOrders);
+
+      // Auto-refresh every 30 seconds
+      setInterval(loadOrders, 30000);
+    });
+
+    // Handle visibility change to refresh when tab becomes active
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        loadOrders();
+      }
+    });
+  </script>
+</body>
+</html>

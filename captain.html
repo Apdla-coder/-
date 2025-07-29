@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>واجهة الكابتن الموحدة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --secondary: #059669;
+      --dark: #1f2937;
+      --light: #f9fafb;
+      --gray: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --waiting: #8b5cf6;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      min-height: 100vh;
+      padding: 1rem;
+      overflow-x: hidden;
+    }
+    .app-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      min-height: 90vh;
+    }
+    .nav-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+    }
+    .nav-title {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .nav-tabs {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-tab.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    .view {
+      display: none;
+      padding: 1.5rem;
+    }
+    .view.active {
+      display: block;
+    }
+    .hero-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hero-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #f0f0f0;
+      margin-bottom: 1rem;
+    }
+    .welcome-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+    .subtitle {
+      color: var(--gray);
+      font-size: 1rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--dark);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+    .orders-container, .history-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .order-id {
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .order-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-delivered {
+      background: #d1fae5;
+      color: var(--success);
+    }
+    .status-waiting {
+      background: #ede9fe;
+      color: var(--waiting);
+    }
+    .order-details {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+    .detail-label {
+      color: var(--gray);
+    }
+    .detail-value {
+      font-weight: 500;
+      color: var(--dark);
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+    }
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, #047857 100%);
+      color: white;
+    }
+    .btn-success:hover {
+      opacity: 0.9;
+    }
+    .btn-secondary {
+      background: var(--light);
+      color: var(--dark);
+    }
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+      color: white;
+    }
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+    .profile-section {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .profile-section h3 {
+      margin-top: 0;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-item:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+    .info-value {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    /* Custody Section Styles */
+    .custody-section {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .custody-section h3 {
+      margin-top: 0;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .custody-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .custody-card {
+      background: #dbeafe;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .custody-amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--info);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .custody-label {
+      font-size: 0.875rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+    .custody-history {
+      margin-top: 1rem;
+    }
+    .custody-history h4 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    .custody-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .custody-table th,
+    .custody-table td {
+      padding: 0.5rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    .custody-table th {
+      background: #f1f5f9;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .custody-table tr:hover {
+      background: #f8fafc;
+    }
+    .custody-status-active {
+      background: #d1fae5;
+      color: var(--success);
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .custody-status-inactive {
+      background: #fef2f2;
+      color: var(--danger);
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    /* Custody Delivery Form */
+    .custody-delivery-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .custody-delivery-form h4 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .loading, .empty-state, .error {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray);
+    }
+    .error {
+      color: var(--danger);
+      background: #fee2e2;
+      border-radius: 12px;
+      margin: 1rem 0;
+    }
+    .empty-state {
+      color: #9ca3af;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      animation: slideDown 0.3s ease-out;
+    }
+    .notification.error {
+      background: var(--danger);
+    }
+    @keyframes slideDown {
+      from {
+        transform: translateX(-50%) translateY(-10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%);
+        opacity: 1;
+      }
+    }
+    .profit-amount {
+      color: var(--success);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="nav-header">
+      <h1 class="nav-title">مرحباً بك</h1>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-view="dashboard">الرئيسية</div>
+      <div class="nav-tab" data-view="orders">طلباتي</div>
+      <div class="nav-tab" data-view="history">سجل التوصيل</div>
+      <div class="nav-tab" data-view="profile">ملفي</div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard" class="view active">
+      <div class="hero-section">
+        <img id="captain-avatar" src="https://placehold.co/150?text=الكابتن" alt="الكابتن" class="hero-img" />
+        <h2 id="captain-welcome" class="welcome-text">مرحباً أيها الكابتن!</h2>
+        <p class="subtitle">نظام إدارة الطلبات والتوصيل</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span id="dash-total-orders" class="stat-number">0</span>
+          <span class="stat-label">إجمالي الطلبات</span>
+        </div>
+        <div class="stat-card">
+          <span id="dash-delivered-orders" class="stat-number">0</span>
+          <span class="stat-label">تم التوصيل</span>
+        </div>
+        <div class="stat-card">
+          <span id="dash-pending-orders" class="stat-number">0</span>
+          <span class="stat-label">جاري التوصيل</span>
+        </div>
+        <div class="stat-card">
+          <span id="dash-waiting-orders" class="stat-number">0</span>
+          <span class="stat-label">في الانتظار</span>
+        </div>
+      </div>
+
+      <button id="view-orders-btn" class="btn btn-primary">
+        <span>📋</span>
+        <span>عرض جميع الطلبات</span>
+      </button>
+    </div>
+
+    <!-- Orders View -->
+    <div id="orders" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>طلباتي</h2>
+        <button id="refresh-orders-btn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+          <i class="fas fa-sync"></i>
+        </button>
+      </div>
+      <select id="order-status-filter" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+        <option value="all">جميع الحالات</option>
+        <option value="في انتظار التسليم">في انتظار التسليم</option>
+        <option value="جاري التوصيل">جاري التوصيل</option>
+        <option value="تم التوصيل">تم التوصيل</option>
+      </select>
+      <div id="orders-container" class="orders-container">
+        <p class="loading">جارٍ تحميل الطلبات...</p>
+      </div>
+    </div>
+
+    <!-- History View -->
+    <div id="history" class="view">
+      <h2>سجل التوصيل</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label for="start-date">من تاريخ:</label>
+          <input type="date" id="start-date" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border);" />
+        </div>
+        <div>
+          <label for="end-date">إلى تاريخ:</label>
+          <input type="date" id="end-date" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border);" />
+        </div>
+      </div>
+      <button id="filter-history-btn" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+        <span>🔍</span>
+        <span>تصفية السجل</span>
+      </button>
+      <div id="history-container" class="history-container">
+        <p class="loading">جارٍ تحميل السجل...</p>
+      </div>
+    </div>
+
+    <!-- Profile View -->
+    <div id="profile" class="view">
+      <div class="profile-section">
+        <h3>👤 المعلومات الشخصية</h3>
+        <div class="profile-info">
+          <div class="info-item">
+            <div class="info-label">
+              <span>👨‍💼</span>
+              <span>اسم الكابتن:</span>
+            </div>
+            <div class="info-value" id="captain-name">غير محدد</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>📱</span>
+              <span>رقم الهاتف:</span>
+            </div>
+            <div class="info-value" id="captain-phone">غير محدد</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>📧</span>
+              <span>البريد الإلكتروني:</span>
+            </div>
+            <div class="info-value" id="captain-email">غير محدد</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>📊</span>
+              <span>إجمالي الطلبات اليوم:</span>
+            </div>
+            <div class="info-value" id="profile-total-orders">0</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>✅</span>
+              <span>الطلبات المسلمة اليوم:</span>
+            </div>
+            <div class="info-value" id="profile-delivered-orders">0</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>💰</span>
+              <span>إجمالي أرباحك اليوم:</span>
+            </div>
+            <div class="info-value" id="profile-total-profit">0.00 ج.م</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <span>💸</span>
+              <span>إجمالي السحوبات اليوم:</span>
+            </div>
+            <div class="info-value" id="profile-total-withdrawals">0.00 ج.م</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custody Section -->
+      <div class="custody-section">
+        <h3>💰 العهدة</h3>
+        <div class="custody-grid">
+          <div class="custody-card">
+            <span class="custody-amount" id="remaining-custody">0.00 ج.م</span>
+            <span class="custody-label">الباقي من العهدة</span>
+          </div>
+          <div class="custody-card">
+            <span class="custody-amount" id="paid-custody">0.00 ج.م</span>
+            <span class="custody-label">تم دفعه من العهدة</span>
+          </div>
+        </div>
+
+        <!-- Custody Delivery Form -->
+        <div class="custody-delivery-form">
+          <h4>💸 تسليم جزء من العهدة</h4>
+          <form id="custody-delivery-form">
+            <div class="form-group">
+              <label for="custody-amount">المبلغ (ج.م):</label>
+              <input type="number" id="custody-amount" step="0.01" min="0" placeholder="أدخل المبلغ" required>
+            </div>
+            <div class="form-group">
+              <label for="custody-notes">ملاحظات (اختياري):</label>
+              <textarea id="custody-notes" rows="2" placeholder="أدخل أي ملاحظات"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger" style="width:100%">
+              <span>📤</span>
+              <span>تسليم العهدة</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="custody-history">
+          <h4>سجل العهدة</h4>
+          <table class="custody-table">
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>المبلغ</th>
+                <th>الحالة</th>
+                <th>الملاحظات</th>
+              </tr>
+            </thead>
+            <tbody id="custody-history-body">
+              <tr>
+                <td colspan="4" class="loading">جارٍ تحميل سجل العهدة...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  // Initialize Supabase
+  const supabaseUrl = 'https://vrngqopmdvdmdayswlos.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs';
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Global variables
+  let currentUser = null;
+  let captainProfile = null;
+  let allOrders = [];
+  let allWithdrawals = [];
+  let custodyRecords = [];
+
+  // DOM Elements
+  const views = document.querySelectorAll('.view');
+  const navTabs = document.querySelectorAll('.nav-tab');
+
+  // Initialize the app
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Check authentication
+    if (!await checkAuth()) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    // Set up navigation
+    navTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const view = tab.getAttribute('data-view');
+        switchView(view);
+      });
+    });
+
+    // Set up button event listeners
+    document.getElementById('view-orders-btn').addEventListener('click', () => switchView('orders'));
+    document.getElementById('refresh-orders-btn').addEventListener('click', loadOrders);
+    document.getElementById('filter-history-btn').addEventListener('click', filterHistory);
+    document.getElementById('order-status-filter').addEventListener('change', () => displayOrders(allOrders));
+    document.getElementById('custody-delivery-form').addEventListener('submit', handleCustodyDelivery);
+
+    // Load initial data
+    await loadCaptainProfile();
+    await loadOrders();
+    await loadWithdrawals();
+    await loadCustodyData();
+    updateWelcomeMessage();
+  });
+
+  // Authentication check
+  async function checkAuth() {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data || !data.session) {
+        return false;
+      }
+      currentUser = data.session.user;
+      return true;
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      return false;
+    }
+  }
+
+  // Load captain profile
+  async function loadCaptainProfile() {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('full_name, email, phone, avatar_url, total_withdrawn')
+        .eq('id', currentUser.id)
+        .single();
+      if (userError) throw userError;
+      if (!userData) {
+        throw new Error('لم يتم العثور على بيانات الكابتن');
+      }
+
+      captainProfile = {
+        full_name: userData.full_name || 'غير محدد',
+        email: userData.email || 'غير محدد',
+        phone: userData.phone || 'غير محدد',
+        avatar_url: userData.avatar_url || null,
+        total_withdrawn: userData.total_withdrawn || 0
+      };
+
+      // Update UI elements
+      document.getElementById('captain-name').textContent = captainProfile.full_name;
+      document.getElementById('captain-email').textContent = captainProfile.email;
+      document.getElementById('captain-phone').textContent = captainProfile.phone;
+
+      // Update avatar
+      const avatarImg = document.getElementById('captain-avatar');
+      if (captainProfile.avatar_url) {
+        avatarImg.src = captainProfile.avatar_url;
+      } else {
+        avatarImg.src = 'https://placehold.co/150?text=الكابتن';
+      }
+
+      updateWelcomeMessage();
+    } catch (error) {
+      console.error("Error loading captain profile:", error);
+      showNotification('خطأ في تحميل بيانات الكابتن: ' + error.message, 'error');
+    }
+  }
+
+  // Update welcome message
+  function updateWelcomeMessage() {
+    const welcomeElement = document.getElementById('captain-welcome');
+    if (captainProfile && captainProfile.full_name && captainProfile.full_name !== 'غير محدد') {
+      welcomeElement.textContent = `مرحباً، ${captainProfile.full_name}!`;
+    } else {
+      welcomeElement.textContent = 'مرحباً أيها الكابتن!';
+    }
+  }
+
+  // Load withdrawals
+// Load withdrawals for today only
+async function loadWithdrawals() {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const { data, error } = await supabase
+      .from('captain_withdrawals')
+      .select('id, amount, notes, created_at, withdrawal_date')
+      .eq('captain_id', currentUser.id)
+      .gte('withdrawal_date', today.toISOString().split('T')[0])
+      .lt('withdrawal_date', tomorrow.toISOString().split('T')[0])
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    allWithdrawals = data || [];
+  } catch (error) {
+    console.error("Error loading withdrawals:", error);
+    showNotification('خطأ في تحميل سجل السحوبات: ' + error.message, 'error');
+    allWithdrawals = []; // تأكد من أن المتغير لا يسبب أخطاء
+  }
+}
+  // Handle custody delivery (partial custody payment)
+  async function handleCustodyDelivery(e) {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById('custody-amount').value);
+    const notes = document.getElementById('custody-notes').value;
+    if (!amount || amount <= 0) {
+      showNotification('يرجى إدخال مبلغ صحيح أكبر من صفر', 'error');
+      return;
+    }
+    try {
+      const { error } = await supabase
+        .from('custodies')
+        .insert({
+          captain_id: currentUser.id,
+          amount: -amount,
+          custody_date: new Date().toISOString().split('T')[0],
+          notes: notes ? `تسليم نقدي: ${notes}` : 'تسليم نقدي للإدارة',
+          status: 'مفعلة'
+        });
+      if (error) throw error;
+      showNotification(`تم تسجيل تسليم ${amount.toFixed(2)} ج.م من العهدة بنجاح`);
+      document.getElementById('custody-delivery-form').reset();
+      await loadCustodyData();
+    } catch (error) {
+      console.error("Error delivering custody:", error);
+      showNotification('حدث خطأ أثناء تسجيل التسليم: ' + error.message, 'error');
+    }
+  }
+
+  // Load orders for today only
+  async function loadOrders() {
+    try {
+      const container = document.getElementById('orders-container');
+      container.innerHTML = '<p class="loading">جارٍ تحميل الطلبات...</p>';
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          id,
+          custom_name,
+          custom_phone,
+          custom_address,
+          order_price,
+          service_price,
+          status,
+          created_at,
+          commission_percent,
+          notes,
+          restaurant_id,
+          restaurants:restaurant_id(full_name)
+        `)
+        .eq('captain_id', currentUser.id)
+        .in('status', ['في انتظار التسليم', 'جاري التوصيل', 'تم التوصيل'])
+        .gte('created_at', today.toISOString())
+        .lt('created_at', tomorrow.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        container.innerHTML = `<p class="error">❌ خطأ في تحميل البيانات: ${error.message}</p>`;
+        return;
+      }
+
+      allOrders = data || [];
+      updateStats();
+      updateDashboardStats();
+      displayOrders(allOrders);
+    } catch (err) {
+      console.error("Error loading orders:", err);
+      document.getElementById('orders-container').innerHTML = 
+        `<p class="error">❌ حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.</p>`;
+    }
+  }
+
+  // Update stats for today only
+function updateStats() {
+  // لأن allOrders و allWithdrawals يحتويان فقط على اليوم
+  const totalOrders = allOrders.length;
+  const deliveredOrders = allOrders.filter(order => order.status === "تم التوصيل").length;
+
+  const deliveredOrderProfits = allOrders
+    .filter(order => order.status === "تم التوصيل")
+    .map(order => {
+      const commission = order.commission_percent || 0;
+      const deliveryPrice = order.service_price || 0;
+      return deliveryPrice * (100 - commission) / 100;
+    });
+
+  const totalProfit = deliveredOrderProfits.reduce((sum, profit) => sum + profit, 0);
+  const totalWithdrawals = allWithdrawals.reduce((sum, w) => sum + w.amount, 0);
+
+  document.getElementById('profile-total-orders').textContent = totalOrders;
+  document.getElementById('profile-delivered-orders').textContent = deliveredOrders;
+  document.getElementById('profile-total-profit').textContent = `${totalProfit.toFixed(2)} ج.م`;
+  document.getElementById('profile-total-withdrawals').textContent = `${totalWithdrawals.toFixed(2)} ج.م`;
+}  // Update dashboard stats
+  function updateDashboardStats() {
+    const totalOrders = allOrders.length;
+    const deliveredOrders = allOrders.filter(order => order.status === "تم التوصيل").length;
+    const pendingOrders = allOrders.filter(order => order.status === "جاري التوصيل").length;
+    const waitingOrders = allOrders.filter(order => order.status === "في انتظار التسليم").length;
+
+    document.getElementById('dash-total-orders').textContent = totalOrders;
+    document.getElementById('dash-delivered-orders').textContent = deliveredOrders;
+    document.getElementById('dash-pending-orders').textContent = pendingOrders;
+    document.getElementById('dash-waiting-orders').textContent = waitingOrders;
+  }
+
+  // Display orders
+  function displayOrders(orders) {
+    const container = document.getElementById('orders-container');
+    const statusFilter = document.getElementById('order-status-filter').value;
+    let filteredOrders = orders;
+    if (statusFilter !== 'all') {
+      filteredOrders = orders.filter(order => order.status === statusFilter);
+    }
+
+    if (filteredOrders.length === 0) {
+      container.innerHTML = '<p class="empty-state">لا توجد طلبات حالياً</p>';
+      return;
+    }
+
+    container.innerHTML = filteredOrders.map(order => {
+      const commission = order.commission_percent || 0;
+      const deliveryPrice = order.service_price || 0;
+      const profit = deliveryPrice * (100 - commission) / 100;
+
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-id">#${order.id.substring(0, 8)}</div>
+            <div class="order-status status-${order.status === 'تم التوصيل' ? 'delivered' : 
+              order.status === 'جاري التوصيل' ? 'pending' : 'waiting'}">
+              ${order.status}
+            </div>
+          </div>
+          <div class="order-details">
+            <div class="detail-row">
+              <span class="detail-label">العميل:</span>
+              <span class="detail-value">${order.custom_name || 'غير محدد'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">المطعم:</span>
+              <span class="detail-value">${order.restaurants?.full_name || 'غير محدد'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">ربحك:</span>
+              <span class="detail-value profit-amount">${profit.toFixed(2)} ج.م</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            ${order.status === 'في انتظار التسليم' ? 
+              `<button class="btn btn-primary start-delivery-btn" data-order-id="${order.id}">
+                <span>🚚</span>
+                <span>بدء التوصيل</span>
+              </button>` : ''}
+            ${order.status === 'جاري التوصيل' ? 
+              `<button class="btn btn-success complete-delivery-btn" data-order-id="${order.id}">
+                <span>✅</span>
+                <span>إتمام التسليم</span>
+              </button>` : ''}
+            <button class="btn btn-secondary view-details-btn" data-order-id="${order.id}">
+              <span>👁️</span>
+              <span>تفاصيل</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add event listeners
+    document.querySelectorAll('.start-delivery-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => startDelivery(e.target.closest('.start-delivery-btn').dataset.orderId));
+    });
+    document.querySelectorAll('.complete-delivery-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => completeDelivery(e.target.closest('.complete-delivery-btn').dataset.orderId));
+    });
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => showOrderDetails(e.target.closest('.view-details-btn').dataset.orderId));
+    });
+  }
+
+  // Show order details
+  function showOrderDetails(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const commission = order.commission_percent || 0;
+    const deliveryPrice = order.service_price || 0;
+    const profit = deliveryPrice * (100 - commission) / 100;
+
+    const modal = document.createElement('div');
+    modal.id = 'order-details-modal';
+    modal.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: flex; justify-content: center;
+      align-items: center; z-index: 2000;
+    `;
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; padding: 1.5rem; max-width: 90%; width: 500px; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="margin: 0;">تفاصيل الطلب</h3>
+          <button id="close-modal-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+        </div>
+        <div style="text-align: right; line-height: 2;">
+          <p><strong>رقم الطلب:</strong> ${order.id.substring(0, 8)}</p>
+          <p><strong>اسم العميل:</strong> ${order.custom_name || 'غير محدد'}</p>
+          <p><strong>رقم الهاتف:</strong> ${order.custom_phone || 'غير محدد'}</p>
+          <p><strong>عنوان التوصيل:</strong> ${order.custom_address || 'غير محدد'}</p>
+          <p><strong>سعر الطلب:</strong> ${order.order_price || 0} ج.م</p>
+          <p><strong>سعر التوصيل:</strong> ${order.service_price || 0} ج.م</p>
+          <p><strong>الإجمالي:</strong> ${(order.order_price || 0) + (order.service_price || 0)} ج.م</p>
+          <p><strong>المطعم:</strong> ${order.restaurants?.full_name || 'غير محدد'}</p>
+          <p><strong>ملاحظات:</strong> ${order.notes || 'لا توجد ملاحظات'}</p>
+          <p><strong>نسبة العمولة:</strong> ${commission}%</p>
+          <p><strong>ربحك من هذا الطلب:</strong> <span class="profit-amount">${profit.toFixed(2)} ج.م</span></p>
+          <p><strong>الحالة:</strong>
+            <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+              background: ${order.status === 'تم التوصيل' ? '#d1fae5' : 
+                           order.status === 'جاري التوصيل' ? '#fef3c7' : '#ede9fe'};
+              color: ${order.status === 'تم التوصيل' ? '#065f46' : 
+                      order.status === 'جاري التوصيل' ? '#92400e' : '#5b21b6'};">
+              ${order.status}
+            </span>
+          </p>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.getElementById('close-modal-btn').addEventListener('click', () => document.body.removeChild(modal));
+    modal.addEventListener('click', (e) => { if (e.target === modal) document.body.removeChild(modal); });
+  }
+
+  // Start delivery
+  async function startDelivery(orderId) {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'جاري التوصيل' })
+        .eq('id', orderId);
+      if (error) throw error;
+      showNotification('تم تحديث حالة الطلب إلى "جاري التوصيل"');
+      await loadOrders();
+    } catch (error) {
+      console.error("Error starting delivery:", error);
+      showNotification('حدث خطأ أثناء تحديث الحالة', 'error');
+    }
+  }
+
+  // Complete delivery
+  async function completeDelivery(orderId) {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'تم التوصيل' })
+        .eq('id', orderId);
+      if (error) throw error;
+      showNotification('تم إتمام التسليم بنجاح');
+      await loadOrders();
+    } catch (error) {
+      console.error("Error completing delivery:", error);
+      showNotification('حدث خطأ أثناء إتمام التسليم', 'error');
+    }
+  }
+
+  // Filter history
+  async function filterHistory() {
+    try {
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const container = document.getElementById('history-container');
+      container.innerHTML = '<p class="loading">جارٍ تحميل السجل...</p>';
+
+      let query = supabase
+        .from('orders')
+        .select(`
+          id,
+          custom_name,
+          custom_phone,
+          custom_address,
+          order_price,
+          service_price,
+          status,
+          created_at,
+          commission_percent,
+          notes,
+          restaurant_id,
+          restaurants:restaurant_id(full_name)
+        `)
+        .eq('captain_id', currentUser.id)
+        .eq('status', 'تم التوصيل')
+        .order('created_at', { ascending: false });
+
+      if (startDate) {
+        query = query.gte('created_at', startDate);
+      }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setDate(endOfDay.getDate() + 1);
+        query = query.lt('created_at', endOfDay.toISOString());
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      if (data.length === 0) {
+        container.innerHTML = '<p class="empty-state">لا توجد طلبات في السجل للفترة المحددة</p>';
+        return;
+      }
+
+      container.innerHTML = data.map(order => {
+        const commission = order.commission_percent || 0;
+        const deliveryPrice = order.service_price || 0;
+        const profit = deliveryPrice * (100 - commission) / 100;
+        return `
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-id">#${order.id.substring(0, 8)}</div>
+              <div class="order-status status-delivered">تم التوصيل</div>
+            </div>
+            <div class="order-details">
+              <div class="detail-row">
+                <span class="detail-label">العميل:</span>
+                <span class="detail-value">${order.custom_name || 'غير محدد'}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">التاريخ:</span>
+                <span class="detail-value">${new Date(order.created_at).toLocaleDateString('ar-EG')}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">الإجمالي:</span>
+                <span class="detail-value">${(order.order_price || 0) + (order.service_price || 0)} ج.م</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">المطعم:</span>
+                <span class="detail-value">${order.restaurants?.full_name || 'غير محدد'}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">ربحك:</span>
+                <span class="detail-value profit-amount">${profit.toFixed(2)} ج.م</span>
+              </div>
+            </div>
+            <button class="btn btn-secondary view-details-btn" data-order-id="${order.id}">
+              <span>👁️</span>
+              <span>تفاصيل</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => showOrderDetails(e.target.closest('.view-details-btn').dataset.orderId));
+      });
+    } catch (error) {
+      console.error("Error filtering history:", error);
+      document.getElementById('history-container').innerHTML = 
+        `<p class="error">❌ حدث خطأ أثناء تحميل السجل: ${error.message}</p>`;
+    }
+  }
+
+  // Load custody data
+  async function loadCustodyData() {
+    try {
+      const { data, error } = await supabase
+        .from('custodies')
+        .select('id, amount, custody_date, status, notes')
+        .eq('captain_id', currentUser.id)
+        .order('custody_date', { ascending: false });
+      if (error) throw error;
+      custodyRecords = data || [];
+
+      const remainingCustody = custodyRecords
+        .filter(c => c.status === 'مفعلة')
+        .reduce((sum, c) => sum + c.amount, 0);
+      const paidCustody = custodyRecords
+        .filter(c => c.amount < 0)
+        .reduce((sum, c) => sum + Math.abs(c.amount), 0);
+
+      document.getElementById('remaining-custody').textContent = `${remainingCustody.toFixed(2)} ج.م`;
+      document.getElementById('paid-custody').textContent = `${paidCustody.toFixed(2)} ج.م`;
+      displayCustodyHistory(custodyRecords);
+    } catch (error) {
+      console.error("Error loading custody ", error);
+      document.getElementById('custody-history-body').innerHTML = 
+        `<tr><td colspan="4" class="error">❌ حدث خطأ أثناء تحميل سجل العهدة: ${error.message}</td></tr>`;
+    }
+  }
+
+  // Display custody history
+  function displayCustodyHistory(records) {
+    const tbody = document.getElementById('custody-history-body');
+    if (records.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">لا توجد سجلات عهدة</td></tr>';
+      return;
+    }
+    tbody.innerHTML = records.map(record => `
+      <tr>
+        <td>${new Date(record.custody_date).toLocaleDateString('ar-EG')}</td>
+        <td>
+          <span style="color: ${record.amount >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">
+            ${record.amount >= 0 ? '+' : ''}${record.amount.toFixed(2)} ج.م
+          </span>
+        </td>
+        <td>
+          <span class="custody-status-${record.status === 'مفعلة' ? 'active' : 'inactive'}">
+            ${record.status}
+          </span>
+        </td>
+        <td>${record.notes || '-'}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Switch view
+function switchView(viewName) {
+  navTabs.forEach(tab => {
+    tab.classList.toggle('active', tab.getAttribute('data-view') === viewName);
+  });
+  views.forEach(view => {
+    view.classList.toggle('active', view.id === viewName);
+  });
+
+  if (viewName === 'orders') {
+    loadOrders();
+  } else if (viewName === 'history') {
+    document.getElementById('start-date').value = '';
+    document.getElementById('end-date').value = '';
+    filterHistory();
+  } else if (viewName === 'profile') {
+    loadCaptainProfile();
+    loadOrders();           // ✅ طلبات اليوم
+    loadWithdrawals();      // ✅ سحوبات اليوم (محدثة)
+    loadCustodyData();
+    updateStats();          // ✅ الآن الأرقام دقيقة
+  }
+}  // Show notification
+  function showNotification(message, type = 'success') {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    const notif = document.createElement('div');
+    notif.className = `notification ${type === 'error' ? 'error' : ''}`;
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
+  }
+</script></body>
+</html>

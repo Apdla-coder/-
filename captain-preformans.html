@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>تقرير أداء الكباتن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="bar.css">
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --secondary: #3b82f6;
+      --secondary-dark: #2563eb;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --danger-dark: #dc2626;
+      --warning: #f59e0b;
+      --warning-dark: #d97706;
+      --info: #0ea5e9;
+      --info-dark: #0284c7;
+      --dark: #1f2937;
+      --darker: #111827;
+      --light: #f3f4f6;
+      --lighter: #f9fafb;
+      --gray: #6b7280;
+      --gray-light: #9ca3af;
+      --border: #e5e7eb;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fa;
+      color: var(--darker);
+      direction: rtl;
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h2 {
+      color: var(--darker);
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .search-container {
+      position: relative;
+      max-width: 300px;
+      width: 100%;
+    }
+    .search-container i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.8rem 2.5rem 0.8rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--darker);
+    }
+    .card-footer {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.5rem;
+    }
+    .positive {
+      color: var(--success);
+    }
+    .negative {
+      color: var(--danger);
+    }
+    /* Table Styles */
+    .table-container {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+      margin-bottom: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 1.2rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--light);
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(249, 115, 22, 0.03);
+    }
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .status-busy {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    .status-free {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    .status-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: var(--secondary-dark);
+    }
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover {
+      background: var(--success-dark);
+    }
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-danger:hover {
+      background: var(--danger-dark);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--dark);
+    }
+    .btn-outline:hover {
+      background: var(--light);
+    }
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      animation: modalSlideIn 0.3s ease;
+    }
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--darker);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      background: var(--light);
+      color: var(--dark);
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+      font-size: 0.9rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      background: var(--lighter);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+    .form-row > div {
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+    }
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 80px;
+      }
+      .sidebar-logo h2,
+      .sidebar a span,
+      .sidebar-menu span {
+        display: none;
+      }
+      .sidebar-logo {
+        padding: 1rem;
+      }
+      .sidebar-logo img {
+        width: 50px;
+        height: 50px;
+      }
+      .sidebar a {
+        justify-content: center;
+        padding: 1.2rem 0;
+      }
+      .sidebar a i {
+        margin-left: 0;
+        font-size: 1.3rem;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-container {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 768px) {
+      .main {
+        padding: 1.5rem 1rem;
+      }
+      .stats-cards {
+        grid-template-columns: 1fr;
+      }
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        min-width: 800px;
+      }
+    }
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray);
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--gray-light);
+    }
+    .empty-state h3 {
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding: 1rem;
+    }
+    .pagination button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: var(--light);
+    }
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .pagination button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    /* No Data */
+    .no-data {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray);
+    }
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .toast.show {
+      transform: translateX(0);
+    }
+    .toast.success {
+      background: var(--success);
+    }
+    .toast.error {
+      background: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
+        <h2>المكتب</h2>
+      </div>
+      <a class="nav-link active" href="./dashboard.html">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>لوحة التحكم</span>
+      </a>
+      <a class="nav-link" href="./add-order.html">
+        <i class="fas fa-plus-circle"></i>
+        <span>اضافة طلب يدويا</span>
+      </a>
+      <a class="nav-link" href="./customers.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./covenant.html">
+        <i class="fas fa-users"></i>
+        <span>نظام العهدة </span>
+      </a>
+      <a class="nav-link" href="./captain-preformans.html">
+        <i class="fas fa-chart-line"></i>
+        <span>أداء الكباتن</span>
+      </a>
+      <a class="nav-link" href="./history-mange.html">
+        <i class="fas fa-history"></i>
+        <span>سجل الطلبات</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+    <div class="main">
+      <div class="header">
+        <h2><i class="fas fa-chart-line me-2"></i> تقرير أداء الكباتن - اليوم الحالي</h2>
+        <div class="search-container">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="ابحث عن كابتن...">
+        </div>
+      </div>
+      <div class="stats-cards">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">إجمالي الكباتن</div>
+            <div class="card-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary);">
+              <i class="fas fa-user-tie"></i>
+            </div>
+          </div>
+          <div class="card-value" id="total-captains">0</div>
+          <div class="card-footer">كباتن مسجلين في النظام</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">إجمالي الطلبات</div>
+            <div class="card-icon" style="background: rgba(249, 115, 22, 0.15); color: var(--primary);">
+              <i class="fas fa-box"></i>
+            </div>
+          </div>
+          <div class="card-value" id="total-orders">0</div>
+          <div class="card-footer">طلب اليوم الحالي</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">الطلبات المُسلمة</div>
+            <div class="card-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+          <div class="card-value" id="delivered-orders">0</div>
+          <div class="card-footer">طلب تم تسليمه اليوم</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">إجمالي العمولة</div>
+            <div class="card-icon" style="background: rgba(147, 51, 234, 0.15); color: #9333ea;">
+              <i class="fas fa-wallet"></i>
+            </div>
+          </div>
+          <div class="card-value" id="total-commission">0.00 جنيه</div>
+          <div class="card-footer">عمولة الطلبات المُسلمة</div>
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>اسم الكابتن</th>
+              <th>الحالة</th>
+              <th>عدد الطلبات</th>
+              <th>تم التوصيل</th>
+              <th>جاري التوصيل</th>
+              <th>فشل التوصيل</th>
+              <th>قيد التوزيع</th>
+              <th>إجمالي سعر الطلبات</th>
+              <th>إجمالي سعر الخدمة</th>
+              <th>إجمالي العمولة</th>
+              <th>العمولة المسحوبة</th>
+              <th>العمولة المتاحة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="captains-body">
+            <tr>
+              <td colspan="13">
+                <div class="loading">
+                  <div class="spinner"></div>
+                  <p>جارٍ تحميل البيانات...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Toast for notifications -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-message"></span>
+  </div>
+  <!-- Withdraw Commission Modal -->
+  <div id="withdraw-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>سحب العمولة</h3>
+        <button class="modal-close" id="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>اسم الكابتن</label>
+          <input type="text" id="captain-name" class="form-control" disabled>
+        </div>
+        <div class="form-group">
+          <label>إجمالي العمولة المتاحة</label>
+          <input type="text" id="available-commission" class="form-control" disabled>
+        </div>
+        <div class="form-group">
+          <label for="withdraw-amount">مبلغ السحب</label>
+          <input type="number" id="withdraw-amount" class="form-control" placeholder="أدخل المبلغ المراد سحبه" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label for="withdraw-notes">ملاحظات (اختياري)</label>
+          <textarea id="withdraw-notes" class="form-control" rows="3" placeholder="أضف ملاحظات حول السحب"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancel-withdraw">إلغاء</button>
+        <button class="btn btn-danger" id="confirm-withdraw">تأكيد السحب</button>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    
+    // Initialize Supabase
+    const supabase = createClient(
+      'https://vrngqopmdvdmdayswlos.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
+    );
+    
+    // Get today's date in ISO format
+    const today = new Date();
+    const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+    
+    // Pagination variables
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let captainsData = [];
+    let filteredData = [];
+    let selectedCaptain = null;
+    
+    // DOM Elements
+    const searchInput = document.getElementById('search-input');
+    const captainsBody = document.getElementById('captains-body');
+    const paginationElement = document.getElementById('pagination');
+    const withdrawModal = document.getElementById('withdraw-modal');
+    const closeModal = document.getElementById('close-modal');
+    const cancelWithdraw = document.getElementById('cancel-withdraw');
+    const confirmWithdraw = document.getElementById('confirm-withdraw');
+    const toast = document.getElementById('toast');
+    
+    // Debounce function for search
+    const debounce = (func, wait) => {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    };
+    
+    // Search functionality
+    const handleSearch = debounce(() => {
+      const term = searchInput.value.toLowerCase().trim();
+      filteredData = term 
+        ? captainsData.filter(captain => captain.full_name.toLowerCase().includes(term))
+        : [...captainsData];
+      
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+    }, 300);
+    
+    // Initialize data loading
+    async function loadTodayData() {
+      try {
+        // Show loading state
+        captainsBody.innerHTML = `
+          <tr>
+            <td colspan="13">
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>جارٍ تحميل بيانات اليوم...</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        
+        // Fetch captains
+        const { data: captains, error: captainsError } = await supabase
+          .from("users")
+          .select("id, full_name, total_withdrawn")
+          .eq("role", "captain");
+          
+        if (captainsError) throw captainsError;
+        
+        // Fetch today's orders only
+        const { data: orders, error: ordersError } = await supabase
+          .from("orders")
+          .select("*")
+          .not("captain_id", "is", null)
+          .gte('created_at', todayStart)
+          .lt('created_at', todayEnd);
+          
+        if (ordersError) throw ordersError;
+        
+        // Process data efficiently
+        const captainStats = new Map();
+        
+        // Initialize all captains
+        captains.forEach(captain => {
+          captainStats.set(captain.id, {
+            id: captain.id,
+            full_name: captain.full_name,
+            total_withdrawn: captain.total_withdrawn || 0,
+            total_orders: 0,
+            delivered: 0,
+            pending: 0,
+            failed: 0,
+            distributing: 0,
+            total_order_price: 0,
+            total_service_price: 0,
+            total_commission: 0,
+            status: "فاضي"
+          });
+        });
+        
+        // Process orders
+        orders.forEach(order => {
+          const stats = captainStats.get(order.captain_id);
+          if (!stats) return;
+          
+          // Update order counts
+          stats.total_orders++;
+          stats.total_order_price += order.order_price || 0;
+          stats.total_service_price += order.service_price || 0;
+          
+          // Update status counts
+          switch(order.status) {
+            case 'تم التوصيل':
+              stats.delivered++;
+              stats.total_commission += ((order.service_price || 0) * (order.commission_percent || 0) / 100);
+              break;
+            case 'جاري التوصيل':
+              stats.pending++;
+              stats.status = "مشغول";
+              break;
+            case 'فشل التوصيل':
+              stats.failed++;
+              break;
+            case 'قيد التوزيع':
+              stats.distributing++;
+              break;
+          }
+        });
+        
+        // Convert to array and calculate available commission
+        captainsData = Array.from(captainStats.values()).map(captain => ({
+          ...captain,
+          available_commission: captain.total_commission - captain.total_withdrawn
+        }));
+        
+        // Update statistics
+        updateStats(captains.length, orders.length, 
+          orders.filter(o => o.status === 'تم التوصيل').length,
+          captainsData.reduce((sum, c) => sum + c.total_commission, 0)
+        );
+        
+        // Filter and render
+        filteredData = [...captainsData];
+        renderTable();
+        renderPagination();
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        captainsBody.innerHTML = `
+          <tr>
+            <td colspan="13">
+              <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>خطأ في تحميل البيانات</h3>
+                <p>${error.message}</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    // Render table with pagination
+    function renderTable() {
+      captainsBody.innerHTML = "";
+      
+      if (filteredData.length === 0) {
+        captainsBody.innerHTML = `
+          <tr>
+            <td colspan="13">
+              <div class="no-data">
+                <i class="fas fa-search"></i>
+                <h3>لا توجد نتائج</h3>
+                <p>حاول تغيير معايير البحث</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+      
+      for (let i = startIndex; i < endIndex; i++) {
+        const captain = filteredData[i];
+        const statusClass = captain.status === "مشغول" ? "status-busy" : "status-free";
+        
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><i class="fas fa-user me-2"></i>${captain.full_name}</td>
+          <td><span class="status-badge ${statusClass}">${captain.status}</span></td>
+          <td>${captain.total_orders}</td>
+          <td>${captain.delivered}</td>
+          <td>${captain.pending}</td>
+          <td>${captain.failed}</td>
+          <td>${captain.distributing}</td>
+          <td>${captain.total_order_price.toFixed(2)} جنيه</td>
+          <td>${captain.total_service_price.toFixed(2)} جنيه</td>
+          <td>${captain.total_commission.toFixed(2)} جنيه</td>
+          <td>${captain.total_withdrawn.toFixed(2)} جنيه</td>
+          <td>${captain.available_commission.toFixed(2)} جنيه</td>
+          <td>
+            <button class="btn btn-sm btn-danger withdraw-btn" data-id="${captain.id}">
+              <i class="fas fa-money-bill-wave"></i> سحب
+            </button>
+          </td>
+        `;
+        captainsBody.appendChild(row);
+      }
+      
+      // Add event listeners
+      document.querySelectorAll('.withdraw-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const captainId = button.getAttribute('data-id');
+          selectedCaptain = captainsData.find(c => c.id === captainId);
+          
+          if (selectedCaptain) {
+            document.getElementById('captain-name').value = selectedCaptain.full_name;
+            document.getElementById('available-commission').value = `${selectedCaptain.available_commission.toFixed(2)} جنيه`;
+            document.getElementById('withdraw-amount').max = selectedCaptain.available_commission;
+            withdrawModal.style.display = 'flex';
+          }
+        });
+      });
+    }
+    
+    // Render pagination
+    function renderPagination() {
+      paginationElement.innerHTML = "";
+      
+      if (filteredData.length <= itemsPerPage) return;
+      
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      
+      // Previous button
+      const prevBtn = document.createElement("button");
+      prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTable();
+          renderPagination();
+        }
+      });
+      paginationElement.appendChild(prevBtn);
+      
+      // Page buttons
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      if (startPage > 1) {
+        const firstBtn = document.createElement("button");
+        firstBtn.textContent = "1";
+        firstBtn.addEventListener("click", () => {
+          currentPage = 1;
+          renderTable();
+          renderPagination();
+        });
+        paginationElement.appendChild(firstBtn);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement("span");
+          ellipsis.textContent = "...";
+          ellipsis.style.padding = "0.5rem";
+          paginationElement.appendChild(ellipsis);
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.classList.toggle("active", i === currentPage);
+        pageBtn.addEventListener("click", () => {
+          currentPage = i;
+          renderTable();
+          renderPagination();
+        });
+        paginationElement.appendChild(pageBtn);
+      }
+      
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const ellipsis = document.createElement("span");
+          ellipsis.textContent = "...";
+          ellipsis.style.padding = "0.5rem";
+          paginationElement.appendChild(ellipsis);
+        }
+        
+        const lastBtn = document.createElement("button");
+        lastBtn.textContent = totalPages;
+        lastBtn.addEventListener("click", () => {
+          currentPage = totalPages;
+          renderTable();
+          renderPagination();
+        });
+        paginationElement.appendChild(lastBtn);
+      }
+      
+      // Next button
+      const nextBtn = document.createElement("button");
+      nextBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderTable();
+          renderPagination();
+        }
+      });
+      paginationElement.appendChild(nextBtn);
+    }
+    
+    // Update statistics
+    function updateStats(totalCaptains, totalOrders, deliveredOrders, totalCommission) {
+      document.getElementById("total-captains").textContent = totalCaptains;
+      document.getElementById("total-orders").textContent = totalOrders;
+      document.getElementById("delivered-orders").textContent = deliveredOrders;
+      document.getElementById("total-commission").textContent = `${totalCommission.toFixed(2)} جنيه`;
+    }
+    
+    // Show toast notifications
+    function showToast(message, type = 'success') {
+      const toastMessage = document.getElementById('toast-message');
+      toastMessage.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 5000);
+    }
+    
+    // Withdraw commission
+    async function handleWithdraw() {
+      const amountInput = document.getElementById('withdraw-amount');
+      const amount = parseFloat(amountInput.value);
+      const notes = document.getElementById('withdraw-notes').value;
+      
+      if (!amount || amount <= 0) {
+        showToast('يرجى إدخال مبلغ سحب صحيح', 'error');
+        return;
+      }
+      
+      if (amount > selectedCaptain.available_commission) {
+        showToast('مبلغ السحب أكبر من العمولة المتاحة', 'error');
+        return;
+      }
+      
+      try {
+        // Insert withdrawal record
+        const { error: insertError } = await supabase
+          .from('captain_withdrawals')
+          .insert([
+            {
+              captain_id: selectedCaptain.id,
+              amount: amount,
+              notes: notes,
+              created_at: new Date().toISOString()
+            }
+          ]);
+          
+        if (insertError) throw insertError;
+        
+        // Update captain's total withdrawn
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ 
+            total_withdrawn: selectedCaptain.total_withdrawn + amount
+          })
+          .eq('id', selectedCaptain.id);
+          
+        if (updateError) throw updateError;
+        
+        // Update local data
+        selectedCaptain.total_withdrawn += amount;
+        selectedCaptain.available_commission -= amount;
+        
+        // Update UI
+        withdrawModal.style.display = 'none';
+        renderTable();
+        showToast('تم سحب العمولة بنجاح');
+        
+        // Reset form
+        amountInput.value = '';
+        document.getElementById('withdraw-notes').value = '';
+        
+      } catch (error) {
+        console.error('Error withdrawing commission:', error);
+        let errorMessage = 'حدث خطأ أثناء سحب العمولة';
+        
+        if (error.message.includes('row-level security policy')) {
+          errorMessage = 'ليس لديك الصلاحيات اللازمة لسحب العمولة لهذا الكابتن.';
+        } else if (error.message.includes('column')) {
+          errorMessage = 'خطأ في أسماء الأعمدة. يرجى التحقق من جدول captain_withdrawals.';
+        }
+        
+        showToast(errorMessage, 'error');
+      }
+    }
+    
+    // Event Listeners
+    document.addEventListener("DOMContentLoaded", loadTodayData);
+    searchInput.addEventListener('input', handleSearch);
+    
+    // Modal events
+    closeModal.addEventListener('click', () => withdrawModal.style.display = 'none');
+    cancelWithdraw.addEventListener('click', () => withdrawModal.style.display = 'none');
+    confirmWithdraw.addEventListener('click', handleWithdraw);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === withdrawModal) {
+        withdrawModal.style.display = 'none';
+      }
+    });
+    
+    // Auto-refresh every 5 minutes
+    setInterval(loadTodayData, 5 * 60 * 1000);
+  </script>
+</body>
+</html>

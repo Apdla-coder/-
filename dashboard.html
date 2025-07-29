@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم المشرف - نظام الطلبات</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="bar.css">
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --secondary: #059669;
+      --dark: #1f2937;
+      --light: #f9fafb;
+      --gray: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --waiting: #8b5cf6;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+    }
+    body {
+      background-color: #f3f4f6;
+      color: var(--dark);
+      direction: rtl;
+      text-align: right;
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+      margin-right: 0;
+    }
+    .nav-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-item {
+      margin: 0;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      color: #d1d5db;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-right: 3px solid transparent;
+    }
+    .nav-link:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+    .nav-link.active {
+      background: rgba(249, 115, 22, 0.1);
+      color: var(--primary);
+      border-right: 3px solid var(--primary);
+    }
+    .nav-link i {
+      margin-left: 0.75rem;
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+    .logout-btn {
+      margin-top: auto;
+      padding: 1rem 1.5rem;
+      background: rgba(255,255,255,0.05);
+      color: #f87171;
+      border: none;
+      border-radius: 0;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-align: right;
+      display: flex;
+      align-items: center;
+    }
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .logout-btn i {
+      margin-left: 0.75rem;
+    }
+    /* Main Content Styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      transition: all 0.3s ease;
+      border-top: 4px solid var(--primary);
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .stat-card.delivered {
+      border-top-color: var(--success);
+    }
+    .stat-card.pending {
+      border-top-color: var(--warning);
+    }
+    .stat-card.waiting {
+      border-top-color: var(--waiting);
+    }
+    .stat-card.in-transit {
+      border-top-color: #0ea5e9;
+    }
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+      color: var(--dark);
+    }
+    .stat-label {
+      font-size: 1rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+    .controls {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 0.8rem;
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--dark);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .filter-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .search-container {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 3rem;
+      border-radius: 0.8rem;
+      border: 2px solid var(--border);
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .search-container input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .search-container i {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    .orders-table-container {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 1.2rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background-color: #f9fafb;
+      font-weight: 700;
+      color: var(--dark);
+      position: sticky;
+      top: 0;
+    }
+    .order-row:hover {
+      background-color: #fdf2f8;
+    }
+    .select-field, .input-field {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 0.5rem;
+      border: 2px solid var(--border);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+    .select-field:focus, .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .details-btn, .transfer-btn, .deliver-btn, .reassign-btn, .delete-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .details-btn {
+      background: var(--info);
+      color: white;
+    }
+    .details-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+    .transfer-btn.enabled, .deliver-btn.enabled, .reassign-btn.enabled {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .transfer-btn.enabled:hover, .deliver-btn.enabled:hover, .reassign-btn.enabled:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #dc2626);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+    .transfer-btn.disabled, .deliver-btn.disabled, .reassign-btn.disabled {
+      background: #d1d5db;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+    .delete-btn {
+      background-color: #ef4444;
+      color: white;
+    }
+    .delete-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-2px);
+    }
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: modalAppear 0.3s ease-out;
+    }
+    @keyframes modalAppear {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 {
+      font-size: 1.5rem;
+      color: var(--dark);
+    }
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--gray);
+      transition: color 0.2s;
+    }
+    .close-modal:hover {
+      color: var(--dark);
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .logout-btn-header {
+      padding: 0.7rem 1.5rem;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logout-btn-header:hover {
+      background: white;
+      color: var(--primary);
+    }
+    .captain-select-container {
+      position: relative;
+      min-width: 200px;
+    }
+    .captain-select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      background: white;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .captain-select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .captain-select:disabled {
+      background: #f9fafb;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .captain-info {
+      margin-top: 0.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .captain-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #059669;
+      color: white;
+    }
+    .captain-badge.success {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+    .captain-display {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .captain-name {
+      color: #374151;
+    }
+    .captain-assigned-badge {
+      color: #059669;
+      font-weight: bold;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      padding: 1rem 2rem;
+      border-radius: 0.8rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    }
+    .notification-success {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+    .notification-error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    .notification-info {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    .new-order {
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), transparent);
+      border-left: 4px solid #f97316;
+      animation: highlightNew 2s ease-in-out;
+    }
+    @keyframes highlightNew {
+      0% { background: rgba(249, 115, 22, 0.3); }
+      100% { background: rgba(249, 115, 22, 0.1); }
+    }
+    .notification-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      z-index: 5000;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .notification-bar.show {
+      transform: translateY(0);
+    }
+    .notification-bar-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .notification-bar i {
+      font-size: 1.5rem;
+    }
+    .notification-bar-close {
+      position: absolute;
+      left: 1rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .controls {
+        flex-direction: column;
+      }
+      .search-container {
+        max-width: 100%;
+      }
+      th, td {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.9rem;
+      }
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .main-content {
+        margin-right: 0;
+        margin-top: 0;
+      }
+      .captain-select-container {
+        min-width: 150px;
+      }
+      .captain-select {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+      }
+      .captain-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+      }
+      .transfer-btn.enabled,
+      .transfer-btn.disabled,
+      .deliver-btn.enabled,
+      .deliver-btn.disabled,
+      .reassign-btn.enabled,
+      .reassign-btn.disabled,
+      .delete-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Notification Bar -->
+  <div class="notification-bar" id="notification-bar">
+    <div class="notification-bar-content">
+      <i class="fas fa-bell"></i>
+      <span id="notification-message">طلب جديد وصل للوحة التحكم</span>
+    </div>
+    <button class="notification-bar-close" onclick="closeNotificationBar()">&times;</button>
+  </div>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
+        <h2>المكتب</h2>
+      </div>
+      <a class="nav-link active" href="./dashboard.html">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>لوحة التحكم</span>
+      </a>
+      <a class="nav-link" href="./add-order.html">
+        <i class="fas fa-plus-circle"></i>
+        <span>اضافة طلب يدويا</span>
+      </a>
+      <a class="nav-link" href="./customers.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./covenant.html">
+        <i class="fas fa-users"></i>
+        <span>نظام العهدة </span>
+      </a>
+      <a class="nav-link" href="./captain-preformans.html">
+        <i class="fas fa-chart-line"></i>
+        <span>أداء الكباتن</span>
+      </a>
+      <a class="nav-link" href="./history-mange.html">
+        <i class="fas fa-history"></i>
+        <span>سجل الطلبات</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <div>
+          <h1><i class="fas fa-tachometer-alt"></i> لوحة تحكم المشرف</h1>
+          <p>إدارة الطلبات بكفاءة وسهولة</p>
+        </div>
+        <button class="logout-btn-header" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-shopping-cart fa-2x"></i>
+          <div class="stat-value" id="total-orders">0</div>
+          <div class="stat-label">إجمالي الطلبات</div>
+        </div>
+        <div class="stat-card delivered">
+          <i class="fas fa-check-circle fa-2x"></i>
+          <div class="stat-value" id="delivered">0</div>
+          <div class="stat-label">تم التوصيل</div>
+        </div>
+        <div class="stat-card pending">
+          <i class="fas fa-clock fa-2x"></i>
+          <div class="stat-value" id="pending">0</div>
+          <div class="stat-label">قيد التوزيع</div>
+        </div>
+        <div class="stat-card waiting">
+          <i class="fas fa-box fa-2x"></i>
+          <div class="stat-value" id="waiting-delivery">0</div>
+          <div class="stat-label">في انتظار التسليم</div>
+        </div>
+        <div class="stat-card in-transit">
+          <i class="fas fa-truck-moving fa-2x"></i>
+          <div class="stat-value" id="in-transit">0</div>
+          <div class="stat-label">جاري التوصيل</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="filter-btn" data-status="all" onclick="setFilterStatus('all')">
+          <i class="fas fa-list"></i> جميع الطلبات
+        </button>
+        <button class="filter-btn active" data-status="قيد التوزيع" onclick="setFilterStatus('قيد التوزيع')">
+          <i class="fas fa-clock"></i> قيد التوزيع <span id="orders-count-pending">(0)</span>
+        </button>
+        <button class="filter-btn" data-status="في انتظار التسليم" onclick="setFilterStatus('في انتظار التسليم')">
+          <i class="fas fa-box"></i> في انتظار التسليم
+        </button>
+        <button class="filter-btn" data-status="جاري التوصيل" onclick="setFilterStatus('جاري التوصيل')">
+          <i class="fas fa-truck-moving"></i> جاري التوصيل
+        </button>
+        <button class="filter-btn" data-status="تم التوصيل" onclick="setFilterStatus('تم التوصيل')">
+          <i class="fas fa-check"></i> تم التوصيل
+        </button>
+        <div class="search-container">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الهاتف أو العنوان..." oninput="handleSearch()">
+        </div>
+      </div>
+      <div class="orders-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المطعم</th>
+              <th>عنوان التوصيل</th>
+              <th>سعر الطلب</th>
+              <th>سعر التوصيل</th>
+              <th>الكابتن</th>
+              <th>العمولة</th>
+              <th>الإجراءات</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body">
+            <tr>
+              <td colspan="8" class="loading-state">
+                <div class="loading-spinner"></div>
+                جارٍ تحميل الطلبات...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Modal for order details -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>تفاصيل الطلب</h2>
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-details">
+        <!-- Order details will be loaded here -->
+      </div>
+    </div>
+  </div>
+  <!-- Hidden audio element for notifications -->
+  <audio id="notification-sound" src="notification.mp3.mp3" preload="auto"></audio>
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(
+      'https://vrngqopmdvdmdayswlos.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
+    );
+    let currentStatusFilter = "قيد التوزيع";
+    let currentSearchText = "";
+    let latestOrderIds = new Set();
+    let allOrders = [];
+    let displayedOrders = [];
+    let captains = [];
+    let restaurants = [];
+    const alertSound = document.getElementById("notification-sound");
+    let audioContext;
+    let audioAllowed = false;
+    let autoRefreshInterval;
+    let lastNotificationTime = 0;
+    let notificationTimeout;
+    let pendingOrdersCheckInterval;
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        filter: params.get('filter') || "قيد التوزيع",
+        search: params.get('search') || ""
+      };
+    }
+    function updateUrlParams(filter, search) {
+      const url = new URL(window.location);
+      url.searchParams.set('filter', filter);
+      if (search) {
+        url.searchParams.set('search', search);
+      } else {
+        url.searchParams.delete('search');
+      }
+      window.history.replaceState({}, '', url);
+    }
+    async function initAudio() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start();
+        await audioContext.resume();
+        audioAllowed = true;
+        console.log("✅ السماح بتشغيل الصوت تم بنجاح");
+      } catch (err) {
+        console.warn("❌ رفض المتصفح تشغيل الصوت:", err.message);
+      }
+    }
+    document.addEventListener("click", initAudio, { once: true });
+    document.addEventListener("click", (e) => {
+      if (e.target.closest(".order-row button, .order-row select, .order-row input")) {
+        if (alertSound) {
+          alertSound.pause();
+          alertSound.currentTime = 0;
+        }
+      }
+    });
+    window.setFilterStatus = function (status) {
+      currentStatusFilter = status;
+      console.log(`🔄 تم تغيير الفلتر إلى: ${status}`);
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.status === status) {
+          btn.classList.add('active');
+        }
+      });
+      updateUrlParams(status, currentSearchText);
+      fetchOrdersByStatus(status);
+    }
+    window.handleSearch = function () {
+      const searchInput = document.getElementById("searchInput");
+      currentSearchText = searchInput ? searchInput.value.trim() : "";
+      console.log(`🔍 البحث: "${currentSearchText}"`);
+      updateUrlParams(currentStatusFilter, currentSearchText);
+      fetchOrdersByStatus(currentStatusFilter);
+    }
+    async function loadInitialData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = './index.html';
+          return;
+        }
+        console.log("✅ المستخدم مُصادق عليه");
+        const urlParams = getUrlParams();
+        currentStatusFilter = urlParams.filter;
+        currentSearchText = urlParams.search;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.status === currentStatusFilter) {
+            btn.classList.add('active');
+          }
+        });
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.value = currentSearchText;
+        }
+        await Promise.all([
+          loadCaptains(),
+          loadRestaurants()
+        ]);
+        console.log(`📋 تم تحميل ${captains.length} كابتن و ${restaurants.length} مطعم`);
+        await Promise.all([
+          loadStatistics(),
+          fetchOrdersByStatus(currentStatusFilter)
+        ]);
+        console.log("✅ تم تحميل جميع البيانات الأولية");
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+        showError('حدث خطأ في تحميل البيانات: ' + error.message);
+      }
+    }
+    async function loadCaptains() {
+      try {
+        console.log("🔄 جاري تحميل الكباتن...");
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "captain");
+        if (error) {
+          console.error('خطأ في تحميل الكباتن:', error);
+          captains = [];
+          showError('خطأ في تحميل الكباتن: ' + error.message);
+        } else {
+          captains = data || [];
+          console.log(`✅ تم تحميل ${captains.length} كابتن:`, captains);
+          if (captains.length === 0) {
+            console.warn("⚠️ لا توجد كباتن في قاعدة البيانات");
+            showError('لا توجد كباتن مسجلة في النظام. يرجى إضافة كباتن أولاً.');
+          }
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل الكباتن:', error);
+        captains = [];
+        showError('حدث خطأ في تحميل الكباتن: ' + error.message);
+      }
+    }
+    async function loadRestaurants() {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "restaurant");
+        if (error) {
+          console.error('خطأ في تحميل المطاعم:', error);
+          restaurants = [];
+        } else {
+          restaurants = data || [];
+          console.log(`✅ تم تحميل ${restaurants.length} مطعم`);
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل المطاعم:', error);
+        restaurants = [];
+      }
+    }
+    async function loadStatistics() {
+      try {
+        console.log("🔄 جاري تحميل الإحصائيات...");
+        const [totalResult, deliveredResult, pendingResult, waitingDeliveryResult, inTransitResult] = await Promise.all([
+          supabase.from("orders").select("id", { count: 'exact', head: true }),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "تم التوصيل"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "قيد التوزيع"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "في انتظار التسليم"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "جاري التوصيل")
+        ]);
+        const stats = {
+          total: totalResult.count || 0,
+          delivered: deliveredResult.count || 0,
+          pending: pendingResult.count || 0,
+          waitingDelivery: waitingDeliveryResult.count || 0,
+          inTransit: inTransitResult.count || 0
+        };
+        updateStatisticsDisplay(stats);
+        console.log("📊 إحصائيات محدثة:", stats);
+      } catch (error) {
+        console.error('خطأ في تحميل الإحصائيات:', error);
+      }
+    }
+    function updateStatisticsDisplay(stats) {
+      const totalOrdersEl = document.getElementById("total-orders");
+      const deliveredEl = document.getElementById("delivered");
+      const pendingEl = document.getElementById("pending");
+      const waitingDeliveryEl = document.getElementById("waiting-delivery");
+      const inTransitEl = document.getElementById("in-transit");
+      if (totalOrdersEl) totalOrdersEl.textContent = stats.total;
+      if (deliveredEl) deliveredEl.textContent = stats.delivered;
+      if (pendingEl) pendingEl.textContent = stats.pending;
+      if (waitingDeliveryEl) waitingDeliveryEl.textContent = stats.waitingDelivery;
+      if (inTransitEl) inTransitEl.textContent = stats.inTransit;
+    }
+    async function fetchOrdersByStatus(status) {
+      try {
+        console.log(`🔄 جاري تحميل الطلبات للحالة: ${status}`);
+        showLoadingState();
+        let query = supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            restaurant_id,
+            captain_id,
+            status,
+            order_price,
+            service_price,
+            commission_percent,
+            notes,
+            created_at
+          `)
+          .order("created_at", { ascending: false });
+        if (status !== "all") {
+          query = query.eq("status", status);
+        }
+        const { data: orders, error } = await query;
+        if (error) {
+          console.error('خطأ في استعلام الطلبات:', error);
+          throw error;
+        }
+        let filteredOrders = orders || [];
+        if (currentSearchText) {
+          filteredOrders = filteredOrders.filter(order => {
+            const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+            const captain = captains.find(c => c.id === order.captain_id);
+            const searchLower = currentSearchText.toLowerCase();
+            return (
+              (order.custom_name && order.custom_name.toLowerCase().includes(searchLower)) ||
+              (order.custom_phone && order.custom_phone.includes(currentSearchText)) ||
+              (order.custom_address && order.custom_address.toLowerCase().includes(searchLower)) ||
+              (restaurant?.full_name && restaurant.full_name.toLowerCase().includes(searchLower)) ||
+              (captain?.full_name && captain.full_name.toLowerCase().includes(searchLower))
+            );
+          });
+        }
+        displayedOrders = filteredOrders;
+        console.log(`✅ تم تحميل ${filteredOrders.length} طلب للحالة: ${status}`);
+        displayOrders(filteredOrders);
+        updateOrdersCount(filteredOrders.length);
+      } catch (error) {
+        console.error('خطأ في تحميل الطلبات:', error);
+        showError('حدث خطأ في تحميل الطلبات: ' + error.message);
+        showErrorState(error.message);
+      }
+    }
+    function showLoadingState() {
+      const tbody = document.getElementById("orders-body");
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="loading-state">
+              <div class="loading-spinner"></div>
+              جارٍ تحميل الطلبات...
+            </td>
+          </tr>
+        `;
+      }
+    }
+    function showErrorState(errorMessage) {
+      const tbody = document.getElementById("orders-body");
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="loading-state" style="color: #ef4444;">
+              ❌ خطأ في تحميل الطلبات: ${errorMessage}
+              <br>
+              <button onclick="fetchOrdersByStatus('${currentStatusFilter}')" 
+                      style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                إعادة المحاولة
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    function updateOrdersCount(count) {
+      const ordersCountEl = document.getElementById("orders-count-pending");
+      if (ordersCountEl) {
+        ordersCountEl.textContent = `(${count})`;
+      }
+    }
+    function generateCaptainOptions(selectedCaptainId) {
+      if (!captains || captains.length === 0) {
+        return '<option value="" disabled>لا توجد كباتن متاحة</option>';
+      }
+      return captains.map(captain => {
+        const isSelected = selectedCaptainId === captain.id;
+        return `<option value="${captain.id}" ${isSelected ? 'selected' : ''} data-captain-name="${captain.full_name}">
+          ${captain.full_name}
+        </option>`;
+      }).join('');
+    }
+    window.handleCaptainChange = async function(orderId, captainId) {
+      const transferBtn = document.getElementById(`transfer-btn-${orderId}`);
+      const reassignBtn = document.getElementById(`reassign-btn-${orderId}`);
+      const captainInfo = document.getElementById(`captain-info-${orderId}`);
+      const captainSelect = document.getElementById(`captain-select-${orderId}`);
+      try {
+        if (captainSelect) {
+          captainSelect.disabled = true;
+          captainSelect.style.opacity = '0.6';
+        }
+        if (captainId) {
+          const { error } = await supabase
+            .from("orders")
+            .update({ captain_id: captainId })
+            .eq("id", orderId);
+          if (error) {
+            console.error('خطأ في تعيين الكابتن:', error);
+            showError('حدث خطأ في تعيين الكابتن');
+            if (captainSelect) {
+              captainSelect.value = "";
+            }
+            return;
+          }
+          const selectedCaptain = captains.find(c => c.id === captainId);
+          const captainName = selectedCaptain ? selectedCaptain.full_name : 'غير محدد';
+          if (transferBtn) {
+            transferBtn.disabled = false;
+            transferBtn.className = 'transfer-btn enabled';
+            transferBtn.textContent = 'تحويل الطلب';
+          }
+          if (reassignBtn) {
+            reassignBtn.disabled = false;
+            reassignBtn.className = 'reassign-btn enabled';
+            reassignBtn.textContent = 'إعادة تعيين الكابتن';
+          }
+          if (captainInfo) {
+            captainInfo.innerHTML = `
+              <span class="captain-badge success">
+                ✓ تم تعيين: ${captainName}
+              </span>
+            `;
+            captainInfo.style.display = 'block';
+          } else {
+            const captainContainer = captainSelect.closest('.captain-select-container');
+            if (captainContainer) {
+              const newCaptainInfo = document.createElement('div');
+              newCaptainInfo.className = 'captain-info';
+              newCaptainInfo.id = `captain-info-${orderId}`;
+              newCaptainInfo.innerHTML = `
+                <span class="captain-badge success">
+                  ✓ تم تعيين: ${captainName}
+                </span>
+              `;
+              captainContainer.appendChild(newCaptainInfo);
+            }
+          }
+          showSuccess(`تم تعيين الكابتن "${captainName}" بنجاح`);
+          const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+          if (orderIndex !== -1) {
+            displayedOrders[orderIndex].captain_id = captainId;
+          }
+        } else {
+          const { error } = await supabase
+            .from("orders")
+            .update({ captain_id: null })
+            .eq("id", orderId);
+          if (error) {
+            console.error('خطأ في إلغاء تعيين الكابتن:', error);
+            showError('حدث خطأ في إلغاء تعيين الكابتن');
+            return;
+          }
+          if (transferBtn) {
+            transferBtn.disabled = true;
+            transferBtn.className = 'transfer-btn disabled';
+            transferBtn.textContent = 'اختر كابتن';
+          }
+          if (reassignBtn) {
+            reassignBtn.disabled = true;
+            reassignBtn.className = 'reassign-btn disabled';
+            reassignBtn.textContent = 'اختر كابتن';
+          }
+          if (captainInfo) {
+            captainInfo.style.display = 'none';
+          }
+          showSuccess('تم إلغاء تعيين الكابتن');
+          const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+          if (orderIndex !== -1) {
+            displayedOrders[orderIndex].captain_id = null;
+          }
+        }
+      } catch (error) {
+        console.error('خطأ في معالجة تغيير الكابتن:', error);
+        showError('حدث خطأ في معالجة العملية: ' + error.message);
+      } finally {
+        if (captainSelect) {
+          captainSelect.disabled = false;
+          captainSelect.style.opacity = '1';
+        }
+      }
+    }
+    function displayOrders(orders) {
+      const tbody = document.getElementById("orders-body");
+      if (!tbody) return;
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="loading-state">
+              لا توجد طلبات متاحة حاليًا
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      tbody.innerHTML = "";
+      orders.forEach((order) => {
+        try {
+          const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+          const row = document.createElement("tr");
+          row.classList.add("order-row");
+          row.dataset.orderId = order.id;
+          if (order.status === "قيد التوزيع") {
+            row.innerHTML = `
+              <td>
+                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  class="input-field"
+                  value="${order.custom_address || ""}"
+                  onchange="updateAddress('${order.id}', this.value)"
+                  placeholder="أدخل عنوان التوصيل"
+                />
+              </td>
+              <td>
+                <span style="color: #059669; font-weight: 600;">
+                  ${order.order_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <span style="color: #f97316; font-weight: 600;">
+                  ${order.service_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <div class="captain-select-container">
+                  <select class="select-field captain-select" id="captain-select-${order.id}" onchange="handleCaptainChange('${order.id}', this.value)">
+                    <option value="" ${!order.captain_id ? 'selected' : ''}>
+                      ${captains.length > 0 ? 'اختر كابتن للتوصيل' : 'لا توجد كباتن متاحة'}
+                    </option>
+                    ${generateCaptainOptions(order.captain_id)}
+                  </select>
+                  ${order.captain_id ? `
+                    <div class="captain-info" id="captain-info-${order.id}">
+                      <span class="captain-badge success">✓ تم التعيين</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </td>
+              <td>
+                <span style="font-weight: 600; color: #374151;">
+                  20%
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button class="transfer-btn ${!order.captain_id || captains.length === 0 ? 'disabled' : 'enabled'}"
+                          onclick="transferOrder('${order.id}', this)"
+                          id="transfer-btn-${order.id}"
+                          ${!order.captain_id || captains.length === 0 ? 'disabled' : ''}>
+                    ${!order.captain_id ? 'اختر كابتن' : 'تحويل الطلب'}
+                  </button>
+                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+                    تفاصيل
+                  </button>
+                </div>
+              </td>
+              <td>
+                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
+                    حذف
+                 </button>
+              </td>
+            `;
+          }
+          else if (order.status === "في انتظار التسليم") {
+            const captain = captains.find(c => c.id === order.captain_id);
+            row.innerHTML = `
+              <td>
+                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  class="input-field"
+                  value="${order.custom_address || ""}"
+                  onchange="updateAddress('${order.id}', this.value)"
+                  placeholder="أدخل عنوان التوصيل"
+                />
+              </td>
+              <td>
+                <span style="color: #059669; font-weight: 600;">
+                  ${order.order_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <span style="color: #f97316; font-weight: 600;">
+                  ${order.service_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <div class="captain-select-container">
+                  <select class="select-field captain-select" id="captain-select-${order.id}" onchange="handleCaptainChange('${order.id}', this.value)">
+                    <option value="" ${!order.captain_id ? 'selected' : ''}>
+                      ${captains.length > 0 ? 'اختر كابتن للتوصيل' : 'لا توجد كباتن متاحة'}
+                    </option>
+                    ${generateCaptainOptions(order.captain_id)}
+                  </select>
+                  ${order.captain_id ? `
+                    <div class="captain-info" id="captain-info-${order.id}">
+                      <span class="captain-badge success">✓ تم التعيين</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </td>
+              <td>
+                <span style="font-weight: 600; color: #374151;">
+                  20%
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button class="reassign-btn ${!order.captain_id || captains.length === 0 ? 'disabled' : 'enabled'}"
+                          onclick="reassignCaptain('${order.id}', this)"
+                          id="reassign-btn-${order.id}"
+                          ${!order.captain_id || captains.length === 0 ? 'disabled' : ''}>
+                    ${!order.captain_id ? 'اختر كابتن' : 'إعادة تعيين الكابتن'}
+                  </button>
+                  <button class="deliver-btn enabled"
+                          onclick="markAsDelivered('${order.id}', this)">
+                    تم التوصيل
+                  </button>
+                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+                    تفاصيل
+                  </button>
+                </div>
+              </td>
+              <td>
+                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
+                    حذف
+                 </button>
+              </td>
+            `;
+          }
+          else {
+            const captain = captains.find(c => c.id === order.captain_id);
+            const statusColor = getStatusColor(order.status);
+            row.innerHTML = `
+              <td>
+                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
+              </td>
+              <td>
+                <span>${order.custom_address || "غير محدد"}</span>
+              </td>
+              <td>
+                <span style="color: #059669; font-weight: 600;">
+                  ${order.order_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <span style="color: #f97316; font-weight: 600;">
+                  ${order.service_price || 0} ج.م
+                </span>
+              </td>
+              <td>
+                <div class="captain-display">
+                  <span class="captain-name" style="font-weight: 600;">
+                    ${captain?.full_name || "غير محدد"}
+                  </span>
+                  ${captain ? '<span class="captain-assigned-badge">✓</span>' : ''}
+                </div>
+              </td>
+              <td>
+                <span style="font-weight: 600; color: #374151;">
+                  20%
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                  <span style="color: ${statusColor}; font-weight: 600; padding: 0.4rem 0.8rem; background: ${statusColor}15; border-radius: 0.5rem; font-size: 0.85rem;">
+                    ${order.status}
+                  </span>
+                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})' style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                    تفاصيل
+                  </button>
+                </div>
+              </td>
+              <td>
+                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
+                    حذف
+                 </button>
+              </td>
+            `;
+          }
+          tbody.appendChild(row);
+        } catch (error) {
+          console.error(`خطأ في عرض الطلب ${order.id}:`, error);
+        }
+      });
+    }
+    window.showOrderDetails = function (order) {
+      try {
+        const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+        const captain = captains.find(c => c.id === order.captain_id);
+        const html = `
+          <div style="text-align: right; line-height: 2;">
+            <p><strong>اسم العميل:</strong> ${order.custom_name || "غير محدد"}</p>
+            <p><strong>رقم الهاتف:</strong> ${order.custom_phone || "غير محدد"}</p>
+            <p><strong>عنوان التوصيل:</strong> ${order.custom_address || "غير محدد"}</p>
+            <p><strong>اسم المطعم:</strong> ${restaurant?.full_name || "غير محدد"}</p>
+            <p><strong>الكابتن المُعيَّن:</strong> ${captain?.full_name || "لم يتم التعيين بعد"}</p>
+            <p><strong>حالة الطلب:</strong>
+              <span style="color: ${getStatusColor(order.status)}; font-weight: 600;">
+                ${order.status || "غير محدد"}
+              </span>
+            </p>
+            <p><strong>سعر الطلب:</strong>
+              <span style="color: #059669; font-weight: 600;">${order.order_price || 0} ج.م</span>
+            </p>
+            <p><strong>سعر التوصيل:</strong>
+              <span style="color: #f97316; font-weight: 600;">${order.service_price || 0} ج.م</span>
+            </p>
+            <p><strong>الإجمالي:</strong>
+              <span style="color: #111827; font-weight: 700; font-size: 1.1em;">
+                ${(order.order_price || 0) + (order.service_price || 0)} ج.م
+              </span>
+            </p>
+            <p><strong>نسبة العمولة:</strong> 20%</p>
+            <p><strong>ملاحظات:</strong> ${order.notes || "لا توجد ملاحظات"}</p>
+            <p><strong>تاريخ الطلب:</strong> ${formatDate(order.created_at)}</p>
+          </div>
+        `;
+        const modalDetailsEl = document.getElementById("modal-details");
+        const modalEl = document.getElementById("modal");
+        if (modalDetailsEl) modalDetailsEl.innerHTML = html;
+        if (modalEl) modalEl.style.display = "flex";
+      } catch (error) {
+        console.error('خطأ في عرض تفاصيل الطلب:', error);
+        showError('حدث خطأ في عرض تفاصيل الطلب');
+      }
+    }
+    function getStatusColor(status) {
+      const statusColors = {
+        'تم التوصيل': '#059669',
+        'جاري التوصيل': '#0ea5e9',
+        'قيد التوزيع': '#f59e0b',
+        'في انتظار التسليم': '#8b5cf6'
+      };
+      return statusColors[status] || '#6b7280';
+    }
+    function formatDate(dateString) {
+      if (!dateString) return "غير محدد";
+      try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) {
+          return `اليوم، ${date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`;
+        } else if (diffDays === 1) {
+          return `أمس، ${date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`;
+        } else {
+          return date.toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        }
+      } catch (error) {
+        console.error('خطأ في تنسيق التاريخ:', error);
+        return "تاريخ غير صحيح";
+      }
+    }
+    window.closeModal = function () {
+      const modalEl = document.getElementById("modal");
+      if (modalEl) modalEl.style.display = "none";
+    }
+    const modalEl = document.getElementById("modal");
+    if (modalEl) {
+      modalEl.addEventListener("click", function (e) {
+        if (e.target === this) {
+          closeModal();
+        }
+      });
+    }
+    window.transferOrder = async function (orderId, buttonElement) {
+      const captainSelect = document.getElementById(`captain-select-${orderId}`);
+      const captainId = captainSelect ? captainSelect.value : null;
+      if (!captainId) {
+        showError('يرجى اختيار كابتن أولاً');
+        return;
+      }
+      try {
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
+        console.log(`🔄 جاري تحويل الطلب ${orderId} للكابتن ${captainId}`);
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            captain_id: captainId,
+            status: "في انتظار التسليم",
+            commission_percent: 20
+          })
+          .eq("id", orderId);
+        if (error) {
+          console.error('خطأ في تحويل الطلب:', error);
+          throw error;
+        }
+        showSuccess('تم تحويل الطلب للكابتن بنجاح');
+        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+          displayedOrders[orderIndex].captain_id = captainId;
+          displayedOrders[orderIndex].status = "في انتظار التسليم";
+          displayedOrders[orderIndex].commission_percent = 20;
+        }
+        await loadStatistics();
+        const row = buttonElement.closest('.order-row');
+        if (row) {
+          row.style.transition = 'all 0.3s ease-out';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(-20px)';
+          setTimeout(() => {
+            if (row.parentNode) {
+              row.parentNode.removeChild(row);
+            }
+            const currentCount = displayedOrders.length;
+            updateOrdersCount(Math.max(0, currentCount - 1));
+          }, 300);
+        }
+      } catch (error) {
+        console.error('خطأ في تحويل الطلب:', error);
+        showError('حدث خطأ في تحويل الطلب: ' + error.message);
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'تحويل الطلب';
+      }
+    }
+    window.reassignCaptain = async function (orderId, buttonElement) {
+      const captainSelect = document.getElementById(`captain-select-${orderId}`);
+      const captainId = captainSelect ? captainSelect.value : null;
+      if (!captainId) {
+        showError('يرجى اختيار كابتن أولاً');
+        return;
+      }
+      try {
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
+        console.log(`🔄 جاري إعادة تعيين الكابتن للطلب ${orderId} للكابتن ${captainId}`);
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            captain_id: captainId,
+            commission_percent: 20
+          })
+          .eq("id", orderId);
+        if (error) {
+          console.error('خطأ في إعادة تعيين الكابتن:', error);
+          throw error;
+        }
+        showSuccess('تم إعادة تعيين الكابتن بنجاح');
+        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+          displayedOrders[orderIndex].captain_id = captainId;
+          displayedOrders[orderIndex].commission_percent = 20;
+        }
+        const selectedCaptain = captains.find(c => c.id === captainId);
+        if (selectedCaptain) {
+          const captainInfo = document.getElementById(`captain-info-${orderId}`);
+          if (captainInfo) {
+            captainInfo.innerHTML = `
+              <span class="captain-badge success">
+                ✓ تم التعيين: ${selectedCaptain.full_name}
+              </span>
+            `;
+            captainInfo.style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('خطأ في إعادة تعيين الكابتن:', error);
+        showError('حدث خطأ في إعادة تعيين الكابتن: ' + error.message);
+      } finally {
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'إعادة تعيين الكابتن';
+      }
+    }
+    window.markAsDelivered = async function (orderId, buttonElement) {
+      try {
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
+        console.log(`🔄 جاري تحديث حالة الطلب ${orderId} إلى "تم التوصيل"`);
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            status: "تم التوصيل",
+            commission_percent: 20
+          })
+          .eq("id", orderId);
+        if (error) {
+          console.error('خطأ في تحديث حالة الطلب:', error);
+          throw error;
+        }
+        showSuccess('تم تحديث حالة الطلب إلى "تم التوصيل"');
+        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+          displayedOrders[orderIndex].status = "تم التوصيل";
+          displayedOrders[orderIndex].commission_percent = 20;
+        }
+        await loadStatistics();
+        const row = buttonElement.closest('.order-row');
+        if (row) {
+          row.style.transition = 'all 0.3s ease-out';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(-20px)';
+          setTimeout(() => {
+            if (row.parentNode) {
+              row.parentNode.removeChild(row);
+            }
+            const currentCount = displayedOrders.length;
+            updateOrdersCount(Math.max(0, currentCount - 1));
+          }, 300);
+        }
+      } catch (error) {
+        console.error('خطأ في تحديث حالة الطلب:', error);
+        showError('حدث خطأ في تحديث حالة الطلب: ' + error.message);
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'تم التوصيل';
+      }
+    }
+    window.updateAddress = async function (orderId, newAddress) {
+      if (!newAddress || !newAddress.trim()) {
+        showError('يرجى إدخال عنوان صحيح');
+        return;
+      }
+      try {
+        console.log(`🔄 جاري تحديث العنوان للطلب ${orderId}`);
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            custom_address: newAddress.trim(),
+            commission_percent: 20
+          })
+          .eq("id", orderId);
+        if (error) {
+          console.error('خطأ في تحديث العنوان:', error);
+          throw error;
+        }
+        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+          displayedOrders[orderIndex].custom_address = newAddress.trim();
+          displayedOrders[orderIndex].commission_percent = 20;
+        }
+        showSuccess('تم تحديث العنوان بنجاح');
+      } catch (error) {
+        console.error('خطأ في تحديث العنوان:', error);
+        showError('حدث خطأ في تحديث العنوان: ' + error.message);
+      }
+    }
+    window.deleteOrder = async function (orderId, buttonElement) {
+      if (!confirm(`هل أنت متأكد من أنك تريد حذف الطلب رقم ${orderId}؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
+        return;
+      }
+      try {
+        const originalText = buttonElement.textContent;
+        buttonElement.disabled = true;
+        buttonElement.textContent = 'جاري الحذف...';
+        buttonElement.style.backgroundColor = '#9ca3af';
+        console.log(`🗑️ جاري حذف الطلب ${orderId}`);
+        const { error } = await supabase
+          .from("orders")
+          .delete()
+          .eq("id", orderId);
+        if (error) {
+          console.error('خطأ في حذف الطلب:', error);
+          throw error;
+        }
+        showSuccess('تم حذف الطلب بنجاح');
+        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+          displayedOrders.splice(orderIndex, 1);
+        }
+        const allOrderIndex = allOrders.findIndex(o => o.id === orderId);
+        if (allOrderIndex !== -1) {
+            allOrders.splice(allOrderIndex, 1);
+        }
+        await loadStatistics();
+        const row = buttonElement.closest('.order-row');
+        if (row) {
+          row.style.transition = 'all 0.3s ease-out';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(20px)';
+          setTimeout(() => {
+            if (row.parentNode) {
+              row.parentNode.removeChild(row);
+            }
+            const currentCount = displayedOrders.length;
+            updateOrdersCount(currentCount);
+            console.log(`✅ تم حذف الطلب ${orderId} من الواجهة`);
+          }, 300);
+        }
+      } catch (error) {
+        console.error('خطأ في حذف الطلب:', error);
+        showError('حدث خطأ في حذف الطلب: ' + (error.message || 'خطأ غير معروف'));
+        buttonElement.disabled = false;
+        buttonElement.textContent = 'حذف';
+        buttonElement.style.backgroundColor = '#ef4444';
+      }
+    }
+    function playNotificationSound() {
+      if (!audioAllowed) {
+        console.warn("⚠️ الصوت غير مسموح به بعد");
+        return;
+      }
+      try {
+        if (alertSound) {
+          alertSound.currentTime = 0;
+          const playPromise = alertSound.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log("🔊 تم تشغيل صوت الإشعار");
+              })
+              .catch(error => {
+                console.warn("❌ فشل تشغيل الصوت:", error.message);
+              });
+          }
+        } else {
+          console.warn("⚠️ عنصر الصوت غير متوفر");
+        }
+      } catch (error) {
+        console.warn("❌ خطأ في تشغيل الصوت:", error.message);
+      }
+    }
+    function showNotificationBar(message) {
+      const now = Date.now();
+      if (now - lastNotificationTime < 2000) {
+        return;
+      }
+      lastNotificationTime = now;
+      const notificationBar = document.getElementById('notification-bar');
+      const notificationMessage = document.getElementById('notification-message');
+      if (notificationMessage) {
+        notificationMessage.textContent = message;
+      }
+      if (notificationBar) {
+        notificationBar.classList.add('show');
+        playNotificationSound();
+        clearTimeout(notificationTimeout);
+        notificationTimeout = setTimeout(() => {
+          notificationBar.classList.remove('show');
+        }, 5000);
+      }
+    }
+    window.closeNotificationBar = function() {
+      const notificationBar = document.getElementById('notification-bar');
+      if (notificationBar) {
+        notificationBar.classList.remove('show');
+      }
+    }
+    function showSuccess(message) {
+      showNotification(message, 'success');
+    }
+    function showError(message) {
+      showNotification(message, 'error');
+    }
+    function showNotification(message, type = 'info') {
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notif => notif.remove());
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease-in forwards';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+    window.logout = async function () {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './index.html';
+      } catch (error) {
+        console.error('خطأ في تسجيل الخروج:', error);
+        showError('حدث خطأ في تسجيل الخروج');
+      }
+    }
+    async function checkForNewPendingOrders() {
+      try {
+        const { data: pendingOrders, error } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("status", "قيد التوزيع")
+          .order("created_at", { ascending: false });
+        if (error) {
+          console.error('خطأ في التحقق من الطلبات الجديدة:', error);
+          return;
+        }
+        const currentPendingOrderIds = new Set(pendingOrders.map(o => o.id));
+        const hasNewPendingOrder = pendingOrders.some(order => !latestOrderIds.has(order.id));
+        if (hasNewPendingOrder && latestOrderIds.size > 0) {
+          showNotificationBar("طلب جديد وصل للوحة التحكم");
+        }
+        latestOrderIds = currentPendingOrderIds;
+      } catch (error) {
+        console.error('خطأ في التحقق من الطلبات الجديدة:', error);
+      }
+    }
+    function setupAutoRefresh() {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+      }
+      autoRefreshInterval = setInterval(async () => {
+        console.log('🔄 تحديث تلقائي للبيانات...');
+        try {
+          await loadStatistics();
+          const isEditing = document.activeElement.tagName === 'INPUT' ||
+                           document.activeElement.tagName === 'SELECT' ||
+                           document.activeElement.classList.contains('input-field') ||
+                           document.activeElement.classList.contains('select-field');
+          if (!isEditing) {
+            await fetchOrdersByStatus(currentStatusFilter);
+          }
+        } catch (error) {
+          console.error('خطأ في التحديث التلقائي:', error);
+        }
+      }, 10000);
+      if (pendingOrdersCheckInterval) {
+        clearInterval(pendingOrdersCheckInterval);
+      }
+      pendingOrdersCheckInterval = setInterval(async () => {
+        await checkForNewPendingOrders();
+      }, 5000);
+      console.log('✅ تم إعداد التحديث التلقائي كل 10 ثانية وفحص الطلبات الجديدة كل 5 ثوانٍ');
+    }
+    window.addEventListener('beforeunload', () => {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+      }
+      if (pendingOrdersCheckInterval) {
+        clearInterval(pendingOrdersCheckInterval);
+      }
+    });
+    window.fetchOrdersByStatus = fetchOrdersByStatus;
+    async function initializeApp() {
+      try {
+        console.log('🚀 بدء تهيئة التطبيق...');
+        await loadInitialData();
+        setupAutoRefresh();
+        console.log('✅ تم تحميل لوحة التحكم بنجاح');
+        showSuccess('تم تحميل لوحة التحكم بنجاح');
+      } catch (error) {
+        console.error('خطأ في تهيئة التطبيق:', error);
+        showError('حدث خطأ في تحميل التطبيق: ' + error.message);
+      }
+    }
+    initializeApp();
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        console.log('📄 الصفحة أصبحت مرئية - تحديث البيانات...');
+        fetchOrdersByStatus(currentStatusFilter);
+        loadStatistics();
+      }
+    });
+    window.addEventListener('focus', () => {
+      console.log('🔍 النافذة أصبحت نشطة - تحديث البيانات...');
+      fetchOrdersByStatus(currentStatusFilter);
+      loadStatistics();
+    });
+  </script>  </body>
+</html>

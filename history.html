@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>سجل الطلبات</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #fdfcfb;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1f2937;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .order-card {
+      background: #f3f4f6;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .order-card p {
+      margin: 0.4rem 0;
+      font-size: 0.95rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      text-decoration: none;
+      font-size: 0.95rem;
+      color: #f97316;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="captain.html">← العودة للرئيسية</a>
+    <h2>سجل الطلبات</h2>
+    <div id="orders-container">
+      <p>تحميل...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const supabase = createClient(
+      "https://vrngqopmdvdmdayswlos.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs"
+    );
+
+    async function loadOrders() {
+      const {
+        data: { user },
+        error: authError
+      } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        alert("يرجى تسجيل الدخول");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const { data: orders, error } = await supabase
+        .from("orders")
+        .select(`
+          id,
+          custom_name,
+          custom_phone,
+          custom_address,
+          order_price,
+          service_price,
+          commission_percent,
+          status,
+          created_at,
+          customers (name, phone, address)
+        `)
+        .eq("captain_id", user.id)
+        .in("status", ["تم التوصيل", "فشل التوصيل"])
+        .order("created_at", { ascending: false });
+
+      const container = document.getElementById("orders-container");
+      container.innerHTML = "";
+
+      if (error || !orders) {
+        container.innerHTML = `<p class="error">❌ حدث خطأ أثناء تحميل السجل</p>`;
+        return;
+      }
+
+      if (orders.length === 0) {
+        container.innerHTML = `<p class="empty">لا توجد طلبات مكتملة لعرضها</p>`;
+        return;
+      }
+
+      orders.forEach((order) => {
+        const name = order.custom_name || order.customers?.name || "—";
+        const phone = order.custom_phone || order.customers?.phone || "—";
+        const address = order.custom_address || order.customers?.address || "—";
+        const orderPrice = order.order_price || 0;
+        const servicePrice = order.service_price || 0;
+        const commission = order.commission_percent || 0;
+        const status = order.status;
+        const created = order.created_at?.split("T")[0];
+
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+          <h3>${name}</h3>
+          <p><strong>📞</strong> ${phone}</p>
+          <p><strong>📍</strong> ${address}</p>
+          <p><strong>💰 سعر الطلب:</strong> ${orderPrice} جنيه</p>
+          <p><strong>🛠️ سعر الخدمة:</strong> ${servicePrice} جنيه</p>
+          <p><strong>📈 العمولة:</strong> ${commission}%</p>
+          <p><strong>📅 التاريخ:</strong> ${created}</p>
+          <p><strong>📌 الحالة:</strong> ${status}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>

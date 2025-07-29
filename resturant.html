@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --gray-100: #f9fafb;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: var(--gray-800);
+      min-height: 100vh;
+      display: flex;
+    }
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background: #fff;
+      height: 100vh;
+      position: fixed;
+      right: 0;
+      top: 0;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--warning));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .sidebar-header-content {
+      flex: 1;
+    }
+    .sidebar-header h3 {
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+      font-size: 1.1rem;
+    }
+    .sidebar-header p {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+    }
+    .sidebar-menu {
+      padding: 1rem 0;
+      flex-grow: 1;
+    }
+    .sidebar-menu-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border-right: 3px solid transparent;
+    }
+    .sidebar-menu-item:hover {
+      background: var(--gray-100);
+      color: var(--primary);
+    }
+    .sidebar-menu-item.active {
+      background: rgba(249, 115, 22, 0.1);
+      color: var(--primary);
+      border-right: 3px solid var(--primary);
+    }
+    .sidebar-menu-item i {
+      margin-left: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+    .sidebar-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--gray-200);
+    }
+    .logout-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--error);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.2s ease;
+    }
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-right: 280px;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--warning));
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h2 {
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+      font-size: 1.75rem;
+      position: relative;
+      padding-bottom: 1rem;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .subtitle {
+      color: var(--gray-600);
+      font-size: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.25rem;
+      border: 2px solid var(--gray-200);
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    }
+    input.valid {
+      border-color: var(--success);
+    }
+    input.invalid {
+      border-color: var(--error);
+    }
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-300);
+    }
+    .input-wrapper input {
+      padding-left: 3rem;
+    }
+    .price-container {
+      display: flex;
+      gap: 1rem;
+    }
+    .price-container .form-group {
+      flex: 1;
+    }
+    .btn {
+      padding: 1rem;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      width: 100%;
+    }
+    .btn-secondary {
+      background: var(--gray-300);
+      color: var(--gray-700);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn:disabled {
+      background: var(--gray-300);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .success, .error, .info {
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      border-radius: 0.75rem;
+      text-align: center;
+      display: none;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease;
+    }
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+    .info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #3b82f6;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gray-200);
+    }
+    .character-count {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+    .required::after {
+      content: " *";
+      color: var(--error);
+    }
+    .order-summary {
+      background: var(--gray-100);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .summary-title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .summary-label {
+      color: var(--gray-700);
+    }
+    .summary-value {
+      font-weight: 600;
+    }
+    .total-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    /* Orders Section */
+    .orders-section {
+      margin-top: 2rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .view-all-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .view-all-link:hover {
+      text-decoration: underline;
+    }
+    .orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+    .order-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+    }
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .order-id {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    .order-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-progress {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .status-failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .order-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .order-detail {
+      color: var(--gray-600);
+    }
+    .order-value {
+      color: var(--gray-900);
+      font-weight: 500;
+    }
+    .order-amount {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 0.75rem;
+    }
+    /* Statistics Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .stat-title {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    .stat-pending { color: #6b7280; }
+    .stat-delivered { color: #10b981; }
+    .stat-failed { color: #ef4444; }
+    .stat-total { color: var(--primary); }
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      padding: 1rem 2rem;
+      border-radius: 0.8rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    }
+    .notification-success {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+    .notification-error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    .notification-info {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-500);
+    }
+    .close-btn:hover {
+      color: var(--gray-700);
+    }
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+      .main-content {
+        margin-right: 240px;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+        border-bottom: 1px solid var(--gray-200);
+      }
+      .main-content {
+        margin-right: 0;
+        padding: 1rem;
+      }
+      .container {
+        padding: 1.5rem;
+      }
+      .price-container {
+        flex-direction: column;
+        gap: 0;
+      }
+      .form-footer {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .btn {
+        width: 100%;
+      }
+      .orders-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">م</div>
+      <div class="sidebar-header-content">
+        <h3 id="restaurant-name">مطعم الشيف الخاص</h3>
+        <p>لوحة التحكم</p>
+      </div>
+    </div>
+    <div class="sidebar-menu">
+      <a href="#" class="sidebar-menu-item active" data-view="home">
+        <i class="fas fa-home"></i>
+        الرئيسية
+      </a>
+      <a href="#" class="sidebar-menu-item" data-view="profile">
+        <i class="fas fa-user"></i>
+        الملف الشخصي
+      </a>
+      <a href="#" class="sidebar-menu-item" data-view="order-history">
+        <i class="fas fa-history"></i>
+        سجل الطلبات
+      </a>
+      <a href="#" class="sidebar-menu-item" data-view="current-orders">
+        <i class="fas fa-truck"></i>
+        الطلبات الجارية
+      </a>
+      <a href="#" class="sidebar-menu-item" data-view="completed-orders">
+        <i class="fas fa-check-circle"></i>
+        الطلبات المنفذة
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" id="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        تسجيل الخروج
+      </button>
+    </div>
+  </div>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Home View -->
+    <div id="home-view">
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon stat-pending">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-title">قيد التوزيع</div>
+          <div class="stat-value" id="pending-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-progress">
+            <i class="fas fa-truck"></i>
+          </div>
+          <div class="stat-title">جاري التوصيل</div>
+          <div class="stat-value" id="progress-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-delivered">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-title">تم التوصيل</div>
+          <div class="stat-value" id="delivered-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-failed">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="stat-title">فشل التوصيل</div>
+          <div class="stat-value" id="failed-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-total">
+            <i class="fas fa-list"></i>
+          </div>
+          <div class="stat-title">إجمالي الطلبات</div>
+          <div class="stat-value" id="total-count">0</div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="header">
+          <h2><i class="fas fa-utensils"></i> إرسال طلب جديد</h2>
+          <p class="subtitle">أدخل تفاصيل الطلب لإرساله إلى المكتب</p>
+        </div>
+        <form id="order-form">
+          <div class="form-group">
+            <label class="required">اسم العميل</label>
+            <div class="input-wrapper">
+              <i class="input-icon fas fa-user"></i>
+              <input type="text" id="customer-name" required placeholder="أدخل اسم العميل">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="required">رقم الهاتف</label>
+            <div class="input-wrapper">
+              <i class="input-icon fas fa-phone"></i>
+              <input type="tel" id="phone" required placeholder="أدخل رقم الهاتف">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="required">العنوان</label>
+            <div class="input-wrapper">
+              <i class="input-icon fas fa-map-marker-alt"></i>
+              <input type="text" id="address" required placeholder="أدخل عنوان التوصيل">
+            </div>
+          </div>
+          <div class="price-container">
+            <div class="form-group">
+              <label class="required">سعر الطلب (ج.م)</label>
+              <div class="input-wrapper">
+                <i class="input-icon fas fa-tag"></i>
+                <input type="number" id="order-price" step="0.01" min="0" required placeholder="0.00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="required">سعر خدمة التوصيل (ج.م)</label>
+              <div class="input-wrapper">
+                <i class="input-icon fas fa-truck"></i>
+                <input type="number" id="delivery-fee" step="0.01" min="0" required placeholder="0.00">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات (اختياري)</label>
+            <textarea id="notes" rows="3" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+            <div class="character-count" id="char-count">0/500</div>
+          </div>
+          <div class="order-summary">
+            <div class="summary-title">
+              <i class="fas fa-receipt"></i>
+              ملخص الطلب
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">سعر الطلب:</span>
+              <span class="summary-value" id="summary-order-price">0.00 ج.م</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">سعر التوصيل:</span>
+              <span class="summary-value" id="summary-delivery-fee">0.00 ج.م</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">الإجمالي:</span>
+              <span class="summary-value total-amount" id="summary-total">0.00 ج.م</span>
+            </div>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn btn-secondary" id="reset-btn">
+              <i class="fas fa-redo"></i>
+              إعادة تعيين
+            </button>
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <span id="submit-text"><i class="fas fa-paper-plane"></i> إرسال الطلب</span>
+            </button>
+          </div>
+        </form>
+        <div class="success" id="success-msg">
+          <i class="fas fa-check-circle"></i> تم إرسال الطلب بنجاح
+        </div>
+        <div class="error" id="error-msg">
+          <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء إرسال الطلب
+        </div>
+        <div class="info" id="info-msg">
+          <i class="fas fa-info-circle"></i> جاري معالجة الطلب...
+        </div>
+      </div>
+      <!-- Recent Orders Section -->
+      <div class="orders-section">
+        <div class="section-header">
+          <div class="section-title">
+            <i class="fas fa-history"></i>
+            الطلبات الأخيرة
+          </div>
+          <a href="#" class="view-all-link" data-view="order-history">
+            عرض الكل <i class="fas fa-arrow-left"></i>
+          </a>
+        </div>
+        <div class="orders-grid" id="recent-orders">
+          <!-- Orders will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+    <!-- Profile View -->
+    <div id="profile-view" style="display: none;">
+      <div class="container">
+        <div class="header">
+          <h2><i class="fas fa-user"></i> الملف الشخصي</h2>
+          <p class="subtitle">معلومات المطعم والحساب</p>
+        </div>
+        <div class="form-group">
+          <label>اسم المطعم</label>
+          <input type="text" id="profile-name" readonly>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="profile-email" readonly>
+        </div>
+        <div class="form-group">
+          <label>تاريخ التسجيل</label>
+          <input type="text" id="profile-joined" readonly>
+        </div>
+        <div class="form-group">
+          <label>إجمالي الطلبات</label>
+          <input type="text" id="profile-total-orders" readonly>
+        </div>
+      </div>
+    </div>
+    <!-- Order History View -->
+    <div id="order-history-view" style="display: none;">
+      <div class="container">
+        <div class="header">
+          <h2><i class="fas fa-history"></i> سجل الطلبات</h2>
+          <p class="subtitle">جميع الطلبات السابقة</p>
+        </div>
+        <div class="orders-grid" id="history-orders">
+          <!-- Orders will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+    <!-- Current Orders View -->
+    <div id="current-orders-view" style="display: none;">
+      <div class="container">
+        <div class="header">
+          <h2><i class="fas fa-truck"></i> الطلبات الجارية</h2>
+          <p class="subtitle">الطلبات قيد التوصيل حالياً</p>
+        </div>
+        <div class="orders-grid" id="current-orders">
+          <!-- Orders will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+    <!-- Completed Orders View -->
+    <div id="completed-orders-view" style="display: none;">
+      <div class="container">
+        <div class="header">
+          <h2><i class="fas fa-check-circle"></i> الطلبات المنفذة</h2>
+          <p class="subtitle">الطلبات التي تم توصيلها بنجاح</p>
+        </div>
+        <div class="orders-grid" id="completed-orders">
+          <!-- Orders will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">تفاصيل الطلب</div>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modal-details"></div>
+    </div>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(
+      'https://vrngqopmdvdmdayswlos.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
+    );
+    // DOM Elements
+    const form = document.getElementById('order-form');
+    const successMsg = document.getElementById('success-msg');
+    const errorMsg = document.getElementById('error-msg');
+    const infoMsg = document.getElementById('info-msg');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const resetBtn = document.getElementById('reset-btn');
+    const notes = document.getElementById('notes');
+    const charCount = document.getElementById('char-count');
+    const logoutBtn = document.getElementById('logout-btn');
+    // Summary elements
+    const summaryOrderPrice = document.getElementById('summary-order-price');
+    const summaryDeliveryFee = document.getElementById('summary-delivery-fee');
+    const summaryTotal = document.getElementById('summary-total');
+    // Stats elements
+    const pendingCount = document.getElementById('pending-count');
+    const progressCount = document.getElementById('progress-count');
+    const deliveredCount = document.getElementById('delivered-count');
+    const failedCount = document.getElementById('failed-count');
+    const totalCount = document.getElementById('total-count');
+    // Views
+    const views = {
+      home: document.getElementById('home-view'),
+      profile: document.getElementById('profile-view'),
+      'order-history': document.getElementById('order-history-view'),
+      'current-orders': document.getElementById('current-orders-view'),
+      'completed-orders': document.getElementById('completed-orders-view')
+    };
+    // Current user
+    let currentUser = null;
+    let captains = [];
+    // Character counter for notes
+    notes.addEventListener('input', () => {
+      const length = notes.value.length;
+      charCount.textContent = `${length}/500`;
+      charCount.style.color = length > 450 ? '#ef4444' : '#6b7280';
+    });
+    // Real-time summary calculation
+    function updateSummary() {
+      const orderPrice = parseFloat(document.getElementById('order-price').value) || 0;
+      const deliveryFee = parseFloat(document.getElementById('delivery-fee').value) || 0;
+      const total = orderPrice + deliveryFee;
+      summaryOrderPrice.textContent = orderPrice.toFixed(2) + ' ج.م';
+      summaryDeliveryFee.textContent = deliveryFee.toFixed(2) + ' ج.م';
+      summaryTotal.textContent = total.toFixed(2) + ' ج.م';
+    }
+    document.getElementById('order-price').addEventListener('input', updateSummary);
+    document.getElementById('delivery-fee').addEventListener('input', updateSummary);
+    // Form validation
+    function validateForm() {
+      const inputs = form.querySelectorAll('input[required]');
+      let isValid = true;
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('invalid');
+          isValid = false;
+        } else {
+          input.classList.remove('invalid');
+          input.classList.add('valid');
+        }
+      });
+      return isValid;
+    }
+    // Input validation on blur
+    form.querySelectorAll('input[required]').forEach(input => {
+      input.addEventListener('blur', () => {
+        if (!input.value.trim()) {
+          input.classList.add('invalid');
+        } else {
+          input.classList.remove('invalid');
+          input.classList.add('valid');
+        }
+      });
+    });
+    // Reset form
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      form.querySelectorAll('input').forEach(input => {
+        input.classList.remove('valid', 'invalid');
+      });
+      charCount.textContent = '0/500';
+      charCount.style.color = '#6b7280';
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+      infoMsg.style.display = 'none';
+      updateSummary();
+    });
+    // Submit form
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validateForm()) {
+        errorMsg.textContent = '❌ يرجى ملء جميع الحقول المطلوبة';
+        errorMsg.style.display = 'block';
+        setTimeout(() => errorMsg.style.display = 'none', 4000);
+        return;
+      }
+      // Show loading state
+      submitBtn.disabled = true;
+      submitText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+      infoMsg.style.display = 'none';
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+          throw new Error("يرجى تسجيل الدخول أولاً");
+        }
+        const order = {
+          restaurant_id: user.id,
+          custom_name: document.getElementById('customer-name').value.trim(),
+          custom_phone: document.getElementById('phone').value.trim(),
+          custom_address: document.getElementById('address').value.trim(),
+          order_price: parseFloat(document.getElementById('order-price').value) || 0,
+          service_price: parseFloat(document.getElementById('delivery-fee').value) || 0,
+          notes: document.getElementById('notes').value.trim() || null,
+          status: 'قيد التوزيع'
+        };
+        const { data, error } = await supabase.from('orders').insert([order]);
+        if (error) throw error;
+        form.reset();
+        form.querySelectorAll('input').forEach(input => {
+          input.classList.remove('valid', 'invalid');
+        });
+        charCount.textContent = '0/500';
+        updateSummary();
+        showNotification('تم إرسال الطلب بنجاح', 'success');
+        // Refresh recent orders and stats
+        loadRecentOrders();
+        loadStatistics();
+      } catch (error) {
+        showNotification('حدث خطأ أثناء إرسال الطلب: ' + error.message, 'error');
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitText.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب';
+      }
+    });
+    // Initialize summary
+    updateSummary();
+    // View navigation
+    document.querySelectorAll('.sidebar-menu-item, .view-all-link').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const viewName = this.getAttribute('data-view');
+        if (!viewName) return;
+        // Remove active class from all items
+        document.querySelectorAll('.sidebar-menu-item').forEach(i => {
+          i.classList.remove('active');
+        });
+        // Add active class to clicked item (if it's a sidebar item)
+        if (this.classList.contains('sidebar-menu-item')) {
+          this.classList.add('active');
+        }
+        // Hide all views
+        Object.values(views).forEach(view => {
+          view.style.display = 'none';
+        });
+        // Show selected view
+        if (views[viewName]) {
+          views[viewName].style.display = 'block';
+          // Load data for the view
+          switch(viewName) {
+            case 'profile':
+              loadProfile();
+              break;
+            case 'order-history':
+              loadOrderHistory();
+              break;
+            case 'current-orders':
+              loadCurrentOrders();
+              break;
+            case 'completed-orders':
+              loadCompletedOrders();
+              break;
+          }
+        }
+      });
+    });
+    // Logout handler
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './index.html';
+      } catch (error) {
+        console.error('خطأ في تسجيل الخروج:', error);
+        showNotification('حدث خطأ في تسجيل الخروج', 'error');
+      }
+    });
+    // Load captains
+    async function loadCaptains() {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, full_name")
+          .eq("role", "captain");
+        if (error) throw error;
+        captains = data || [];
+      } catch (error) {
+        console.error('Error loading captains:', error);
+        captains = [];
+      }
+    }
+    // Load statistics
+    async function loadStatistics() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        // Get counts for each status
+        const [pendingResult, progressResult, deliveredResult, failedResult, totalResult] = await Promise.all([
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("restaurant_id", user.id).eq("status", "قيد التوزيع"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("restaurant_id", user.id).eq("status", "جاري التوصيل"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("restaurant_id", user.id).eq("status", "تم التوصيل"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("restaurant_id", user.id).eq("status", "فشل التوصيل"),
+          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("restaurant_id", user.id)
+        ]);
+        pendingCount.textContent = pendingResult.count || 0;
+        progressCount.textContent = progressResult.count || 0;
+        deliveredCount.textContent = deliveredResult.count || 0;
+        failedCount.textContent = failedResult.count || 0;
+        totalCount.textContent = totalResult.count || 0;
+      } catch (error) {
+        console.error('Error loading statistics:', error);
+      }
+    }
+    // Load recent orders
+    async function loadRecentOrders() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            order_price,
+            service_price,
+            status,
+            created_at,
+            captain_id
+          `)
+          .eq("restaurant_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(6);
+        if (error) throw error;
+        const recentOrdersContainer = document.getElementById('recent-orders');
+        if (!recentOrdersContainer) return;
+        if (!orders || orders.length === 0) {
+          recentOrdersContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem;">لا توجد طلبات سابقة</p>';
+          return;
+        }
+        recentOrdersContainer.innerHTML = orders.map(order => {
+          const captain = captains.find(c => c.id === order.captain_id);
+          return `
+            <div class="order-card">
+              <div class="order-header">
+                <div class="order-id">#${order.id.slice(0, 8)}</div>
+                <span class="order-status ${getStatusClass(order.status)}">${order.status}</span>
+              </div>
+              <div class="order-details">
+                <div>
+                  <div class="order-detail">العميل:</div>
+                  <div class="order-value">${order.custom_name || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الهاتف:</div>
+                  <div class="order-value">${order.custom_phone || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">التاريخ:</div>
+                  <div class="order-value">${formatDate(order.created_at)}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الكابتن:</div>
+                  <div class="order-value">${captain ? captain.full_name : 'غير مُعيَّن'}</div>
+                </div>
+              </div>
+              <div class="order-amount">${(order.order_price + order.service_price).toFixed(2)} ج.م</div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading recent orders:', error);
+        document.getElementById('recent-orders').innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">حدث خطأ في تحميل الطلبات</p>';
+      }
+    }
+    // Load profile
+    async function loadProfile() {
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) return;
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("full_name, created_at")
+          .eq("id", user.id)
+          .single();
+        if (userError) throw userError;
+        const { count: orderCount, error: countError } = await supabase
+          .from("orders")
+          .select("id", { count: 'exact', head: true })
+          .eq("restaurant_id", user.id);
+        if (countError) throw countError;
+        document.getElementById('profile-name').value = userData.full_name || 'غير محدد';
+        document.getElementById('profile-email').value = user.email || 'غير محدد';
+        document.getElementById('profile-joined').value = formatDate(userData.created_at);
+        document.getElementById('profile-total-orders').value = orderCount || 0;
+        // Update restaurant name in sidebar
+        document.getElementById('restaurant-name').textContent = userData.full_name || 'مطعم غير محدد';
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+    // Load order history
+    async function loadOrderHistory() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            order_price,
+            service_price,
+            status,
+            created_at,
+            captain_id
+          `)
+          .eq("restaurant_id", user.id)
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        const historyOrdersContainer = document.getElementById('history-orders');
+        if (!historyOrdersContainer) return;
+        if (!orders || orders.length === 0) {
+          historyOrdersContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem;">لا توجد طلبات سابقة</p>';
+          return;
+        }
+        historyOrdersContainer.innerHTML = orders.map(order => {
+          const captain = captains.find(c => c.id === order.captain_id);
+          return `
+            <div class="order-card">
+              <div class="order-header">
+                <div class="order-id">#${order.id.slice(0, 8)}</div>
+                <span class="order-status ${getStatusClass(order.status)}">${order.status}</span>
+              </div>
+              <div class="order-details">
+                <div>
+                  <div class="order-detail">العميل:</div>
+                  <div class="order-value">${order.custom_name || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الهاتف:</div>
+                  <div class="order-value">${order.custom_phone || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">التاريخ:</div>
+                  <div class="order-value">${formatDate(order.created_at)}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الكابتن:</div>
+                  <div class="order-value">${captain ? captain.full_name : 'غير مُعيَّن'}</div>
+                </div>
+              </div>
+              <div class="order-amount">${(order.order_price + order.service_price).toFixed(2)} ج.م</div>
+              <div style="text-align: center; margin-top: 1rem;">
+                <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+                  <i class="fas fa-info-circle"></i> تفاصيل
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading order history:', error);
+        document.getElementById('history-orders').innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">حدث خطأ في تحميل الطلبات</p>';
+      }
+    }
+    // Load current orders
+    async function loadCurrentOrders() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            order_price,
+            service_price,
+            status,
+            created_at,
+            captain_id
+          `)
+          .eq("restaurant_id", user.id)
+          .in("status", ["قيد التوزيع", "جاري التوصيل"])
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        const currentOrdersContainer = document.getElementById('current-orders');
+        if (!currentOrdersContainer) return;
+        if (!orders || orders.length === 0) {
+          currentOrdersContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem;">لا توجد طلبات جارية</p>';
+          return;
+        }
+        currentOrdersContainer.innerHTML = orders.map(order => {
+          const captain = captains.find(c => c.id === order.captain_id);
+          return `
+            <div class="order-card">
+              <div class="order-header">
+                <div class="order-id">#${order.id.slice(0, 8)}</div>
+                <span class="order-status ${getStatusClass(order.status)}">${order.status}</span>
+              </div>
+              <div class="order-details">
+                <div>
+                  <div class="order-detail">العميل:</div>
+                  <div class="order-value">${order.custom_name || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الهاتف:</div>
+                  <div class="order-value">${order.custom_phone || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">التاريخ:</div>
+                  <div class="order-value">${formatDate(order.created_at)}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الكابتن:</div>
+                  <div class="order-value">${captain ? captain.full_name : 'غير مُعيَّن'}</div>
+                </div>
+              </div>
+              <div class="order-amount">${(order.order_price + order.service_price).toFixed(2)} ج.م</div>
+              <div style="text-align: center; margin-top: 1rem;">
+                <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+                  <i class="fas fa-info-circle"></i> تفاصيل
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading current orders:', error);
+        document.getElementById('current-orders').innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">حدث خطأ في تحميل الطلبات</p>';
+      }
+    }
+    // Load completed orders
+    async function loadCompletedOrders() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: orders, error } = await supabase
+          .from("orders")
+          .select(`
+            id,
+            custom_name,
+            custom_phone,
+            custom_address,
+            order_price,
+            service_price,
+            status,
+            created_at,
+            captain_id
+          `)
+          .eq("restaurant_id", user.id)
+          .in("status", ["تم التوصيل", "فشل التوصيل"])
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        const completedOrdersContainer = document.getElementById('completed-orders');
+        if (!completedOrdersContainer) return;
+        if (!orders || orders.length === 0) {
+          completedOrdersContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem;">لا توجد طلبات منفذة</p>';
+          return;
+        }
+        completedOrdersContainer.innerHTML = orders.map(order => {
+          const captain = captains.find(c => c.id === order.captain_id);
+          return `
+            <div class="order-card">
+              <div class="order-header">
+                <div class="order-id">#${order.id.slice(0, 8)}</div>
+                <span class="order-status ${getStatusClass(order.status)}">${order.status}</span>
+              </div>
+              <div class="order-details">
+                <div>
+                  <div class="order-detail">العميل:</div>
+                  <div class="order-value">${order.custom_name || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الهاتف:</div>
+                  <div class="order-value">${order.custom_phone || 'غير محدد'}</div>
+                </div>
+                <div>
+                  <div class="order-detail">التاريخ:</div>
+                  <div class="order-value">${formatDate(order.created_at)}</div>
+                </div>
+                <div>
+                  <div class="order-detail">الكابتن:</div>
+                  <div class="order-value">${captain ? captain.full_name : 'غير مُعيَّن'}</div>
+                </div>
+              </div>
+              <div class="order-amount">${(order.order_price + order.service_price).toFixed(2)} ج.م</div>
+              <div style="text-align: center; margin-top: 1rem;">
+                <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
+                  <i class="fas fa-info-circle"></i> تفاصيل
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading completed orders:', error);
+        document.getElementById('completed-orders').innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">حدث خطأ في تحميل الطلبات</p>';
+      }
+    }
+    // Helper functions
+    function getStatusClass(status) {
+      switch(status) {
+        case 'قيد التوزيع': return 'status-pending';
+        case 'جاري التوصيل': return 'status-progress';
+        case 'تم التوصيل': return 'status-delivered';
+        case 'فشل التوصيل': return 'status-failed';
+        default: return 'status-pending';
+      }
+    }
+    function formatDate(dateString) {
+      if (!dateString) return "غير محدد";
+      try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) {
+          return `اليوم، ${date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`;
+        } else if (diffDays === 1) {
+          return `أمس، ${date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}`;
+        } else {
+          return date.toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+        }
+      } catch (error) {
+        return "تاريخ غير صحيح";
+      }
+    }
+    // Show order details
+    window.showOrderDetails = function (order) {
+      try {
+        const captain = captains.find(c => c.id === order.captain_id);
+        const html = `
+          <div style="text-align: right; line-height: 2;">
+            <p><strong>معرف الطلب:</strong> #${order.id.slice(0, 8)}</p>
+            <p><strong>اسم العميل:</strong> ${order.custom_name || "غير محدد"}</p>
+            <p><strong>رقم الهاتف:</strong> ${order.custom_phone || "غير محدد"}</p>
+            <p><strong>عنوان التوصيل:</strong> ${order.custom_address || "غير محدد"}</p>
+            <p><strong>الكابتن المُعيَّن:</strong> ${captain ? captain.full_name : "لم يتم التعيين بعد"}</p>
+            <p><strong>حالة الطلب:</strong>
+              <span style="color: ${getStatusColor(order.status)}; font-weight: 600;">
+                ${order.status || "غير محدد"}
+              </span>
+            </p>
+            <p><strong>سعر الطلب:</strong>
+              <span style="color: #059669; font-weight: 600;">${order.order_price || 0} ج.م</span>
+            </p>
+            <p><strong>سعر التوصيل:</strong>
+              <span style="color: #f97316; font-weight: 600;">${order.service_price || 0} ج.م</span>
+            </p>
+            <p><strong>الإجمالي:</strong>
+              <span style="color: #111827; font-weight: 700; font-size: 1.1em;">
+                ${(order.order_price || 0) + (order.service_price || 0)} ج.م
+              </span>
+            </p>
+            <p><strong>تاريخ الطلب:</strong> ${formatDate(order.created_at)}</p>
+          </div>
+        `;
+        const modalDetailsEl = document.getElementById("modal-details");
+        const modalEl = document.getElementById("modal");
+        if (modalDetailsEl) modalDetailsEl.innerHTML = html;
+        if (modalEl) modalEl.style.display = "flex";
+      } catch (error) {
+        console.error('خطأ في عرض تفاصيل الطلب:', error);
+        showNotification('حدث خطأ في عرض تفاصيل الطلب', 'error');
+      }
+    }
+    // Get status color
+    function getStatusColor(status) {
+      const statusColors = {
+        'تم التوصيل': '#059669',
+        'جاري التوصيل': '#f59e0b',
+        'فشل التوصيل': '#ef4444',
+        'قيد التوزيع': '#6b7280'
+      };
+      return statusColors[status] || '#6b7280';
+    }
+    // Close modal
+    window.closeModal = function () {
+      const modalEl = document.getElementById("modal");
+      if (modalEl) modalEl.style.display = "none";
+    }
+    // Close modal when clicking outside
+    const modalEl = document.getElementById("modal");
+    if (modalEl) {
+      modalEl.addEventListener("click", function (e) {
+        if (e.target === this) {
+          closeModal();
+        }
+      });
+    }
+    // Show notification
+    function showNotification(message, type = 'info') {
+      // Remove existing notifications
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notif => notif.remove());
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.3s ease-in forwards';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+    // Set up real-time subscriptions
+    function setupRealTimeSubscriptions() {
+      try {
+        supabase
+          .channel("orders-changes")
+          .on("postgres_changes", {
+            event: "INSERT",
+            schema: "public",
+            table: "orders"
+          }, (payload) => {
+            console.log('New order inserted:', payload.new);
+            loadStatistics();
+            loadRecentOrders();
+          })
+          .on("postgres_changes", {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders"
+          }, (payload) => {
+            console.log('Order updated:', payload.new);
+            loadStatistics();
+            loadRecentOrders();
+            // Show notification based on status change
+            const newStatus = payload.new.status;
+            const orderId = payload.new.id.slice(0, 8);
+            switch(newStatus) {
+              case 'تم التوصيل':
+                showNotification(`✅ الطلب #${orderId} تم توصيله بنجاح`, 'success');
+                break;
+              case 'فشل التوصيل':
+                showNotification(`❌ الطلب #${orderId} فشل في التوصيل`, 'error');
+                break;
+              case 'جاري التوصيل':
+                showNotification(`🚚 الطلب #${orderId} جاري توصيله الآن`, 'info');
+                break;
+            }
+          })
+          .subscribe();
+        console.log('Real-time subscriptions set up');
+      } catch (error) {
+        console.error('Error setting up real-time subscriptions:', error);
+      }
+    }
+    // Initialize app
+    async function initializeApp() {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+          window.location.href = './index.html';
+          return;
+        }
+        currentUser = user;
+        console.log('User authenticated:', user);
+        // Load initial data
+        await Promise.all([
+          loadCaptains(),
+          loadStatistics(),
+          loadRecentOrders(),
+          loadProfile()
+        ]);
+        // Set up real-time subscriptions
+        setupRealTimeSubscriptions();
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        window.location.href = './index.html';
+      }
+    }
+    // Start the app
+    initializeApp();
+  </script>
+</body>
+</html>
