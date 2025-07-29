@@ -435,8 +435,7 @@
     try {
       // استدعاء وظيفة استعادة كلمة المرور من Supabase
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://your-app-url.com/reset-password', // يجب تغيير هذا إلى عنوان URL الخاص بك
-      });
+redirectTo: 'https://apdla-coder.github.io/-/changepass.html'      });
       
       if (error) {
         throw error;
