@@ -406,7 +406,7 @@
           </div>
           <div class="custody-card">
             <h3>إجمالي العهدة المسلمة</h3>
-            <div class="custody-amount" id="total-delivered-custody">0.00 ج.م</div>
+            <div class="custody-amount" id="paid-custody">0.00 ج.م</div>
             <p>العهدة التي تم تسليمها للإدارة</p>
           </div>
           <div class="custody-card">
@@ -636,51 +636,46 @@
       }
     }
     
-    // Load custody summary
-    async function loadCustodySummary() {
-      try {
-        console.log("🔄 جاري تحميل ملخص العهدة...");
-        
-        // Get active custodies
-        const { data: activeCustodies, error: activeError } = await supabase
-          .from("custodies")
-          .select("amount")
-          .eq("status", "مفعلة");
-        
-        if (activeError) {
-          console.error('خطأ في تحميل العهدة النشطة:', activeError);
-          return;
-        }
-        
-        // Get delivered custodies
-        const { data: deliveredCustodies, error: deliveredError } = await supabase
-          .from("custodies")
-          .select("amount")
-          .eq("status", "مسلمة");
-        
-        if (deliveredError) {
-          console.error('خطأ في تحميل العهدة المسلمة:', deliveredError);
-          return;
-        }
-        
-        // Calculate totals
-        const totalActive = activeCustodies.reduce((sum, custody) => sum + (custody.amount || 0), 0);
-        const totalDelivered = deliveredCustodies.reduce((sum, custody) => sum + (custody.amount || 0), 0);
-        
-        // Update UI
-        document.getElementById("total-active-custody").textContent = `${totalActive.toFixed(2)} ج.م`;
-        document.getElementById("total-delivered-custody").textContent = `${totalDelivered.toFixed(2)} ج.م`;
-        
-        console.log("📊 ملخص العهدة محدث:", {
-          totalActive,
-          totalDelivered
-        });
-      } catch (error) {
-        console.error('خطأ في تحميل ملخص العهدة:', error);
-      }
+async function loadCustodySummary() {
+  try {
+    console.log("🔄 جاري تحميل ملخص العهدة...");
+
+    // العهدة النشطة
+    const { data: activeCustodies, error: activeError } = await supabase
+      .from("custodies")
+      .select("amount")
+      .eq("status", "مفعلة");
+
+    if (activeError) {
+      console.error('خطأ في تحميل العهدة النشطة:', activeError);
+      return;
     }
-    
-    // Load custody history
+
+    // العهدة المسلمة - مع دعم التنسيقات المختلفة
+// في صفحة الإدارة - تصحيح loadCustodySummary
+const { data: deliveredCustodies, error: deliveredError } = await supabase
+  .from("custodies")
+  .select("amount")
+  .lt("amount", 0); // فقط السالبة
+
+    if (deliveredError) {
+      console.error('خطأ في تحميل العهدة المسلمة:', deliveredError);
+      return;
+    } 
+
+    // حساب الإجماليات
+    const totalActive = activeCustodies?.reduce((sum, c) => sum + (c.amount || 0), 0) || 0;
+const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.amount), 0);
+
+    // تحديث الواجهة
+    document.getElementById("total-active-custody").textContent = `${totalActive.toFixed(2)} ج.م`;
+    document.getElementById("paid-custody").textContent = `${totalDelivered.toFixed(2)} ج.م`;
+
+    console.log("📊 ملخص العهدة:", { totalActive, totalDelivered });
+  } catch (error) {
+    console.error('خطأ في تحميل ملخص العهدة:', error);
+  }
+}  // Load custody history
     window.loadCustodyHistory = async function() {
       const historySection = document.getElementById("custodyHistory");
       const historyBody = document.getElementById("custodyHistoryBody");
