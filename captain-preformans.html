@@ -45,22 +45,12 @@ body {
   display: flex;
   min-height: 100vh;
 }
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  .header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  .form-group {
-    flex-direction: column;
-  }
-  .form-group input,
-  .form-group select {
-    min-width: 100%;
-  }
+.main {
+  flex: 1;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1400px;
+  width: 100%;
 }
 .header {
   display: flex;
@@ -154,39 +144,78 @@ body {
 .negative {
   color: var(--danger);
 }
-/* Table Styles */
-.table-container {
+/* Captain Cards */
+.captains-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.captain-card {
   background: white;
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 4px 12px var(--shadow);
-  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+.captain-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px var(--shadow);
 }
-th, td {
-  padding: 1.2rem 1rem;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
+.captain-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-th {
-  background: var(--light);
+.captain-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.captain-info {
+  flex: 1;
+}
+.captain-name {
   font-weight: 600;
-  color: var(--dark);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  font-size: 1.1rem;
+  margin: 0;
 }
-tr:last-child td {
-  border-bottom: none;
+.captain-status {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin: 0;
 }
-tr:hover td {
-  background: rgba(249, 115, 22, 0.03);
+.captain-body {
+  padding: 1.5rem;
+}
+.captain-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-bottom: 0.25rem;
+}
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--darker);
 }
 .status-badge {
   padding: 0.4rem 0.8rem;
@@ -207,6 +236,11 @@ tr:hover td {
 .status-pending {
   background: rgba(245, 158, 11, 0.15);
   color: var(--warning);
+}
+.captain-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 .btn {
   padding: 0.6rem 1.2rem;
@@ -367,6 +401,9 @@ tr:hover td {
 }
 /* Responsive */
 @media (max-width: 992px) {
+  .main {
+    padding: 1.5rem;
+  }
   .form-row {
     flex-direction: column;
     gap: 0;
@@ -380,17 +417,16 @@ tr:hover td {
   }
 }
 @media (max-width: 768px) {
-  .main {
-    padding: 1.5rem 1rem;
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
   }
   .stats-cards {
     grid-template-columns: 1fr;
   }
-  .table-container {
-    overflow-x: auto;
-  }
-  table {
-    min-width: 800px;
+  .captains-container {
+    grid-template-columns: 1fr;
   }
 }
 /* Loading State */
@@ -487,12 +523,137 @@ tr:hover td {
 }
 .toast.error {
   background: var(--danger);
-}  
-</style>
+}
+/* Performance Badge */
+.performance-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+.performance-excellent {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+.performance-good {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+.performance-average {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--primary);
+}
+.performance-poor {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+/* Captain Details Modal */
+.captain-details-modal .modal-content {
+  max-width: 800px;
+}
+.captain-details-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.captain-details-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--primary);
+}
+.captain-details-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+.captain-details-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+.captain-details-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+.captain-details-tab {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.captain-details-tab.active {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+.captain-details-content {
+  padding: 1rem 0;
+}
+.orders-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-item:last-child {
+  border-bottom: none;
+}
+.order-info {
+  flex: 1;
+}
+.order-status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.order-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.filter-btn:hover:not(.active) {
+  background: var(--light);
+}
+</style> 
 </head>
 <body>
+  
   <div class="container">
-    <!-- Sidebar -->
+        <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
         <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
@@ -527,6 +688,7 @@ tr:hover td {
         <span>تسجيل الخروج</span>
       </button>
     </div>
+
     <div class="main">
       <div class="header">
         <h2><i class="fas fa-chart-line me-2"></i> تقرير أداء الكباتن - اليوم الحالي</h2>
@@ -535,6 +697,15 @@ tr:hover td {
           <input type="text" id="search-input" class="search-input" placeholder="ابحث عن كابتن...">
         </div>
       </div>
+      
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all">الكل</button>
+        <button class="filter-btn" data-filter="busy">مشغولين</button>
+        <button class="filter-btn" data-filter="free">أحرار</button>
+        <button class="filter-btn" data-filter="high-performance">أداء عالي</button>
+      </div>
+      
       <div class="stats-cards">
         <div class="card">
           <div class="card-header">
@@ -577,51 +748,31 @@ tr:hover td {
           <div class="card-footer">عمولة الطلبات المُسلمة</div>
         </div>
       </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>اسم الكابتن</th>
-              <th>الحالة</th>
-              <th>عدد الطلبات</th>
-              <th>تم التوصيل</th>
-              <th>جاري التوصيل</th>
-              <th>فشل التوصيل</th>
-              <th>قيد التوزيع</th>
-              <th>إجمالي سعر الطلبات</th>
-              <th>إجمالي سعر الخدمة</th>
-              <th>إجمالي العمولة</th>
-              <th>العمولة المسحوبة</th>
-              <th>العمولة المتاحة</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="captains-body">
-            <tr>
-              <td colspan="13">
-                <div class="loading">
-                  <div class="spinner"></div>
-                  <p>جارٍ تحميل البيانات...</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div id="pagination" class="pagination"></div>
+      
+      <!-- Captains Cards -->
+      <div class="captains-container" id="captains-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>جارٍ تحميل بيانات الكباتن...</p>
+        </div>
       </div>
+      
+      <div id="pagination" class="pagination"></div>
     </div>
   </div>
+  
   <!-- Toast for notifications -->
   <div id="toast" class="toast">
     <i class="fas fa-check-circle"></i>
     <span id="toast-message"></span>
   </div>
+  
   <!-- Withdraw Commission Modal -->
   <div id="withdraw-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>سحب العمولة</h3>
-        <button class="modal-close" id="close-modal">&times;</button>
+        <button class="modal-close" id="close-withdraw-modal">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
@@ -647,36 +798,134 @@ tr:hover td {
       </div>
     </div>
   </div>
+  
+  <!-- Captain Details Modal -->
+  <div id="captain-details-modal" class="modal captain-details-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>تفاصيل الكابتن</h3>
+        <button class="modal-close" id="close-details-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="captain-details-header">
+          <div class="captain-details-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="captain-details-info">
+            <h3 id="details-captain-name">اسم الكابتن</h3>
+            <div class="captain-details-meta">
+              <span><i class="fas fa-phone"></i> <span id="details-captain-phone">0123456789</span></span>
+              <span><i class="fas fa-calendar"></i> <span id="details-captain-joined">تاريخ الانضمام</span></span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="captain-details-tabs">
+          <div class="captain-details-tab active" data-tab="overview">نظرة عامة</div>
+          <div class="captain-details-tab" data-tab="orders">الطلبات</div>
+          <div class="captain-details-tab" data-tab="history">سجل السحب</div>
+        </div>
+        
+        <div class="captain-details-content">
+          <!-- Overview Tab -->
+          <div id="tab-overview" class="tab-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="captain-stats">
+                  <div class="stat-item">
+                    <div class="stat-label">إجمالي الطلبات</div>
+                    <div class="stat-value" id="details-total-orders">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">تم التوصيل</div>
+                    <div class="stat-value" id="details-delivered">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">جاري التوصيل</div>
+                    <div class="stat-value" id="details-pending">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">فشل التوصيل</div>
+                    <div class="stat-value" id="details-failed">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">إجمالي العمولة</div>
+                    <div class="stat-value" id="details-total-commission">0.00 جنيه</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">العمولة المسحوبة</div>
+                    <div class="stat-value" id="details-withdrawn">0.00 جنيه</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Orders Tab -->
+          <div id="tab-orders" class="tab-content" style="display: none;">
+            <div class="orders-list" id="orders-list">
+              <!-- Orders will be populated here -->
+            </div>
+          </div>
+          
+          <!-- History Tab -->
+          <div id="tab-history" class="tab-content" style="display: none;">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+                    <th>الحالة</th>
+                    <th>ملاحظات</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawals-history">
+                  <!-- History will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="close-details-btn">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    
     // Initialize Supabase
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-    
     // Get today's date in ISO format
     const today = new Date();
     const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
     const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-    
     // Pagination variables
     let currentPage = 1;
-    const itemsPerPage = 10;
+    const itemsPerPage = 8;
     let captainsData = [];
     let filteredData = [];
     let selectedCaptain = null;
+    let selectedFilter = 'all';
     
     // DOM Elements
     const searchInput = document.getElementById('search-input');
-    const captainsBody = document.getElementById('captains-body');
+    const captainsContainer = document.getElementById('captains-container');
     const paginationElement = document.getElementById('pagination');
     const withdrawModal = document.getElementById('withdraw-modal');
-    const closeModal = document.getElementById('close-modal');
+    const captainDetailsModal = document.getElementById('captain-details-modal');
+    const closeWithdrawModal = document.getElementById('close-withdraw-modal');
+    const closeDetailsModal = document.getElementById('close-details-modal');
     const cancelWithdraw = document.getElementById('cancel-withdraw');
     const confirmWithdraw = document.getElementById('confirm-withdraw');
+    const closeDetailsBtn = document.getElementById('close-details-btn');
     const toast = document.getElementById('toast');
+    const filterButtons = document.querySelectorAll('.filter-btn');
     
     // Debounce function for search
     const debounce = (func, wait) => {
@@ -698,30 +947,67 @@ tr:hover td {
         ? captainsData.filter(captain => captain.full_name.toLowerCase().includes(term))
         : [...captainsData];
       
+      // Apply filter after search
+      applyFilter(selectedFilter);
       currentPage = 1;
-      renderTable();
+      renderCaptains();
       renderPagination();
     }, 300);
+    
+    // Filter functionality
+    function applyFilter(filter) {
+      selectedFilter = filter;
+      filterButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      
+      // Reset to first page when filter changes
+      currentPage = 1;
+      
+      // Apply filter
+      switch(filter) {
+        case 'busy':
+          filteredData = captainsData.filter(captain => captain.status === 'مشغول');
+          break;
+        case 'free':
+          filteredData = captainsData.filter(captain => captain.status === 'فاضي');
+          break;
+        case 'high-performance':
+          filteredData = captainsData.filter(captain => captain.delivered >= 5);
+          break;
+        case 'all':
+        default:
+          filteredData = [...captainsData];
+          break;
+      }
+      
+      // Apply search term if exists
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      if (searchTerm) {
+        filteredData = filteredData.filter(captain => 
+          captain.full_name.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      renderCaptains();
+      renderPagination();
+    }
     
     // Initialize data loading
     async function loadTodayData() {
       try {
         // Show loading state
-        captainsBody.innerHTML = `
-          <tr>
-            <td colspan="13">
-              <div class="loading">
-                <div class="spinner"></div>
-                <p>جارٍ تحميل بيانات اليوم...</p>
-              </div>
-            </td>
-          </tr>
+        captainsContainer.innerHTML = `
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>جارٍ تحميل بيانات اليوم...</p>
+          </div>
         `;
         
         // Fetch captains
         const { data: captains, error: captainsError } = await supabase
           .from("users")
-          .select("id, full_name, total_withdrawn")
+          .select("id, full_name, phone, created_at, total_withdrawn")
           .eq("role", "captain");
           
         if (captainsError) throw captainsError;
@@ -744,6 +1030,8 @@ tr:hover td {
           captainStats.set(captain.id, {
             id: captain.id,
             full_name: captain.full_name,
+            phone: captain.phone,
+            created_at: captain.created_at,
             total_withdrawn: captain.total_withdrawn || 0,
             total_orders: 0,
             delivered: 0,
@@ -753,11 +1041,14 @@ tr:hover td {
             total_order_price: 0,
             total_service_price: 0,
             total_commission: 0,
-            status: "فاضي"
+            status: "فاضي",
+            performance_score: 0,
+            recent_orders: []
           });
         });
         
         // Process orders
+        const captainOrders = new Map();
         orders.forEach(order => {
           const stats = captainStats.get(order.captain_id);
           if (!stats) return;
@@ -766,6 +1057,12 @@ tr:hover td {
           stats.total_orders++;
           stats.total_order_price += order.order_price || 0;
           stats.total_service_price += order.service_price || 0;
+          
+          // Add to recent orders
+          if (!captainOrders.has(order.captain_id)) {
+            captainOrders.set(order.captain_id, []);
+          }
+          captainOrders.get(order.captain_id).push(order);
           
           // Update status counts
           switch(order.status) {
@@ -786,11 +1083,23 @@ tr:hover td {
           }
         });
         
-        // Convert to array and calculate available commission
-        captainsData = Array.from(captainStats.values()).map(captain => ({
-          ...captain,
-          available_commission: captain.total_commission - captain.total_withdrawn
-        }));
+        // Calculate performance score and recent orders
+        captainsData = Array.from(captainStats.values()).map(captain => {
+          // Calculate performance score (0-100)
+          const deliveryRate = captain.total_orders > 0 ? (captain.delivered / captain.total_orders) * 100 : 0;
+          const completionRate = captain.total_orders > 0 ? ((captain.delivered + captain.pending) / captain.total_orders) * 100 : 0;
+          const performanceScore = (deliveryRate * 0.6) + (completionRate * 0.4);
+          
+          return {
+            ...captain,
+            performance_score: Math.round(performanceScore),
+            recent_orders: (captainOrders.get(captain.id) || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5),
+            available_commission: captain.total_commission - captain.total_withdrawn
+          };
+        });
+        
+        // Sort by performance score (descending)
+        captainsData.sort((a, b) => b.performance_score - a.performance_score);
         
         // Update statistics
         updateStats(captains.length, orders.length, 
@@ -800,40 +1109,32 @@ tr:hover td {
         
         // Filter and render
         filteredData = [...captainsData];
-        renderTable();
+        applyFilter('all'); // Apply default filter
+        renderCaptains();
         renderPagination();
         
       } catch (error) {
         console.error('Error loading data:', error);
-        captainsBody.innerHTML = `
-          <tr>
-            <td colspan="13">
-              <div class="empty-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>خطأ في تحميل البيانات</h3>
-                <p>${error.message}</p>
-              </div>
-            </td>
-          </tr>
+        captainsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>خطأ في تحميل البيانات</h3>
+            <p>${error.message}</p>
+          </div>
         `;
       }
     }
     
-    // Render table with pagination
-    function renderTable() {
-      captainsBody.innerHTML = "";
-      
+    // Render captains cards
+    function renderCaptains() {
+      captainsContainer.innerHTML = "";
       if (filteredData.length === 0) {
-        captainsBody.innerHTML = `
-          <tr>
-            <td colspan="13">
-              <div class="no-data">
-                <i class="fas fa-search"></i>
-                <h3>لا توجد نتائج</h3>
-                <p>حاول تغيير معايير البحث</p>
-              </div>
-            </td>
-          </tr>
+        captainsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>لا توجد نتائج</h3>
+            <p>حاول تغيير معايير البحث أو الفلاتر</p>
+          </div>
         `;
         return;
       }
@@ -845,27 +1146,79 @@ tr:hover td {
         const captain = filteredData[i];
         const statusClass = captain.status === "مشغول" ? "status-busy" : "status-free";
         
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><i class="fas fa-user me-2"></i>${captain.full_name}</td>
-          <td><span class="status-badge ${statusClass}">${captain.status}</span></td>
-          <td>${captain.total_orders}</td>
-          <td>${captain.delivered}</td>
-          <td>${captain.pending}</td>
-          <td>${captain.failed}</td>
-          <td>${captain.distributing}</td>
-          <td>${captain.total_order_price.toFixed(2)} جنيه</td>
-          <td>${captain.total_service_price.toFixed(2)} جنيه</td>
-          <td>${captain.total_commission.toFixed(2)} جنيه</td>
-          <td>${captain.total_withdrawn.toFixed(2)} جنيه</td>
-          <td>${captain.available_commission.toFixed(2)} جنيه</td>
-          <td>
-            <button class="btn btn-sm btn-danger withdraw-btn" data-id="${captain.id}">
-              <i class="fas fa-money-bill-wave"></i> سحب
-            </button>
-          </td>
+        // Performance badge
+        let performanceBadge = "performance-average";
+        let performanceText = "متوسط";
+        if (captain.performance_score >= 80) {
+          performanceBadge = "performance-excellent";
+          performanceText = "ممتاز";
+        } else if (captain.performance_score >= 60) {
+          performanceBadge = "performance-good";
+          performanceText = "جيد";
+        } else if (captain.performance_score >= 40) {
+          performanceBadge = "performance-average";
+          performanceText = "متوسط";
+        } else {
+          performanceBadge = "performance-poor";
+          performanceText = "ضعيف";
+        }
+        
+        const card = document.createElement("div");
+        card.className = "captain-card";
+        card.innerHTML = `
+          <div class="captain-header">
+            <div class="captain-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="captain-info">
+              <h3 class="captain-name">${captain.full_name}</h3>
+              <p class="captain-status"><i class="fas fa-circle ${captain.status === 'مشغول' ? 'fa-xs' : 'fa-2xs'}" style="color: ${captain.status === 'مشغول' ? '#ef4444' : '#10b981'};"></i> ${captain.status}</p>
+            </div>
+          </div>
+          <div class="captain-body">
+            <div class="captain-stats">
+              <div class="stat-item">
+                <div class="stat-label">إجمالي الطلبات</div>
+                <div class="stat-value">${captain.total_orders}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">تم التوصيل</div>
+                <div class="stat-value">${captain.delivered}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">جاري التوصيل</div>
+                <div class="stat-value">${captain.pending}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">فشل التوصيل</div>
+                <div class="stat-value">${captain.failed}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">إجمالي العمولة</div>
+                <div class="stat-value">${captain.total_commission.toFixed(2)} جنيه</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">العمولة المتاحة</div>
+                <div class="stat-value">${captain.available_commission.toFixed(2)} جنيه</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
+              <span class="performance-badge ${performanceBadge}">${performanceText}</span>
+              <div style="font-size: 0.9rem; color: var(--gray);">أداء: ${captain.performance_score}%</div>
+            </div>
+            
+            <div class="captain-actions">
+              <button class="btn btn-primary view-details-btn" data-id="${captain.id}">
+                <i class="fas fa-eye"></i> تفاصيل
+              </button>
+              <button class="btn btn-danger withdraw-btn" data-id="${captain.id}">
+                <i class="fas fa-money-bill-wave"></i> سحب
+              </button>
+            </div>
+          </div>
         `;
-        captainsBody.appendChild(row);
+        captainsContainer.appendChild(card);
       }
       
       // Add event listeners
@@ -873,7 +1226,6 @@ tr:hover td {
         button.addEventListener('click', () => {
           const captainId = button.getAttribute('data-id');
           selectedCaptain = captainsData.find(c => c.id === captainId);
-          
           if (selectedCaptain) {
             document.getElementById('captain-name').value = selectedCaptain.full_name;
             document.getElementById('available-commission').value = `${selectedCaptain.available_commission.toFixed(2)} جنيه`;
@@ -882,12 +1234,21 @@ tr:hover td {
           }
         });
       });
+      
+      document.querySelectorAll('.view-details-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const captainId = button.getAttribute('data-id');
+          selectedCaptain = captainsData.find(c => c.id === captainId);
+          if (selectedCaptain) {
+            showCaptainDetails(selectedCaptain);
+          }
+        });
+      });
     }
     
     // Render pagination
     function renderPagination() {
       paginationElement.innerHTML = "";
-      
       if (filteredData.length <= itemsPerPage) return;
       
       const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -899,7 +1260,7 @@ tr:hover td {
       prevBtn.addEventListener("click", () => {
         if (currentPage > 1) {
           currentPage--;
-          renderTable();
+          renderCaptains();
           renderPagination();
         }
       });
@@ -919,7 +1280,7 @@ tr:hover td {
         firstBtn.textContent = "1";
         firstBtn.addEventListener("click", () => {
           currentPage = 1;
-          renderTable();
+          renderCaptains();
           renderPagination();
         });
         paginationElement.appendChild(firstBtn);
@@ -938,7 +1299,7 @@ tr:hover td {
         pageBtn.classList.toggle("active", i === currentPage);
         pageBtn.addEventListener("click", () => {
           currentPage = i;
-          renderTable();
+          renderCaptains();
           renderPagination();
         });
         paginationElement.appendChild(pageBtn);
@@ -956,7 +1317,7 @@ tr:hover td {
         lastBtn.textContent = totalPages;
         lastBtn.addEventListener("click", () => {
           currentPage = totalPages;
-          renderTable();
+          renderCaptains();
           renderPagination();
         });
         paginationElement.appendChild(lastBtn);
@@ -969,7 +1330,7 @@ tr:hover td {
       nextBtn.addEventListener("click", () => {
         if (currentPage < totalPages) {
           currentPage++;
-          renderTable();
+          renderCaptains();
           renderPagination();
         }
       });
@@ -984,13 +1345,121 @@ tr:hover td {
       document.getElementById("total-commission").textContent = `${totalCommission.toFixed(2)} جنيه`;
     }
     
+    // Show captain details
+    function showCaptainDetails(captain) {
+      // Set basic info
+      document.getElementById('details-captain-name').textContent = captain.full_name;
+      document.getElementById('details-captain-phone').textContent = captain.phone || 'غير متوفر';
+      document.getElementById('details-captain-joined').textContent = new Date(captain.created_at).toLocaleDateString('ar-EG');
+      
+      // Set overview stats
+      document.getElementById('details-total-orders').textContent = captain.total_orders;
+      document.getElementById('details-delivered').textContent = captain.delivered;
+      document.getElementById('details-pending').textContent = captain.pending;
+      document.getElementById('details-failed').textContent = captain.failed;
+      document.getElementById('details-total-commission').textContent = `${captain.total_commission.toFixed(2)} جنيه`;
+      document.getElementById('details-withdrawn').textContent = `${captain.total_withdrawn.toFixed(2)} جنيه`;
+      
+      // Set orders
+      const ordersList = document.getElementById('orders-list');
+      ordersList.innerHTML = '';
+      
+      if (captain.recent_orders.length === 0) {
+        ordersList.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 1rem;">لا توجد طلبات حديثة</p>';
+      } else {
+        captain.recent_orders.forEach(order => {
+          const orderStatusClass = order.status === 'تم التوصيل' ? 'success' : 
+                                 order.status === 'جاري التوصيل' ? 'warning' : 
+                                 order.status === 'فشل التوصيل' ? 'danger' : 'info';
+          
+          const orderItem = document.createElement('div');
+          orderItem.className = 'order-item';
+          orderItem.innerHTML = `
+            <div class="order-info">
+              <div style="font-weight: 500;">طلب #${order.id}</div>
+              <div style="font-size: 0.8rem; color: var(--gray); margin: 0.25rem 0;">
+                ${new Date(order.created_at).toLocaleTimeString('ar-EG')}
+              </div>
+            </div>
+            <div class="order-info" style="text-align: left;">
+              <div style="font-weight: 500;">${order.order_price.toFixed(2)} جنيه</div>
+              <div style="font-size: 0.8rem; color: var(--gray); margin: 0.25rem 0;">
+                ${order.service_price.toFixed(2)} جنيه (الخدمة)
+              </div>
+            </div>
+            <div class="order-status status-${orderStatusClass}">
+              ${order.status}
+            </div>
+            <div class="order-actions">
+              <button class="btn btn-sm btn-outline" onclick="showOrderDetails('${order.id}')">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          `;
+          ordersList.appendChild(orderItem);
+        });
+      }
+      
+      // Fetch withdrawals history
+      fetchWithdrawalsHistory(captain.id);
+      
+      // Show modal
+      captainDetailsModal.style.display = 'flex';
+    }
+    
+    // Fetch withdrawals history
+    async function fetchWithdrawalsHistory(captainId) {
+      try {
+        const { data: withdrawals, error } = await supabase
+          .from('captain_withdrawals')
+          .select('*')
+          .eq('captain_id', captainId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+          
+        if (error) throw error;
+        
+        const historyBody = document.getElementById('withdrawals-history');
+        historyBody.innerHTML = '';
+        
+        if (withdrawals.length === 0) {
+          historyBody.innerHTML = `
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--gray); padding: 1rem;">
+                لا توجد عمليات سحب
+              </td>
+            </tr>
+          `;
+        } else {
+          withdrawals.forEach(withdrawal => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${new Date(withdrawal.created_at).toLocaleDateString('ar-EG')}</td>
+              <td>${withdrawal.amount.toFixed(2)} جنيه</td>
+              <td><span class="status-badge status-success">تم السحب</span></td>
+              <td>${withdrawal.notes || '-'}</td>
+            `;
+            historyBody.appendChild(row);
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching withdrawals history:', error);
+        document.getElementById('withdrawals-history').innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; color: var(--danger); padding: 1rem;">
+              خطأ في تحميل السجل
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
     // Show toast notifications
     function showToast(message, type = 'success') {
       const toastMessage = document.getElementById('toast-message');
       toastMessage.textContent = message;
       toast.className = `toast ${type}`;
       toast.classList.add('show');
-      
       setTimeout(() => {
         toast.classList.remove('show');
       }, 5000);
@@ -1043,7 +1512,7 @@ tr:hover td {
         
         // Update UI
         withdrawModal.style.display = 'none';
-        renderTable();
+        renderCaptains();
         showToast('تم سحب العمولة بنجاح');
         
         // Reset form
@@ -1053,35 +1522,87 @@ tr:hover td {
       } catch (error) {
         console.error('Error withdrawing commission:', error);
         let errorMessage = 'حدث خطأ أثناء سحب العمولة';
-        
         if (error.message.includes('row-level security policy')) {
           errorMessage = 'ليس لديك الصلاحيات اللازمة لسحب العمولة لهذا الكابتن.';
         } else if (error.message.includes('column')) {
           errorMessage = 'خطأ في أسماء الأعمدة. يرجى التحقق من جدول captain_withdrawals.';
         }
-        
         showToast(errorMessage, 'error');
       }
     }
     
+    // Tab switching for captain details
+    function setupTabSwitching() {
+      const tabButtons = document.querySelectorAll('.captain-details-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tab = button.dataset.tab;
+          
+          // Update active tab button
+          tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+          });
+          button.classList.add('active');
+          
+          // Show active tab content
+          tabContents.forEach(content => {
+            content.style.display = 'none';
+          });
+          document.getElementById(`tab-${tab}`).style.display = 'block';
+        });
+      });
+    }
+    
     // Event Listeners
-    document.addEventListener("DOMContentLoaded", loadTodayData);
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTodayData();
+      setupTabSwitching();
+    });
+    
     searchInput.addEventListener('input', handleSearch);
     
+    // Filter buttons
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        applyFilter(button.dataset.filter);
+      });
+    });
+    
     // Modal events
-    closeModal.addEventListener('click', () => withdrawModal.style.display = 'none');
+    closeWithdrawModal.addEventListener('click', () => withdrawModal.style.display = 'none');
+    closeDetailsModal.addEventListener('click', () => captainDetailsModal.style.display = 'none');
     cancelWithdraw.addEventListener('click', () => withdrawModal.style.display = 'none');
+    closeDetailsBtn.addEventListener('click', () => captainDetailsModal.style.display = 'none');
     confirmWithdraw.addEventListener('click', handleWithdraw);
     
-    // Close modal when clicking outside
+    // Close modals when clicking outside
     window.addEventListener('click', (e) => {
       if (e.target === withdrawModal) {
         withdrawModal.style.display = 'none';
+      }
+      if (e.target === captainDetailsModal) {
+        captainDetailsModal.style.display = 'none';
       }
     });
     
     // Auto-refresh every 5 minutes
     setInterval(loadTodayData, 5 * 60 * 1000);
+    
+    // Helper function for order details (placeholder)
+    window.showOrderDetails = function(orderId) {
+      showToast(`عرض تفاصيل الطلب #${orderId}`);
+    };
+    
+    // Logout function
+    window.logout = function() {
+      if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
+        showToast('تم تسجيل الخروج بنجاح');
+        // In a real app, you would redirect to login page
+        // window.location.href = 'login.html';
+      }
+    };
   </script>
 </body>
 </html>

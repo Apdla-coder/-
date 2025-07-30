@@ -20,6 +20,7 @@
       --danger: #ef4444;
       --info: #3b82f6;
       --waiting: #8b5cf6;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     * {
       margin: 0;
@@ -32,6 +33,7 @@
       color: var(--dark);
       direction: rtl;
       text-align: right;
+      font-size: 14px;
     }
     .container {
       display: flex;
@@ -109,48 +111,185 @@
       font-size: 1.8rem;
       font-weight: 700;
     }
-    .custody-section {
-      background: white;
-      border-radius: 1rem;
-      padding: 2rem;
+    .search-filter-container {
+      display: flex;
+      gap: 1rem;
       margin-bottom: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
     }
-    .custody-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-box i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.8rem 3rem;
+      border-radius: 0.5rem;
+      border: 2px solid var(--border);
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    .filter-btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.5rem;
+      border: 2px solid var(--border);
+      background: white;
       color: var(--dark);
-      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .custody-summary {
+    .filter-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .filter-btn.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+    .captains-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
-    .custody-card {
-      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    .captain-card {
+      background: white;
       border-radius: 1rem;
       padding: 1.5rem;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
     }
-    .custody-card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
+    .captain-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+      border-color: rgba(249, 115, 22, 0.2);
+    }
+    .captain-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .captain-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-left: 1rem;
+      border: 3px solid var(--primary);
+    }
+    .captain-info {
+      flex: 1;
+    }
+    .captain-name {
+      font-size: 1.3rem;
+      font-weight: 700;
       color: var(--dark);
+      margin-bottom: 0.3rem;
     }
-    .custody-amount {
-      font-size: 2rem;
+    .captain-id {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+    }
+    .status-active {
+      background: #05966915;
+      color: #059669;
+    }
+    .status-inactive {
+      background: #ef444415;
+      color: #ef4444;
+    }
+    .status-warning {
+      background: #f59e0b15;
+      color: #f59e0b;
+    }
+    .captain-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-item {
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--primary);
     }
-    .custody-actions {
+    .stat-value-small {
+      font-size: 1.1rem;
+    }
+    .actions-container {
       display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+    .action-btn {
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .add-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .add-btn:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #dc2626);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+    .history-btn {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+    .history-btn:hover {
+      background: #e5e7eb;
     }
     .btn {
       padding: 0.8rem 1.5rem;
@@ -183,9 +322,10 @@
       background: white;
       border-radius: 1rem;
       padding: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: var(--card-shadow);
       max-width: 800px;
       margin: 0 auto 2rem;
+      position: relative;
     }
     .form-title {
       font-size: 1.5rem;
@@ -278,7 +418,7 @@
       border-radius: 1rem;
       padding: 2rem;
       margin-top: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: var(--card-shadow);
     }
     .history-title {
       font-size: 1.5rem;
@@ -317,6 +457,165 @@
       background: #ef444415;
       color: #ef4444;
     }
+    .no-data {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+    .no-data i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #e5e7eb;
+    }
+    .total-summary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .total-summary-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+    .total-stats {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .total-stat {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      background: rgba(255,255,255,0.1);
+    }
+    .total-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+    .total-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .quick-action {
+      flex: 1;
+      min-width: 200px;
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .quick-action:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    .quick-action-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(249, 115, 22, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+    .quick-action-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .quick-action-desc {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    .modal-close:hover {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+    .modal-body {
+      padding: 2rem;
+    }
+    .captain-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .detail-item {
+      margin-bottom: 1rem;
+    }
+    .detail-label {
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 0.3rem;
+    }
+    .detail-value {
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+    .chart-container {
+      height: 300px;
+      margin: 2rem 0;
+    }
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -337,11 +636,23 @@
       .form-footer {
         flex-direction: column;
       }
-      .custody-summary {
+      .captain-stats {
         grid-template-columns: 1fr;
       }
-      .custody-actions {
+      .total-stats {
         flex-direction: column;
+      }
+      .quick-actions {
+        flex-direction: column;
+      }
+      .captain-details {
+        grid-template-columns: 1fr;
+      }
+      .search-filter-container {
+        flex-direction: column;
+      }
+      .search-box {
+        min-width: 100%;
       }
     }
   </style>
@@ -394,38 +705,76 @@
           <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </button>
       </div>
-      
-      <!-- Custody Summary Section -->
-      <div class="custody-section">
-        <h2 class="custody-title">ملخص العهدة</h2>
-        <div class="custody-summary">
-          <div class="custody-card">
-            <h3>إجمالي العهدة النشطة</h3>
-            <div class="custody-amount" id="total-active-custody">0.00 ج.م</div>
-            <p>العهدة الحالية قيد الاستخدام</p>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action" onclick="showAddCustodyForm()">
+          <div class="quick-action-icon">
+            <i class="fas fa-plus"></i>
           </div>
-          <div class="custody-card">
-            <h3>إجمالي العهدة المسلمة</h3>
-            <div class="custody-amount" id="paid-custody">0.00 ج.م</div>
-            <p>العهدة التي تم تسليمها للإدارة</p>
-          </div>
-          <div class="custody-card">
-            <h3>عدد الكباتن</h3>
-            <div class="custody-amount" id="total-captains">0</div>
-            <p>الكباتن المسجلون في النظام</p>
-          </div>
+          <div class="quick-action-title">إضافة عهدة</div>
+          <div class="quick-action-desc">إضافة عهدة جديدة للكباتن</div>
         </div>
-        
-        <div class="custody-actions">
-          <button class="btn btn-primary" onclick="showAddCustodyForm()">
-            <i class="fas fa-plus-circle"></i> إضافة عهدة جديدة
-          </button>
-          <button class="btn btn-secondary" onclick="loadCustodyHistory()">
-            <i class="fas fa-history"></i> عرض سجل العهدة
-          </button>
+        <div class="quick-action" onclick="loadAllCustodyHistory()">
+          <div class="quick-action-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <div class="quick-action-title">سجل العهدة</div>
+          <div class="quick-action-desc">عرض جميع سجلات العهدة</div>
+        </div>
+        <div class="quick-action" onclick="showAnalytics()">
+          <div class="quick-action-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="quick-action-title">الإحصائيات</div>
+          <div class="quick-action-desc">تحليلات العهدة والكباتن</div>
         </div>
       </div>
-      
+
+      <!-- Total Summary -->
+      <div class="total-summary">
+        <div class="total-summary-title">إجمالي العهدة</div>
+        <div class="total-stats">
+          <div class="total-stat">
+            <div class="total-value" id="total-active">0.00</div>
+            <div class="total-label">العهدة النشطة</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" id="total-delivered">0.00</div>
+            <div class="total-label">العهدة المسلمة</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" id="total-captains">0</div>
+            <div class="total-label">عدد الكباتن</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" id="avg-custody">0.00</div>
+            <div class="total-label">متوسط العهدة</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="search-filter-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="بحث عن كابتن..." oninput="searchCaptains()">
+        </div>
+        <button class="filter-btn" id="filter-all" onclick="filterCaptains('all')">الكل</button>
+        <button class="filter-btn active" id="filter-active" onclick="filterCaptains('active')">نشطة</button>
+        <button class="filter-btn" id="filter-warning" onclick="filterCaptains('warning')">تحذير</button>
+        <button class="filter-btn" id="filter-inactive" onclick="filterCaptains('inactive')">مغلقة</button>
+      </div>
+
+      <!-- Captains Cards Container -->
+      <div class="captains-container" id="captainsContainer">
+        <!-- Captain cards will be dynamically inserted here -->
+        <div class="no-data">
+          <i class="fas fa-user-friends"></i>
+          <p>جاري تحميل بيانات الكباتن...</p>
+        </div>
+      </div>
+
       <!-- Add Custody Form -->
       <div class="form-container" id="addCustodyForm" style="display: none;">
         <h2 class="form-title">إضافة عهدة جديدة</h2>
@@ -436,7 +785,6 @@
               <option value="">جارٍ تحميل الكباتن...</option>
             </select>
           </div>
-          
           <div class="form-row">
             <div class="form-col">
               <div class="form-group">
@@ -451,12 +799,17 @@
               </div>
             </div>
           </div>
-          
+          <div class="form-group">
+            <label for="custodyType">نوع العهدة *</label>
+            <select class="form-control" id="custodyType" required>
+              <option value="add">إضافة عهدة</option>
+              <option value="deliver">تسليم عهدة</option>
+            </select>
+          </div>
           <div class="form-group">
             <label for="custodyNotes">ملاحظات</label>
             <textarea class="form-control" id="custodyNotes" rows="3" placeholder="أدخل أي ملاحظات إضافية"></textarea>
           </div>
-          
           <div class="form-footer">
             <button type="submit" class="btn btn-primary" id="submitCustodyBtn">
               <span id="submitCustodyText">إضافة العهدة</span>
@@ -468,35 +821,22 @@
           </div>
         </form>
       </div>
-      
-      <!-- Custody History -->
-      <div class="custody-history" id="custodyHistory" style="display: none;">
-        <h2 class="history-title">سجل العهدة</h2>
-        <div class="history-table-container">
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th>الكابتن</th>
-                <th>المبلغ</th>
-                <th>التاريخ</th>
-                <th>الحالة</th>
-                <th>الملاحظات</th>
-              </tr>
-            </thead>
-            <tbody id="custodyHistoryBody">
-              <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem;">
-                  <div class="loading-spinner" style="margin: 0 auto;"></div>
-                  <p style="margin-top: 1rem;">جارٍ تحميل سجل العهدة...</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+      <!-- Captain Details Modal -->
+      <div class="modal" id="captainModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">تفاصيل الكابتن</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <!-- Content will be dynamically inserted -->
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     
@@ -508,8 +848,11 @@
     
     // Global variables
     let captains = [];
+    let custodies = [];
     let currentUser = null;
-    
+    let currentFilter = 'active';
+    let searchQuery = '';
+
     // Show add custody form
     window.showAddCustodyForm = function() {
       const form = document.getElementById("addCustodyForm");
@@ -520,7 +863,7 @@
         document.getElementById("custodyDate").value = today;
       }
     }
-    
+
     // Hide add custody form
     window.hideAddCustodyForm = function() {
       const form = document.getElementById("addCustodyForm");
@@ -530,15 +873,16 @@
         document.getElementById("custodyForm").reset();
       }
     }
-    
+
     // Load captains
     async function loadCaptains() {
       try {
         console.log("🔄 جاري تحميل الكباتن...");
         const { data, error } = await supabase
           .from("users")
-          .select("id, full_name")
-          .eq("role", "captain");
+          .select("id, full_name, phone, created_at")
+          .eq("role", "captain")
+          .order("full_name", { ascending: true });
         
         if (error) {
           console.error('خطأ في تحميل الكباتن:', error);
@@ -564,25 +908,499 @@
         // Update total captains in summary
         document.getElementById("total-captains").textContent = captains.length;
         
+        // Load custodies and render cards
+        await loadCustodies();
+        renderCaptainsCards();
+        
       } catch (error) {
         console.error('خطأ في تحميل الكباتن:', error);
         showError('حدث خطأ في تحميل الكباتن: ' + error.message);
       }
     }
-    
+
+    // Load custodies
+    async function loadCustodies() {
+      try {
+        console.log("🔄 جاري تحميل العهدة...");
+        const { data, error } = await supabase
+          .from("custodies")
+          .select("*")
+          .order("custody_date", { ascending: false });
+        
+        if (error) {
+          console.error('خطأ في تحميل العهدة:', error);
+          throw error;
+        }
+        
+        custodies = data || [];
+        console.log(`✅ تم تحميل ${custodies.length} سجل عهدة`);
+        
+        // Update summary
+        updateSummary();
+        
+      } catch (error) {
+        console.error('خطأ في تحميل العهدة:', error);
+        showError('حدث خطأ في تحميل العهدة: ' + error.message);
+      }
+    }
+
+    // Update summary statistics
+    function updateSummary() {
+      const activeCustodies = custodies.filter(c => c.status === 'مفعلة');
+      const deliveredCustodies = custodies.filter(c => c.amount < 0);
+      
+      const totalActive = activeCustodies.reduce((sum, c) => sum + (c.amount || 0), 0);
+      const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.amount), 0);
+      const avgCustody = captains.length > 0 ? totalActive / captains.length : 0;
+      
+      document.getElementById("total-active").textContent = `${totalActive.toFixed(2)}`;
+      document.getElementById("total-delivered").textContent = `${totalDelivered.toFixed(2)}`;
+      document.getElementById("avg-custody").textContent = `${avgCustody.toFixed(2)}`;
+    }
+
+    // Render captains cards
+    function renderCaptainsCards() {
+      const container = document.getElementById("captainsContainer");
+      if (!container) return;
+      
+      // Filter captains based on search and status
+      let filteredCaptains = captains.filter(captain => {
+        const hasCustody = custodies.some(c => c.captain_id === captain.id);
+        const matchesSearch = captain.full_name.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (currentFilter === 'all') return matchesSearch;
+        if (currentFilter === 'active') return hasCustody && matchesSearch;
+        if (currentFilter === 'warning') return hasCustody && matchesSearch;
+        if (currentFilter === 'inactive') return !hasCustody && matchesSearch;
+        
+        return matchesSearch;
+      });
+      
+      // Sort captains: those with custody first, then by name
+      filteredCaptains.sort((a, b) => {
+        const aHasCustody = custodies.some(c => c.captain_id === a.id);
+        const bHasCustody = custodies.some(c => c.captain_id === b.id);
+        
+        if (aHasCustody && !bHasCustody) return -1;
+        if (!aHasCustody && bHasCustody) return 1;
+        
+        return a.full_name.localeCompare(b.full_name);
+      });
+      
+      if (filteredCaptains.length === 0) {
+        container.innerHTML = `
+          <div class="no-data">
+            <i class="fas fa-user-friends"></i>
+            <p>لا توجد كباتن تطابق المعايير</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = filteredCaptains.map(captain => {
+        const captainCustodies = custodies.filter(c => c.captain_id === captain.id);
+        const activeCustodies = captainCustodies.filter(c => c.status === 'مفعلة');
+        const totalActive = activeCustodies.reduce((sum, c) => sum + (c.amount || 0), 0);
+        const totalDelivered = captainCustodies.filter(c => c.amount < 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
+        
+        const hasCustody = captainCustodies.length > 0;
+        const status = hasCustody ? 'active' : 'inactive';
+        const statusText = hasCustody ? 'نشطة' : 'مغلقة';
+        const statusClass = hasCustody ? 'status-active' : 'status-inactive';
+        
+        // Calculate warning status if active custody is high
+        let warningStatus = '';
+        if (hasCustody && totalActive > 5000) { // Example threshold
+          warningStatus = 'status-warning';
+          statusText = 'تحذير';
+        }
+        
+        return `
+          <div class="captain-card" onclick="showCaptainDetails('${captain.id}')">
+            <div class="captain-card-header">
+              <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(captain.full_name)}&background=f97316&color=fff&size=128" 
+                   alt="${captain.full_name}" class="captain-avatar">
+              <div class="captain-info">
+                <div class="captain-name">${captain.full_name}</div>
+                <div class="captain-id">كابتن #${captain.id.slice(-4)}</div>
+              </div>
+              <span class="status-badge ${statusClass} ${warningStatus}">${statusText}</span>
+            </div>
+            
+            <div class="captain-stats">
+              <div class="stat-item">
+                <div class="stat-label">العهدة النشطة</div>
+                <div class="stat-value">${totalActive.toFixed(2)} ج.م</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">المسلمة</div>
+                <div class="stat-value">${totalDelivered.toFixed(2)} ج.م</div>
+              </div>
+            </div>
+            
+            <div class="actions-container">
+              <button class="action-btn add-btn" onclick="event.stopPropagation(); showAddCustodyForCaptain('${captain.id}')">
+                <i class="fas fa-plus"></i> إضافة
+              </button>
+              <button class="action-btn history-btn" onclick="event.stopPropagation(); showCaptainHistory('${captain.id}')">
+                <i class="fas fa-history"></i> السجل
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Show captain details in modal
+    window.showCaptainDetails = async function(captainId) {
+      const captain = captains.find(c => c.id === captainId);
+      if (!captain) return;
+      
+      const captainCustodies = custodies.filter(c => c.captain_id === captainId);
+      const activeCustodies = captainCustodies.filter(c => c.status === 'مفعلة');
+      const totalActive = activeCustodies.reduce((sum, c) => sum + (c.amount || 0), 0);
+      const totalDelivered = captainCustodies.filter(c => c.amount < 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
+      
+      const modal = document.getElementById('captainModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = `تفاصيل الكابتن: ${captain.full_name}`;
+      
+      modalBody.innerHTML = `
+        <div class="captain-details">
+          <div>
+            <div class="detail-item">
+              <div class="detail-label">الاسم الكامل</div>
+              <div class="detail-value">${captain.full_name}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">رقم الكابتن</div>
+              <div class="detail-value">#${captain.id.slice(-8)}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">رقم الهاتف</div>
+              <div class="detail-value">${captain.phone || 'غير متوفر'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">تاريخ التسجيل</div>
+              <div class="detail-value">${formatDate(captain.created_at)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="detail-item">
+              <div class="detail-label">إجمالي العهدة النشطة</div>
+              <div class="detail-value" style="color: var(--primary); font-size: 1.3rem; font-weight: 800;">${totalActive.toFixed(2)} ج.م</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">إجمالي العهدة المسلمة</div>
+              <div class="detail-value" style="color: var(--secondary); font-size: 1.3rem; font-weight: 800;">${totalDelivered.toFixed(2)} ج.م</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">عدد سجلات العهدة</div>
+              <div class="detail-value">${captainCustodies.length}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">آخر تحديث</div>
+              <div class="detail-value">${captainCustodies.length > 0 ? formatDate(captainCustodies[0].custody_date) : 'لا يوجد'}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="captainChart"></canvas>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn btn-primary" onclick="showAddCustodyForCaptain('${captainId}')">
+            <i class="fas fa-plus-circle"></i> إضافة عهدة جديدة
+          </button>
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      
+      // Initialize chart (would require Chart.js in a real implementation)
+      // For now, we'll just show a placeholder
+      setTimeout(() => {
+        const chartContainer = document.querySelector('.chart-container');
+        if (chartContainer) {
+          chartContainer.innerHTML = `
+            <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 0.5rem;">
+              <div style="text-align: center; color: var(--gray);">
+                <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>تتوفر التحليلات التفصيلية في الإصدار الكامل</p>
+              </div>
+            </div>
+          `;
+        }
+      }, 100);
+    }
+
+    // Show modal for adding custody to specific captain
+    window.showAddCustodyForCaptain = function(captainId) {
+      showAddCustodyForm();
+      const captainSelect = document.getElementById("captainSelect");
+      if (captainSelect) {
+        captainSelect.value = captainId;
+      }
+    }
+
+    // Show captain history
+    window.showCaptainHistory = function(captainId) {
+      const captain = captains.find(c => c.id === captainId);
+      if (!captain) return;
+      
+      const captainCustodies = custodies.filter(c => c.captain_id === captainId);
+      
+      const modal = document.getElementById('captainModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = `سجل العهدة - ${captain.full_name}`;
+      
+      if (captainCustodies.length === 0) {
+        modalBody.innerHTML = `
+          <div class="no-data">
+            <i class="fas fa-history"></i>
+            <p>لا توجد سجلات عهدة لهذا الكابتن</p>
+          </div>
+          <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-primary" onclick="showAddCustodyForCaptain('${captainId}')">
+              <i class="fas fa-plus-circle"></i> إضافة عهدة جديدة
+            </button>
+          </div>
+        `;
+      } else {
+        modalBody.innerHTML = `
+          <div class="history-table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                  <th>الملاحظات</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${captainCustodies.map(custody => `
+                  <tr>
+                    <td>${formatDate(custody.custody_date)}</td>
+                    <td style="color: ${custody.amount >= 0 ? 'var(--primary)' : 'var(--secondary)'}; font-weight: 600;">
+                      ${Math.abs(custody.amount).toFixed(2)} ج.م
+                    </td>
+                    <td>${custody.amount >= 0 ? 'إضافة' : 'تسليم'}</td>
+                    <td>
+                      <span class="status-badge ${custody.status === 'مفعلة' ? 'status-active' : 'status-inactive'}">
+                        ${custody.status}
+                      </span>
+                    </td>
+                    <td>${custody.notes || "لا توجد ملاحظات"}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-primary" onclick="showAddCustodyForCaptain('${captainId}')">
+              <i class="fas fa-plus-circle"></i> إضافة عهدة جديدة
+            </button>
+          </div>
+        `;
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    // Show all custody history
+    window.loadAllCustodyHistory = function() {
+      const allCustodies = [...custodies];
+      allCustodies.sort((a, b) => new Date(b.custody_date) - new Date(a.custody_date));
+      
+      const modal = document.getElementById('captainModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = 'سجل العهدة - الكل';
+      
+      if (allCustodies.length === 0) {
+        modalBody.innerHTML = `
+          <div class="no-data">
+            <i class="fas fa-history"></i>
+            <p>لا توجد سجلات عهدة</p>
+          </div>
+        `;
+      } else {
+        modalBody.innerHTML = `
+          <div class="history-table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>الكابتن</th>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${allCustodies.map(custody => {
+                  const captain = captains.find(c => c.id === custody.captain_id);
+                  return `
+                    <tr>
+                      <td>${captain?.full_name || "غير محدد"}</td>
+                      <td>${formatDate(custody.custody_date)}</td>
+                      <td style="color: ${custody.amount >= 0 ? 'var(--primary)' : 'var(--secondary)'}; font-weight: 600;">
+                        ${Math.abs(custody.amount).toFixed(2)} ج.م
+                      </td>
+                      <td>${custody.amount >= 0 ? 'إضافة' : 'تسليم'}</td>
+                      <td>
+                        <span class="status-badge ${custody.status === 'مفعلة' ? 'status-active' : 'status-inactive'}">
+                          ${custody.status}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    // Show analytics
+    window.showAnalytics = function() {
+      const modal = document.getElementById('captainModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = 'الإحصائيات والتحليلات';
+      
+      // Calculate analytics
+      const activeCustodies = custodies.filter(c => c.status === 'مفعلة');
+      const deliveredCustodies = custodies.filter(c => c.amount < 0);
+      const totalActive = activeCustodies.reduce((sum, c) => sum + (c.amount || 0), 0);
+      const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.amount), 0);
+      const avgCustody = captains.length > 0 ? totalActive / captains.length : 0;
+      
+      // Find top captains
+      const captainStats = captains.map(captain => {
+        const captainCustodies = custodies.filter(c => c.captain_id === captain.id && c.status === 'مفعلة');
+        const total = captainCustodies.reduce((sum, c) => sum + (c.amount || 0), 0);
+        return { ...captain, totalCustody: total };
+      }).sort((a, b) => b.totalCustody - a.totalCustody);
+      
+      const topCaptains = captainStats.slice(0, 5);
+      
+      modalBody.innerHTML = `
+        <div class="total-stats" style="margin-bottom: 2rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+          <div class="total-stat">
+            <div class="total-value" style="color: var(--primary);">${totalActive.toFixed(2)}</div>
+            <div class="total-label">إجمالي العهدة النشطة</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" style="color: var(--secondary);">${totalDelivered.toFixed(2)}</div>
+            <div class="total-label">إجمالي العهدة المسلمة</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" style="color: var(--info);">${captains.length}</div>
+            <div class="total-label">إجمالي الكباتن</div>
+          </div>
+          <div class="total-stat">
+            <div class="total-value" style="color: var(--warning);">${avgCustody.toFixed(2)}</div>
+            <div class="total-label">متوسط العهدة</div>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="analyticsChart"></canvas>
+        </div>
+        
+        <h3 style="margin: 2rem 0 1rem; color: var(--dark);">أعلى 5 كباتن من حيث العهدة النشطة</h3>
+        <div class="history-table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>العهدة النشطة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${topCaptains.map((captain, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${captain.full_name}</td>
+                  <td style="color: var(--primary); font-weight: 600;">${captain.totalCustody.toFixed(2)} ج.م</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      
+      // Initialize chart (placeholder)
+      setTimeout(() => {
+        const chartContainer = document.querySelector('#analyticsChart').parentElement;
+        if (chartContainer) {
+          chartContainer.innerHTML = `
+            <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 0.5rem;">
+              <div style="text-align: center; color: var(--gray);">
+                <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>تتوفر التحليلات التفصيلية في الإصدار الكامل</p>
+              </div>
+            </div>
+          `;
+        }
+      }, 100);
+    }
+
+    // Close modal
+    window.closeModal = function() {
+      const modal = document.getElementById('captainModal');
+      modal.style.display = 'none';
+    }
+
+    // Filter captains
+    window.filterCaptains = function(filter) {
+      currentFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`filter-${filter}`).classList.add('active');
+      
+      renderCaptainsCards();
+    }
+
+    // Search captains
+    window.searchCaptains = function() {
+      const input = document.getElementById('searchInput');
+      searchQuery = input.value;
+      renderCaptainsCards();
+    }
+
     // Add custody
     async function addCustody(event) {
       event.preventDefault();
-      
       // Get form values
       const captainId = document.getElementById("captainSelect").value;
       const custodyAmount = parseFloat(document.getElementById("custodyAmount").value);
       const custodyDate = document.getElementById("custodyDate").value;
+      const custodyType = document.getElementById("custodyType").value;
       const custodyNotes = document.getElementById("custodyNotes").value.trim();
       
       // Validate form
-      if (!captainId || isNaN(custodyAmount) || !custodyDate) {
-        showError('يرجى ملء جميع الحقول المطلوبة');
+      if (!captainId || isNaN(custodyAmount) || !custodyDate || custodyAmount <= 0) {
+        showError('يرجى ملء جميع الحقول المطلوبة بشكل صحيح');
         return;
       }
       
@@ -590,20 +1408,21 @@
       const submitBtn = document.getElementById("submitCustodyBtn");
       const submitText = document.getElementById("submitCustodyText");
       const submitSpinner = document.getElementById("submitCustodySpinner");
-      
       submitBtn.disabled = true;
       submitText.textContent = 'جاري الإضافة...';
       submitSpinner.style.display = 'inline-block';
       
       try {
         console.log("🔄 جاري إضافة العهدة...");
+        // Determine amount based on type
+        const amount = custodyType === 'deliver' ? -custodyAmount : custodyAmount;
         
         // Insert custody into database
         const { data, error } = await supabase
           .from("custodies")
           .insert({
             captain_id: captainId,
-            amount: custodyAmount,
+            amount: amount,
             custody_date: custodyDate,
             notes: custodyNotes || null,
             status: 'مفعلة'
@@ -622,8 +1441,9 @@
         document.getElementById("custodyForm").reset();
         hideAddCustodyForm();
         
-        // Refresh summary
-        loadCustodySummary();
+        // Refresh data
+        await loadCustodies();
+        renderCaptainsCards();
         
       } catch (error) {
         console.error('خطأ في إضافة العهدة:', error);
@@ -635,129 +1455,7 @@
         submitSpinner.style.display = 'none';
       }
     }
-    
-async function loadCustodySummary() {
-  try {
-    console.log("🔄 جاري تحميل ملخص العهدة...");
 
-    // العهدة النشطة
-    const { data: activeCustodies, error: activeError } = await supabase
-      .from("custodies")
-      .select("amount")
-      .eq("status", "مفعلة");
-
-    if (activeError) {
-      console.error('خطأ في تحميل العهدة النشطة:', activeError);
-      return;
-    }
-
-    // العهدة المسلمة - مع دعم التنسيقات المختلفة
-// في صفحة الإدارة - تصحيح loadCustodySummary
-const { data: deliveredCustodies, error: deliveredError } = await supabase
-  .from("custodies")
-  .select("amount")
-  .lt("amount", 0); // فقط السالبة
-
-    if (deliveredError) {
-      console.error('خطأ في تحميل العهدة المسلمة:', deliveredError);
-      return;
-    } 
-
-    // حساب الإجماليات
-    const totalActive = activeCustodies?.reduce((sum, c) => sum + (c.amount || 0), 0) || 0;
-const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.amount), 0);
-
-    // تحديث الواجهة
-    document.getElementById("total-active-custody").textContent = `${totalActive.toFixed(2)} ج.م`;
-    document.getElementById("paid-custody").textContent = `${totalDelivered.toFixed(2)} ج.م`;
-
-    console.log("📊 ملخص العهدة:", { totalActive, totalDelivered });
-  } catch (error) {
-    console.error('خطأ في تحميل ملخص العهدة:', error);
-  }
-}  // Load custody history
-    window.loadCustodyHistory = async function() {
-      const historySection = document.getElementById("custodyHistory");
-      const historyBody = document.getElementById("custodyHistoryBody");
-      
-      if (historySection) {
-        historySection.style.display = "block";
-      }
-      
-      if (historyBody) {
-        historyBody.innerHTML = `
-          <tr>
-            <td colspan="5" style="text-align: center; padding: 2rem;">
-              <div class="loading-spinner" style="margin: 0 auto;"></div>
-              <p style="margin-top: 1rem;">جارٍ تحميل سجل العهدة...</p>
-            </td>
-          </tr>
-        `;
-      }
-      
-      try {
-        console.log("🔄 جاري تحميل سجل العهدة...");
-        
-        // Get custody history with captain names
-        const { data: custodies, error } = await supabase
-          .from("custodies")
-          .select(`
-            id,
-            amount,
-            custody_date,
-            notes,
-            status,
-            captain_id,
-            users (full_name)
-          `)
-          .order("custody_date", { ascending: false });
-        
-        if (error) {
-          console.error('خطأ في تحميل سجل العهدة:', error);
-          throw error;
-        }
-        
-        if (historyBody) {
-          if (custodies && custodies.length > 0) {
-            historyBody.innerHTML = custodies.map(custody => `
-              <tr>
-                <td>${custody.users?.full_name || "غير محدد"}</td>
-                <td>${(custody.amount || 0).toFixed(2)} ج.م</td>
-                <td>${formatDate(custody.custody_date)}</td>
-                <td>
-                  <span class="status-badge ${custody.status === 'مفعلة' ? 'status-active' : 'status-inactive'}">
-                    ${custody.status}
-                  </span>
-                </td>
-                <td>${custody.notes || "لا توجد ملاحظات"}</td>
-              </tr>
-            `).join('');
-          } else {
-            historyBody.innerHTML = `
-              <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem;">
-                  <p>لا توجد سجلات عهدة متاحة</p>
-                </td>
-              </tr>
-            `;
-          }
-        }
-        
-        console.log(`✅ تم تحميل ${custodies ? custodies.length : 0} سجل عهدة`);
-      } catch (error) {
-        console.error('خطأ في تحميل سجل العهدة:', error);
-        if (historyBody) {
-          historyBody.innerHTML = `
-            <tr>
-              <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
-                <p>حدث خطأ في تحميل سجل العهدة: ${error.message}</p>
-              </td>
-            </tr>
-          `;
-        }
-      }
-    }
-    
     // Format date
     function formatDate(dateString) {
       if (!dateString) return "غير محدد";
@@ -773,17 +1471,17 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
         return "تاريخ غير صحيح";
       }
     }
-    
+
     // Show success message
     function showSuccess(message) {
       showNotification(message, 'success');
     }
-    
+
     // Show error message
     function showError(message) {
       showNotification(message, 'error');
     }
-    
+
     // Show notification
     function showNotification(message, type = 'info') {
       const existingNotifications = document.querySelectorAll('.notification');
@@ -799,7 +1497,7 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
         setTimeout(() => notification.remove(), 4000);
       }, 4000);
     }
-    
+
     // Logout function
     window.logout = async function () {
       try {
@@ -810,7 +1508,7 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
         showError('حدث خطأ في تسجيل الخروج');
       }
     }
-    
+
     // Load initial data
     async function loadInitialData() {
       try {
@@ -822,12 +1520,8 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
         currentUser = user;
         console.log("✅ المستخدم مُصادق عليه");
         
-        // Load captains
+        // Load data
         await loadCaptains();
-        
-        // Load custody summary
-        await loadCustodySummary();
-        
         console.log("✅ تم تحميل جميع البيانات الأولية");
         showSuccess('مرحبًا بك في نظام إدارة العهدة');
         
@@ -836,7 +1530,7 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
         showError('حدث خطأ في تحميل البيانات: ' + error.message);
       }
     }
-    
+
     // Initialize application
     async function initializeApp() {
       try {
@@ -849,13 +1543,21 @@ const totalDelivered = deliveredCustodies.reduce((sum, c) => sum + Math.abs(c.am
           custodyForm.addEventListener("submit", addCustody);
         }
         
+        // Close modal when clicking outside
+        const modal = document.getElementById('captainModal');
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+        
         console.log('✅ تم تحميل تطبيق العهدة بنجاح');
       } catch (error) {
         console.error('خطأ في تهيئة التطبيق:', error);
         showError('حدث خطأ في تحميل التطبيق: ' + error.message);
       }
     }
-    
+
     // Start the application
     document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
