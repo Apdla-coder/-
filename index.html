@@ -23,35 +23,10 @@
       position: relative;
       overflow: hidden;
     }
-    /* خلفية متحركة */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" fill-opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" fill-opacity="0.05"/><circle cx="50" cy="10" r="1.5" fill="white" fill-opacity="0.08"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-      animation: grain 20s linear infinite;
-      z-index: 0;
-    }
-    @keyframes grain {
-      0%, 100% { transform: translate(0, 0); }
-      10% { transform: translate(-5%, -5%); }
-      20% { transform: translate(-10%, 5%); }
-      30% { transform: translate(5%, -10%); }
-      40% { transform: translate(-5%, 15%); }
-      50% { transform: translate(-10%, 5%); }
-      60% { transform: translate(15%, 0%); }
-      70% { transform: translate(0%, 10%); }
-      80% { transform: translate(-15%, 0%); }
-      90% { transform: translate(10%, 5%); }
-    }
     .container {
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 450px;
       padding: 2rem;
     }
     .login-card {
