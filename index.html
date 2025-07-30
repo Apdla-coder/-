@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>تسجيل الدخول - مكتب الدليفري</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -891,6 +892,16 @@ setTimeout(() => {
       closeModal(supportModal);
     }
   });
+</script>
+<script>
+  // تسجيل Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('✅ SW Registered: ', reg.scope))
+        .catch(err => console.log('❌ SW Registration Failed: ', err));
+    });
+  }
 </script>
 </body>
 </html>
