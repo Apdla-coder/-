@@ -425,8 +425,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
-        <h2>المكتب</h2>
+        <img src="./277127979_817023239693413_6733959100742848340_n.jpg" alt="شعار المكتب">
+        <h2>مكتب السريع</h2>
       </div>
       <a class="nav-link active" href="./dashboard.html">
         <i class="fas fa-tachometer-alt"></i>
@@ -828,6 +828,9 @@
         }
       }
     }
+
+
+    
     // Delete user with policy check
     async function deleteUser(userId) {
       try {
@@ -965,6 +968,7 @@
       };
       return filterNames[type] || type;
     }
+    
     // Show message
     function showMessage(text, type = 'info') {
       // Remove existing messages
@@ -989,6 +993,46 @@
         }, 3000);
       }
     }
+    
+        async function loadOfficeLogo() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("full_name, avatar_url")
+          .eq("id", user.id)
+          .single();
+        if (error) throw error;
+        // تحديث شعار المكتب
+        const logoImg = document.querySelector('.sidebar-logo img');
+        const logoTitle = document.querySelector('.sidebar-logo h2');
+        if (logoImg) {
+          if (userData.avatar_url) {
+            logoImg.src = userData.avatar_url;
+            logoImg.alt = userData.full_name || "شعار المكتب";
+          } else {
+            logoImg.src = './assets/images/logo-placeholder.png';
+            logoImg.alt = "شعار المكتب";
+          }
+        }
+        if (logoTitle && userData.full_name) {
+          logoTitle.textContent = userData.full_name;
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل شعار المكتب:', error);
+        const logoImg = document.querySelector('.sidebar-logo img');
+        if (logoImg) {
+          logoImg.src = './assets/images/logo-placeholder.png';
+          logoImg.alt = "خطأ في تحميل الشعار";
+        }
+      }
+    }
+       loadOfficeLogo();
+
+        // Start the application
+    initializeApp();
+
   </script>
 </body>
 </html>

@@ -302,8 +302,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
-        <h2>المكتب</h2>
+        <img src="" alt="شعار المكتب">
+        <h2>مكتب السريع</h2>
       </div>
       <a class="nav-link active" href="./dashboard.html">
         <i class="fas fa-tachometer-alt"></i>
@@ -391,13 +391,12 @@
       <button class="close-btn" onclick="closeModal()">إغلاق</button>
     </div>
   </div>
-  <script type="module">
+<script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-
     // Global variables
     let currentStatusFilter = "all";
     let currentSearchText = "";
@@ -405,11 +404,9 @@
     let displayedOrders = [];
     let captains = [];
     let restaurants = [];
-
     // Filter status function
     window.setFilterStatus = function (status, event) {
       currentStatusFilter = status;
-      
       // Update active button
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -417,17 +414,14 @@
           btn.classList.add('active');
         }
       });
-      
       filterAndDisplayOrders();
     }
-
     // Search handler
     window.handleSearch = function () {
       const searchInput = document.getElementById("searchInput");
       currentSearchText = searchInput ? searchInput.value.trim() : "";
       filterAndDisplayOrders();
     }
-
     // Load initial data
     async function loadInitialData() {
       try {
@@ -436,23 +430,20 @@
           window.location.href = './index.html';
           return;
         }
-
         // Load captains and restaurants first
         await Promise.all([
           loadCaptains(),
-          loadRestaurants()
+          loadRestaurants(),
+          loadOfficeLogo()
         ]);
-
         // Then load orders
         await loadOrders();
-        
         console.log("✅ تم تحميل جميع البيانات");
       } catch (error) {
         console.error('خطأ في تحميل البيانات:', error);
         showError('حدث خطأ في تحميل البيانات: ' + error.message);
       }
     }
-
     // Load captains
     async function loadCaptains() {
       try {
@@ -460,7 +451,6 @@
           .from("users")
           .select("id, full_name")
           .eq("role", "captain");
-          
         if (error) {
           console.error('خطأ في تحميل الكباتن:', error);
           captains = [];
@@ -472,7 +462,6 @@
         captains = [];
       }
     }
-
     // Load restaurants
     async function loadRestaurants() {
       try {
@@ -480,7 +469,6 @@
           .from("users")
           .select("id, full_name")
           .eq("role", "restaurant");
-          
         if (error) {
           console.error('خطأ في تحميل المطاعم:', error);
           restaurants = [];
@@ -492,12 +480,10 @@
         restaurants = [];
       }
     }
-
     // Load all orders
     async function loadOrders() {
       try {
         showLoadingState();
-        
         const { data: orders, error } = await supabase
           .from("orders")
           .select(`
@@ -514,15 +500,12 @@
             created_at
           `)
           .order("created_at", { ascending: false });
-
         if (error) {
           throw error;
         }
-
         allOrders = orders || [];
         displayedOrders = [...allOrders];
         filterAndDisplayOrders();
-        
         console.log(`✅ تم تحميل ${allOrders.length} طلب`);
       } catch (error) {
         console.error('خطأ في تحميل الطلبات:', error);
@@ -530,16 +513,13 @@
         showErrorState(error.message);
       }
     }
-
     // Filter and display orders
     function filterAndDisplayOrders() {
       let filtered = [...allOrders];
-
       // Apply status filter
       if (currentStatusFilter !== "all") {
         filtered = filtered.filter(order => order.status === currentStatusFilter);
       }
-
       // Apply search filter
       if (currentSearchText) {
         const searchLower = currentSearchText.toLowerCase();
@@ -553,12 +533,10 @@
           );
         });
       }
-
       displayedOrders = filtered;
       displayOrders(filtered);
       updateOrdersCount(filtered.length);
     }
-
     // Show loading state
     function showLoadingState() {
       const tbody = document.getElementById("orders-body");
@@ -573,7 +551,6 @@
         `;
       }
     }
-
     // Show error state
     function showErrorState(errorMessage) {
       const tbody = document.getElementById("orders-body");
@@ -592,7 +569,6 @@
         `;
       }
     }
-
     // Update orders count display
     function updateOrdersCount(count) {
       const ordersCountEl = document.getElementById("orders-count");
@@ -600,12 +576,10 @@
         ordersCountEl.textContent = `(${count})`;
       }
     }
-
     // Display orders
     function displayOrders(orders) {
       const tbody = document.getElementById("orders-body");
       if (!tbody) return;
-
       if (!orders || orders.length === 0) {
         tbody.innerHTML = `
           <tr>
@@ -616,17 +590,14 @@
         `;
         return;
       }
-
       tbody.innerHTML = "";
       orders.forEach(order => {
         const restaurant = restaurants.find(r => r.id === order.restaurant_id);
         const captain = captains.find(c => c.id === order.captain_id);
         const totalPrice = (order.order_price || 0) + (order.service_price || 0);
         const statusClass = getStatusClass(order.status);
-        
         const row = document.createElement("tr");
         row.classList.add("order-row");
-        
         row.innerHTML = `
           <td>#${order.id.toString().padStart(4, '0')}</td>
           <td>${order.custom_name || "غير محدد"}</td>
@@ -648,11 +619,9 @@
             </button>
           </td>
         `;
-        
         tbody.appendChild(row);
       });
     }
-
     // Show order details
     window.showOrderDetails = function (order) {
       try {
@@ -660,7 +629,6 @@
         const captain = captains.find(c => c.id === order.captain_id);
         const totalPrice = (order.order_price || 0) + (order.service_price || 0);
         const statusClass = getStatusClass(order.status);
-        
         const html = `
           <div style="text-align: right; line-height: 2;">
             <p><strong>رقم الطلب:</strong> #${order.id.toString().padStart(4, '0')}</p>
@@ -689,7 +657,6 @@
             <p><strong>تاريخ الطلب:</strong> ${formatDate(order.created_at)}</p>
           </div>
         `;
-        
         const modalDetailsEl = document.getElementById("modal-details");
         const modalEl = document.getElementById("modal");
         if (modalDetailsEl) modalDetailsEl.innerHTML = html;
@@ -699,7 +666,6 @@
         showError('حدث خطأ في عرض تفاصيل الطلب');
       }
     }
-
     // Get status class
     function getStatusClass(status) {
       const statusClasses = {
@@ -710,7 +676,6 @@
       };
       return statusClasses[status] || 'status-pending';
     }
-
     // Format date
     function formatDate(dateString) {
       if (!dateString) return "غير محدد";
@@ -728,13 +693,11 @@
         return "تاريخ غير صحيح";
       }
     }
-
     // Close modal
     window.closeModal = function () {
       const modalEl = document.getElementById("modal");
       if (modalEl) modalEl.style.display = "none";
     }
-
     // Close modal when clicking outside
     const modalEl = document.getElementById("modal");
     if (modalEl) {
@@ -744,12 +707,10 @@
         }
       });
     }
-
     // Show error message
     function showError(message) {
       alert(`خطأ: ${message}`);
     }
-
     // Logout function
     window.logout = async function () {
       try {
@@ -760,7 +721,6 @@
         showError('حدث خطأ في تسجيل الخروج');
       }
     }
-
     // Initialize application
     async function initializeApp() {
       try {
@@ -772,9 +732,41 @@
         showError('حدث خطأ في تحميل التطبيق: ' + error.message);
       }
     }
-
-    // Start the application
-    initializeApp();
-  </script>
-</body>
+    async function loadOfficeLogo() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("full_name, avatar_url")
+          .eq("id", user.id)
+          .single();
+        if (error) throw error;
+        // تحديث شعار المكتب
+        const logoImg = document.querySelector('.sidebar-logo img');
+        const logoTitle = document.querySelector('.sidebar-logo h2');
+        if (logoImg) {
+          if (userData.avatar_url) {
+            logoImg.src = userData.avatar_url;
+            logoImg.alt = userData.full_name || "شعار المكتب";
+          } else {
+            logoImg.src = './assets/images/logo-placeholder.png';
+            logoImg.alt = "شعار المكتب";
+          }
+        }
+        if (logoTitle && userData.full_name) {
+          logoTitle.textContent = userData.full_name;
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل شعار المكتب:', error);
+        const logoImg = document.querySelector('.sidebar-logo img');
+        if (logoImg) {
+          logoImg.src = './assets/images/logo-placeholder.png';
+          logoImg.alt = "خطأ في تحميل الشعار";
+        }
+      }
+    }
+      // Start the application
+      initializeApp();
+  </script></body>
 </html>

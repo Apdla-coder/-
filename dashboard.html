@@ -572,8 +572,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
-        <h2>المكتب</h2>
+        <img src="" alt="شعار المكتب">
+        <h2>مكتب السريع</h2>
       </div>
       <a class="nav-link active" href="./dashboard.html">
         <i class="fas fa-tachometer-alt"></i>
@@ -807,7 +807,8 @@
         }
         await Promise.all([
           loadCaptains(),
-          loadRestaurants()
+          loadRestaurants(),
+          loadOfficeLogo()
         ]);
         console.log(`📋 تم تحميل ${captains.length} كابتن و ${restaurants.length} مطعم`);
         await Promise.all([
@@ -818,6 +819,41 @@
       } catch (error) {
         console.error('خطأ في تحميل البيانات:', error);
         showError('حدث خطأ في تحميل البيانات: ' + error.message);
+      }
+    }
+    
+    async function loadOfficeLogo() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("full_name, avatar_url")
+          .eq("id", user.id)
+          .single();
+        if (error) throw error;
+        // تحديث شعار المكتب
+        const logoImg = document.querySelector('.sidebar-logo img');
+        const logoTitle = document.querySelector('.sidebar-logo h2');
+        if (logoImg) {
+          if (userData.avatar_url) {
+            logoImg.src = userData.avatar_url;
+            logoImg.alt = userData.full_name || "شعار المكتب";
+          } else {
+            logoImg.src = './assets/images/logo-placeholder.png';
+            logoImg.alt = "شعار المكتب";
+          }
+        }
+        if (logoTitle && userData.full_name) {
+          logoTitle.textContent = userData.full_name;
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل شعار المكتب:', error);
+        const logoImg = document.querySelector('.sidebar-logo img');
+        if (logoImg) {
+          logoImg.src = './assets/images/logo-placeholder.png';
+          logoImg.alt = "خطأ في تحميل الشعار";
+        }
       }
     }
     async function loadCaptains() {
@@ -1099,6 +1135,47 @@
         }
       }
     }
+    async function loadProfile() {
+  try {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return;
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("full_name, created_at, avatar_url") // أضف avatar_url هنا
+      .eq("id", user.id)
+      .single();
+    if (userError) throw userError;
+    const { count: orderCount, error: countError } = await supabase
+      .from("orders")
+      .select("id", { count: 'exact', head: true })
+      .eq("restaurant_id", user.id);
+    if (countError) throw countError;
+    // تحديث بيانات الملف الشخصي
+    document.getElementById('profile-name').value = userData.full_name || 'غير محدد';
+    document.getElementById('profile-email').value = user.email || 'غير محدد';
+    document.getElementById('profile-joined').value = formatDate(userData.created_at);
+    document.getElementById('profile-total-orders').value = orderCount || 0;
+    // تحديث اسم المطعم في الشريط الجانبي
+    document.getElementById('restaurant-name').textContent = userData.full_name || 'مطعم غير محدد';
+    // تحديث صورة المطعم
+    const restaurantPic = document.getElementById('restaurant-pic');
+    if (restaurantPic && userData.avatar_url) {
+      restaurantPic.src = userData.avatar_url;
+      restaurantPic.alt = userData.full_name || 'صورة المطعم';
+    } else {
+      // صورة افتراضية إذا لم تكن هناك صورة
+      restaurantPic.src = './assets/images/placeholder-restaurant.png';
+      restaurantPic.alt = 'صورة غير متوفرة';
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    const restaurantPic = document.getElementById('restaurant-pic');
+    if (restaurantPic) {
+      restaurantPic.src = './assets/images/placeholder-restaurant.png';
+      restaurantPic.alt = 'خطأ في تحميل الصورة';
+    }
+  }
+}  
     function displayOrders(orders) {
       const tbody = document.getElementById("orders-body");
       if (!tbody) return;
@@ -1118,7 +1195,7 @@
           const restaurant = restaurants.find(r => r.id === order.restaurant_id);
           const row = document.createElement("tr");
           row.classList.add("order-row");
-          row.dataset.orderId = order.id;
+          row.dataset_orderId = order.id;
           if (order.status === "قيد التوزيع") {
             row.innerHTML = `
               <td>
@@ -1782,5 +1859,5 @@
       fetchOrdersByStatus(currentStatusFilter);
       loadStatistics();
     });
-  </script>  </body>
+  </script>    </body>
 </html>

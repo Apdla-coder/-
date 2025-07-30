@@ -12,8 +12,8 @@
       margin-bottom: 2rem;
     }
     .sidebar-logo img {
-      width: 60px;
-      height: 60px;
+      width: 150px;  
+      height: 150px;
       border-radius: 50%;
       object-fit: cover;
       margin-bottom: 1rem;

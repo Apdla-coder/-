@@ -55,10 +55,11 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+      flex-direction: column;
     }
     .logo {
-      width: 40px;
-      height: 40px;
+      width: 150px;
+      height: 150px;
       background: linear-gradient(135deg, var(--primary), var(--warning));
       border-radius: 50%;
       display: flex;
@@ -70,15 +71,18 @@
     }
     .sidebar-header-content {
       flex: 1;
+      text-align: center;
     }
     .sidebar-header h3 {
       color: var(--gray-900);
       margin-bottom: 0.25rem;
-      font-size: 1.1rem;
+      font-size: 2.0rem;
+          color: var(--primary);
+
     }
     .sidebar-header p {
       color: var(--gray-600);
-      font-size: 0.85rem;
+      font-size: 1.0rem;
     }
     .sidebar-menu {
       padding: 1rem 0;
@@ -719,8 +723,7 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="sidebar-header">
-      <div class="logo">م</div>
-      <div class="sidebar-header-content">
+<img id="restaurant-pic" class="logo src="./assets/images/placeholder-restaurant.png" alt="صورة المطعم" />      <div class="sidebar-header-content">
         <h3 id="restaurant-name">مطعم الشيف الخاص</h3>
         <p>لوحة التحكم</p>
       </div>
@@ -1264,32 +1267,54 @@
       }
     }
     // Load profile
-    async function loadProfile() {
-      try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) return;
-        const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("full_name, created_at")
-          .eq("id", user.id)
-          .single();
-        if (userError) throw userError;
-        const { count: orderCount, error: countError } = await supabase
-          .from("orders")
-          .select("id", { count: 'exact', head: true })
-          .eq("restaurant_id", user.id);
-        if (countError) throw countError;
-        document.getElementById('profile-name').value = userData.full_name || 'غير محدد';
-        document.getElementById('profile-email').value = user.email || 'غير محدد';
-        document.getElementById('profile-joined').value = formatDate(userData.created_at);
-        document.getElementById('profile-total-orders').value = orderCount || 0;
-        // Update restaurant name in sidebar
-        document.getElementById('restaurant-name').textContent = userData.full_name || 'مطعم غير محدد';
-      } catch (error) {
-        console.error('Error loading profile:', error);
-      }
+async function loadProfile() {
+  try {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return;
+
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("full_name, created_at, avatar_url") // أضف avatar_url هنا
+      .eq("id", user.id)
+      .single();
+    if (userError) throw userError;
+
+    const { count: orderCount, error: countError } = await supabase
+      .from("orders")
+      .select("id", { count: 'exact', head: true })
+      .eq("restaurant_id", user.id);
+    if (countError) throw countError;
+
+    // تحديث بيانات الملف الشخصي
+    document.getElementById('profile-name').value = userData.full_name || 'غير محدد';
+    document.getElementById('profile-email').value = user.email || 'غير محدد';
+    document.getElementById('profile-joined').value = formatDate(userData.created_at);
+    document.getElementById('profile-total-orders').value = orderCount || 0;
+
+    // تحديث اسم المطعم في الشريط الجانبي
+    document.getElementById('restaurant-name').textContent = userData.full_name || 'مطعم غير محدد';
+
+    // تحديث صورة المطعم
+    const restaurantPic = document.getElementById('restaurant-pic');
+    if (restaurantPic && userData.avatar_url) {
+      restaurantPic.src = userData.avatar_url;
+      restaurantPic.alt = userData.full_name || 'صورة المطعم';
+    } else {
+      // صورة افتراضية إذا لم تكن هناك صورة
+      restaurantPic.src = './assets/images/placeholder-restaurant.png';
+      restaurantPic.alt = 'صورة غير متوفرة';
     }
-    // Load order history
+
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    const restaurantPic = document.getElementById('restaurant-pic');
+    if (restaurantPic) {
+      restaurantPic.src = './assets/images/placeholder-restaurant.png';
+      restaurantPic.alt = 'خطأ في تحميل الصورة';
+    }
+  }
+}  
+  // Load order history
     async function loadOrderHistory() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
