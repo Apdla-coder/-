@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>إدارة المطاعم - مكتب السريع</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="bar.css">
   <style>
     :root {
       --primary: #f97316;
@@ -33,82 +34,6 @@
       display: flex;
       min-height: 100vh;
     }
-    .sidebar {
-      width: 260px;
-      background: #1f2937;
-      color: #d1d5db;
-      padding: 1rem 0;
-      position: fixed;
-      height: 100%;
-      overflow-y: auto;
-    }
-    .sidebar-logo {
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      border-bottom: 1px solid #374151;
-    }
-    .sidebar-logo img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .sidebar-logo h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      color: #d1d5db;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      border-right: 3px solid transparent;
-    }
-    .nav-link:hover {
-      background: rgba(255,255,255,0.05);
-    }
-    .nav-link.active {
-      background: rgba(249, 115, 22, 0.1);
-      color: var(--primary);
-      border-right: 3px solid var(--primary);
-    }
-    .nav-link i {
-      margin-left: 0.75rem;
-      font-size: 1.1rem;
-      width: 24px;
-      text-align: center;
-    }
-    .logout-btn {
-      margin-top: auto;
-      padding: 1rem 1.5rem;
-      background: rgba(255,255,255,0.05);
-      color: #f87171;
-      border: none;
-      border-radius: 0;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-      text-align: right;
-      display: flex;
-      align-items: center;
-    }
-    .logout-btn:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    .logout-btn i {
-      margin-left: 0.75rem;
-    }
-    .main-content {
-      flex: 1;
-      margin-right: 260px;
-      padding: 2rem;
-    }
     .header {
       display: flex;
       justify-content: space-between;
@@ -123,6 +48,34 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+    }
+    .filters-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .filter-group label {
+      font-size: 0.9rem;
+      color: var(--dark);
+      font-weight: 600;
+    }
+    .filter-inputs {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .date-input {
+      padding: 0.7rem;
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
     }
     .search-bar {
       display: flex;
@@ -166,67 +119,6 @@
     .label {
       font-size: 0.95rem;
       color: var(--gray);
-    }
-    .add-restaurant-form, .edit-restaurant-form {
-      background: white;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      display: none;
-    }
-    .form-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .form-group {
-      flex: 1;
-      min-width: 200px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--dark);
-    }
-    .input-field, .input-field-full {
-      width: 100%;
-      padding: 0.7rem;
-      border: 2px solid var(--border);
-      border-radius: 0.5rem;
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
-    }
-    .input-field:focus, .input-field-full:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-    }
-    .btn-cancel {
-      background: #d1d5db;
-      color: var(--dark);
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-cancel:hover {
-      background: #9ca3af;
     }
     .table-wrapper {
       background: white;
@@ -346,63 +238,42 @@
       border-right: 4px solid #059669;
       font-weight: 500;
     }
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      border-radius: 1rem;
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    }
-    .modal-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .modal-header h2 {
-      font-size: 1.5rem;
-      color: var(--dark);
-    }
-    .close-modal {
-      background: none;
+    .apply-filters-btn {
+      background: var(--primary);
+      color: white;
+      padding: 0.7rem 1.5rem;
       border: none;
-      font-size: 1.8rem;
+      border-radius: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      color: var(--gray);
+      margin-right: 1rem;
     }
-    .close-modal:hover {
+    .apply-filters-btn:hover {
+      background: var(--primary-dark);
+    }
+    .clear-filters-btn {
+      background: #d1d5db;
       color: var(--dark);
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
     }
-    .modal-body {
-      padding: 1.5rem;
+    .clear-filters-btn:hover {
+      background: #9ca3af;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Sidebar -->
+        <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <img src="./277127979_817023239693413_6733959100742848340_n.jpg" alt="شعار المكتب">
-        <h2>مكتب السريع</h2>
+        <img src="./logo.png" alt="شعار المكتب">
+        <h2>المكتب</h2>
       </div>
-      <a class="nav-link" href="./dashboard.html">
+      <a class="nav-link active" href="./dashboard.html">
         <i class="fas fa-tachometer-alt"></i>
         <span>لوحة التحكم</span>
       </a>
@@ -410,13 +281,17 @@
         <i class="fas fa-plus-circle"></i>
         <span>اضافة طلب يدويا</span>
       </a>
-      <a class="nav-link active" href="./restaurant-management.html">
-        <i class="fas fa-utensils"></i>
+      <a class="nav-link" href="./customers.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./restaurant-management.html">
+        <i class="fas fa-users"></i>
         <span>إدارة المطاعم</span>
       </a>
       <a class="nav-link" href="./covenant.html">
         <i class="fas fa-users"></i>
-        <span>نظام العهدة</span>
+        <span>نظام العهدة </span>
       </a>
       <a class="nav-link" href="./captain-preformans.html">
         <i class="fas fa-chart-line"></i>
@@ -436,56 +311,53 @@
     <div class="main-content">
       <div class="header">
         <h1><i class="fas fa-utensils"></i> إدارة المطاعم</h1>
-        <button class="btn-primary" onclick="toggleAddForm()">
-          <i class="fas fa-plus"></i> إضافة مطعم جديد
-        </button>
       </div>
-
-      <!-- رسالة النجاح -->
-      <div id="success-message" class="success-message" style="display: none;"></div>
-
       <!-- إحصائيات -->
       <div class="stats-bar">
         <div class="stat-card">
           <div class="number" id="total-restaurants">0</div>
           <div class="label">إجمالي المطاعم</div>
         </div>
-      </div>
-
-      <!-- نموذج إضافة مطعم -->
-      <div class="add-restaurant-form" id="add-form">
-        <h3>إضافة مطعم جديد</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="rest-name">اسم المطعم</label>
-            <input type="text" class="input-field" id="rest-name" placeholder="مثلاً: مطعم الوجبة السريعة" required>
-          </div>
-          <div class="form-group">
-            <label for="rest-phone">رقم الهاتف</label>
-            <input type="text" class="input-field" id="rest-phone" placeholder="مثل: 01001234567" required>
-          </div>
+        <div class="stat-card">
+          <div class="number" id="total-orders">0</div>
+          <div class="label">إجمالي الطلبات</div>
         </div>
-        <div class="form-group">
-          <label for="rest-address">عنوان المطعم</label>
-          <input type="text" class="input-field-full" id="rest-address" placeholder="أدخل العنوان بالتفصيل" required>
-        </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-          <button class="btn-primary" onclick="addRestaurant()">إضافة المطعم</button>
-          <button class="btn-cancel" onclick="toggleAddForm()">إلغاء</button>
+        <div class="stat-card">
+          <div class="number" id="total-revenue">0 ج.م</div>
+          <div class="label">إجمالي الإيرادات</div>
         </div>
       </div>
-
-      <!-- أدوات الجدول -->
-      <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+      <!-- فلاتر البحث -->
+      <div class="filters-container">
+        <div class="filter-inputs">
+          <div class="filter-group">
+            <label for="from-date">من تاريخ</label>
+            <input type="date" id="from-date" class="date-input">
+          </div>
+          <div class="filter-group">
+            <label for="to-date">إلى تاريخ</label>
+            <input type="date" id="to-date" class="date-input">
+          </div>
+          <div class="filter-group">
+            <button class="apply-filters-btn" onclick="applyFilters()">
+              <i class="fas fa-filter"></i> تطبيق الفلاتر
+            </button>
+            <button class="clear-filters-btn" onclick="clearFilters()">
+              <i class="fas fa-times"></i> مسح الفلاتر
+            </button>
+          </div>
+        </div>
         <div class="search-bar">
           <i class="fas fa-search"></i>
           <input type="text" id="search-input" placeholder="بحث فوري..." oninput="handleSearch()">
         </div>
+      </div>
+      <!-- أدوات الجدول -->
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
         <button class="export-btn" onclick="exportToExcel()">
           <i class="fas fa-file-excel"></i> تصدير إلى Excel
         </button>
       </div>
-
       <!-- جدول المطاعم -->
       <div class="table-wrapper">
         <table>
@@ -496,86 +368,31 @@
               <th>العنوان</th>
               <th>عدد الطلبات</th>
               <th>إجمالي التوصيل</th>
-              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody id="restaurants-table">
-            <tr><td colspan="6" class="loading"><div class="loading-spinner"></div> جارٍ التحميل...</td></tr>
+            <tr><td colspan="5" class="loading"><div class="loading-spinner"></div> جارٍ التحميل...</td></tr>
           </tbody>
         </table>
       </div>
-
       <div class="pagination" id="pagination"></div>
     </div>
   </div>
-
-  <!-- نافذة تعديل المطعم (Modal) -->
-  <div class="modal" id="edit-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>تعديل المطعم</h2>
-        <button class="close-modal" onclick="closeEditModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="edit-name">اسم المطعم</label>
-            <input type="text" class="input-field" id="edit-name" required>
-          </div>
-          <div class="form-group">
-            <label for="edit-phone">رقم الهاتف</label>
-            <input type="text" class="input-field" id="edit-phone" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="edit-address">العنوان</label>
-          <input type="text" class="input-field-full" id="edit-address" required>
-        </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-          <button class="btn-primary" onclick="saveEdit()">حفظ التعديلات</button>
-          <button class="btn-cancel" onclick="closeEditModal()">إلغاء</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient(
-      'https://vrngqopmdvdmdayswlos.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
-    );
+
+    // Initialize Supabase with the provided URL and key
+    const supabaseUrl = 'https://vrngqopmdvdmdayswlos.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     let allRestaurants = [];
     let allOrders = [];
     let filteredRestaurants = [];
     let currentPage = 1;
     const itemsPerPage = 10;
-    let currentEditId = null;
 
-    // التحقق من أن المستخدم هو admin
-    async function checkAdmin() {
-const { data: { user }, error } = await supabase.auth.getUser();      if (error || !user) {
-        window.location.href = './index.html';
-        return false;
-      }
-
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (userError || !userData || userData.role !== 'admin') {
-        alert('غير مصرح لك بالوصول. هذه الصفحة للمديرين فقط.');
-        window.location.href = './dashboard.html';
-        return false;
-      }
-
-      return true;
-    }
-
-    // تحميل البيانات
+    // تحميل البيانات من قاعدة البيانات
     async function loadData() {
       try {
         // تحميل المطاعم
@@ -585,9 +402,9 @@ const { data: { user }, error } = await supabase.auth.getUser();      if (error 
         if (restError) throw restError;
 
         // تحميل الطلبات
-        const {  orders, error: orderError } = await supabase
+        const { data: orders, error: orderError } = await supabase
           .from('orders')
-          .select('restaurant_id, service_price');
+          .select('restaurant_id, service_price, created_at');
         if (orderError) throw orderError;
 
         allRestaurants = restaurants || [];
@@ -612,142 +429,104 @@ const { data: { user }, error } = await supabase.auth.getUser();      if (error 
 
         allRestaurants = restaurantsWithStats;
         filteredRestaurants = [...allRestaurants];
-
+        
         updateStats();
         renderTable();
+        
+        // تعيين تاريخ اليوم كقيمة افتراضية
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('to-date').value = today;
+        
       } catch (error) {
         console.error('خطأ في تحميل البيانات:', error);
         document.getElementById('restaurants-table').innerHTML = `
-          <tr><td colspan="6" class="error-message">❌ ${error.message}</td></tr>
+          <tr><td colspan="5" class="error-message">❌ ${error.message}</td></tr>
         `;
       }
     }
 
     function updateStats() {
+      const totalOrders = filteredRestaurants.reduce((sum, r) => sum + r.order_count, 0);
+      const totalRevenue = filteredRestaurants.reduce((sum, r) => sum + r.delivery_total, 0);
+      
       document.getElementById('total-restaurants').textContent = filteredRestaurants.length;
+      document.getElementById('total-orders').textContent = totalOrders;
+      document.getElementById('total-revenue').textContent = `${totalRevenue} ج.م`;
     }
 
-window.toggleAddForm = function () {
-  const form = document.getElementById('add-form');
-  if (!form) return;
-  form.style.display = form.style.display === 'block' ? 'none' : 'block';
-  document.getElementById('success-message').style.display = 'none';
-};
-    window.addRestaurant = async function () {
-      const name = document.getElementById('rest-name').value.trim();
-      const phone = document.getElementById('rest-phone').value.trim();
-      const address = document.getElementById('rest-address').value.trim();
-
-      if (!name || !phone || !address) {
-        alert('يرجى تعبئة جميع الحقول');
-        return;
+    // تطبيق الفلاتر
+    function applyFilters() {
+      const fromDate = document.getElementById('from-date').value;
+      const toDate = document.getElementById('to-date').value;
+      
+      // تصفية الطلبات حسب التاريخ
+      let filteredOrders = [...allOrders];
+      
+      if (fromDate) {
+        filteredOrders = filteredOrders.filter(order => {
+          const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+          return orderDate >= fromDate;
+        });
       }
-
-      const { error } = await supabase
-        .from('restaurants')
-        .insert([{
-          restaurant_name: name,
-          phone: phone,
-          address: address
-        }]);
-
-      if (error) {
-        alert('خطأ في الإضافة: ' + error.message);
-        return;
+      
+      if (toDate) {
+        filteredOrders = filteredOrders.filter(order => {
+          const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+          return orderDate <= toDate;
+        });
       }
-
-      showSuccess('تم إضافة المطعم بنجاح');
-      document.getElementById('rest-name').value = '';
-      document.getElementById('rest-phone').value = '';
-      document.getElementById('rest-address').value = '';
-      toggleAddForm();
-      await loadData();
-    };
-
-    window.deleteRestaurant = async function (id, name) {
-      if (!confirm(`هل أنت متأكد من حذف المطعم: ${name}؟`)) return;
-
-      const { error } = await supabase
-        .from('restaurants')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        alert('خطأ في الحذف: ' + error.message);
-        return;
-      }
-
-      showSuccess(`تم حذف المطعم ${name} بنجاح`);
-      allRestaurants = allRestaurants.filter(r => r.id !== id);
-      filteredRestaurants = filteredRestaurants.filter(r => r.id !== id);
+      
+      // حساب الإحصائيات للطلبات المفلترة
+      const stats = {};
+      filteredOrders.forEach(order => {
+        if (!stats[order.restaurant_id]) {
+          stats[order.restaurant_id] = { count: 0, total: 0 };
+        }
+        stats[order.restaurant_id].count += 1;
+        stats[order.restaurant_id].total += order.service_price || 0;
+      });
+      
+      // تحديث بيانات المطاعم بالإحصائيات الجديدة
+      filteredRestaurants = allRestaurants.map(r => ({
+        ...r,
+        order_count: stats[r.id]?.count || 0,
+        delivery_total: stats[r.id]?.total || 0
+      }));
+      
+      currentPage = 1;
       updateStats();
       renderTable();
-    };
+    }
 
-    // فتح نافذة التعديل
-    window.editRestaurant = function (id) {
-      const restaurant = allRestaurants.find(r => r.id === id);
-      if (!restaurant) return;
-
-      document.getElementById('edit-name').value = restaurant.restaurant_name;
-      document.getElementById('edit-phone').value = restaurant.phone;
-      document.getElementById('edit-address').value = restaurant.address;
-      currentEditId = id;
-      document.getElementById('edit-modal').style.display = 'flex';
-    };
-
-    // حفظ التعديلات
-    window.saveEdit = async function () {
-      const name = document.getElementById('edit-name').value.trim();
-      const phone = document.getElementById('edit-phone').value.trim();
-      const address = document.getElementById('edit-address').value.trim();
-
-      if (!name || !phone || !address) {
-        alert('يرجى تعبئة جميع الحقول');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('restaurants')
-        .update({
-          restaurant_name: name,
-          phone: phone,
-          address: address
-        })
-        .eq('id', currentEditId);
-
-      if (error) {
-        alert('خطأ في التعديل: ' + error.message);
-        return;
-      }
-
-      showSuccess('تم تحديث بيانات المطعم');
-      closeEditModal();
-      await loadData();
-    };
-
-    // إغلاق نافذة التعديل
-    window.closeEditModal = function () {
-      document.getElementById('edit-modal').style.display = 'none';
-      currentEditId = null;
-    };
+    // مسح الفلاتر
+    function clearFilters() {
+      document.getElementById('from-date').value = '';
+      document.getElementById('to-date').value = '';
+      
+      filteredRestaurants = [...allRestaurants];
+      currentPage = 1;
+      updateStats();
+      renderTable();
+    }
 
     // بحث فوري
-    window.handleSearch = function () {
+    function handleSearch() {
       const input = document.getElementById('search-input');
       const query = input.value.toLowerCase();
+      
       filteredRestaurants = allRestaurants.filter(r =>
         r.restaurant_name.toLowerCase().includes(query) ||
         r.phone.includes(query) ||
         r.address.toLowerCase().includes(query)
       );
+      
       currentPage = 1;
       updateStats();
       renderTable();
-    };
+    }
 
     // تصدير إلى Excel
-    window.exportToExcel = function () {
+    function exportToExcel() {
       const data = filteredRestaurants.map(r => ({
         'اسم المطعم': r.restaurant_name,
         'الهاتف': r.phone,
@@ -755,13 +534,13 @@ window.toggleAddForm = function () {
         'عدد الطلبات': r.order_count,
         'إجمالي التوصيل (ج.م)': r.delivery_total
       }));
-
+      
       const headers = Object.keys(data[0]);
       const csv = [
         headers.join(','),
         ...data.map(row => headers.map(fieldName => `"${row[fieldName]}"`).join(','))
       ].join('\n');
-
+      
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
@@ -771,13 +550,6 @@ window.toggleAddForm = function () {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    };
-
-    function showSuccess(msg) {
-      const el = document.getElementById('success-message');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(() => { el.style.display = 'none'; }, 3000);
     }
 
     function renderTable() {
@@ -786,15 +558,15 @@ window.toggleAddForm = function () {
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
       const paginatedData = filteredRestaurants.slice(start, end);
-
+      
       if (paginatedData.length === 0) {
         tableBody.innerHTML = `
-          <tr><td colspan="6" style="text-align:center; padding:2rem;">لا توجد مطاعم</td></tr>
+          <tr><td colspan="5" style="text-align:center; padding:2rem;">لا توجد مطاعم</td></tr>
         `;
         renderPagination(0);
         return;
       }
-
+      
       tableBody.innerHTML = '';
       paginatedData.forEach(r => {
         const row = document.createElement('tr');
@@ -807,27 +579,18 @@ window.toggleAddForm = function () {
           <td>${r.address}</td>
           <td><strong>${r.order_count}</strong> طلب</td>
           <td><strong style="color:#f97316;">${r.delivery_total} ج.م</strong></td>
-          <td>
-            <button class="action-btn edit-btn" onclick="editRestaurant('${r.id}')">
-              <i class="fas fa-edit"></i> تعديل
-            </button>
-            <button class="action-btn delete-btn" onclick="deleteRestaurant('${r.id}', '${r.restaurant_name}')">
-              <i class="fas fa-trash"></i> حذف
-            </button>
-          </td>
         `;
         tableBody.appendChild(row);
       });
-
+      
       renderPagination(totalPages);
     }
 
     function renderPagination(totalPages) {
       const paginationEl = document.getElementById('pagination');
       paginationEl.innerHTML = '';
-
       if (totalPages <= 1) return;
-
+      
       for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
@@ -840,19 +603,10 @@ window.toggleAddForm = function () {
       }
     }
 
-    window.logout = async () => {
-      await supabase.auth.signOut();
-      window.location.href = './index.html';
-    };
-
     // بدء التشغيل
-    async function init() {
-      const isAuthorized = await checkAdmin();
-      if (!isAuthorized) return;
-      await loadData();
-    }
-
-    init();
+    window.onload = function() {
+      loadData();
+    };
   </script>
 </body>
 </html>

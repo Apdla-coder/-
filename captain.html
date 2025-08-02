@@ -762,16 +762,29 @@
   </div>
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
   // Initialize Supabase with the provided URL and key
   const supabaseUrl = 'https://vrngqopmdvdmdayswlos.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs';
   const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Audio notifications - using base64 encoded sounds to avoid CORS issues
+  const successSound = new Audio("");
+  const errorSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
+  const notificationSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
+
+  // DOM Elements
+  const views = document.querySelectorAll('.view');
+  const navTabs = document.querySelectorAll('.nav-tab');
+  const headerTitle = document.getElementById('header-title');
+
   // Global variables
   let currentUser = null;
   let captainProfile = null;
   let allOrders = [];
   let allWithdrawals = [];
   let custodyRecords = [];
+
   // Default app titles (used when app_settings table is not available)
   const defaultAppTitles = {
     dashboard: 'نظام الكابتن',
@@ -779,17 +792,9 @@
     history: 'سجل التوصيل',
     profile: 'ملفي'
   };
-  // DOM Elements
-  const views = document.querySelectorAll('.view');
-  const navTabs = document.querySelectorAll('.nav-tab');
-  const headerTitle = document.getElementById('header-title');
+
   // Initialize the app
   document.addEventListener('DOMContentLoaded', async () => {
-    // Check authentication
-    if (!await checkAuth()) {
-      showNotification('فشل التحقق من الهوية، يرجى تسجيل الدخول', 'error');
-      // For development purposes, we'll continue without redirecting
-    }
     // Set up navigation
     navTabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -797,6 +802,7 @@
         switchView(view);
       });
     });
+
     // Set up button event listeners
     document.getElementById('view-orders-btn').addEventListener('click', () => switchView('orders'));
     document.getElementById('refresh-orders-btn').addEventListener('click', async () => {
@@ -808,14 +814,17 @@
     document.getElementById('filter-history-btn').addEventListener('click', filterHistory);
     document.getElementById('order-status-filter').addEventListener('change', () => displayOrders(allOrders));
     document.getElementById('custody-delivery-form').addEventListener('submit', handleCustodyDelivery);
+
     // Load initial data
     await loadAppData();
+    await checkAuth();
     await loadCaptainProfile();
     await loadOrders();
     await loadWithdrawals();
     await loadCustodyData();
     updateWelcomeMessage();
   });
+
   // Load app data - with fallback to default titles
   async function loadAppData() {
     try {
@@ -825,7 +834,7 @@
         .select('key, value')
         .eq('key', 'captain_interface_titles');
       
-      if (error) {
+      if (error && error.code !== '42P01') { // 42P01 is "relation does not exist"
         console.warn("App settings table not found or inaccessible:", error.message);
         // Continue with default titles
       } else if (data && data.length > 0) {
@@ -840,19 +849,17 @@
       
       // Fallback to default titles if DB access fails
       updateNavigationTitles(defaultAppTitles);
-      
     } catch (error) {
-      console.error("Error loading app data:", error);
+      console.error("Error loading app settings:", error);
       // Continue with default titles
       updateNavigationTitles(defaultAppTitles);
     }
   }
-  
+
   // Update navigation titles
   function updateNavigationTitles(titles) {
     // Update the titles object
     Object.assign(defaultAppTitles, titles);
-    
     // Update navigation tabs
     navTabs.forEach(tab => {
       const view = tab.getAttribute('data-view');
@@ -861,47 +868,46 @@
         span.textContent = defaultAppTitles[view];
       }
     });
-    
     // Update header title if on current view
     const activeView = document.querySelector('.nav-tab.active')?.getAttribute('data-view');
     if (activeView && defaultAppTitles[activeView]) {
       headerTitle.textContent = defaultAppTitles[activeView];
     }
   }
+
   // Authentication check
   async function checkAuth() {
     try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error || !data || !data.session) {
-        console.warn("No active session found:", error);
-        // For development, we'll use a mock user
-        currentUser = {
-          id: 'd3ef8500-5e91-4463-99ee-5c8c0d6d9bdb', // Mock captain ID
-          email: 'captain@example.com'
-        };
-        return true;
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.warn("User not authenticated:", error?.message);
+        // In a real app, you might redirect to login
+        showNotification("يجب تسجيل الدخول أولاً", "error");
+        return false;
       }
-      currentUser = data.session.user;
+      currentUser = session.user;
       return true;
     } catch (error) {
-      console.error("Auth check failed:", error);
-      // Use mock user for development
-      currentUser = {
-        id: 'd3ef8500-5e91-4463-99ee-5c8c0d6d9bdb',
-        email: 'captain@example.com'
-      };
-      return true;
+      console.error("Authentication error:", error);
+      showNotification("حدث خطأ في التحقق من الهوية", "error");
+      return false;
     }
   }
+
   // Load captain profile
   async function loadCaptainProfile() {
+    if (!currentUser) {
+      console.warn("No current user for profile loading");
+      return;
+    }
+
     try {
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('full_name, email, phone, avatar_url, total_withdrawn')
         .eq('id', currentUser.id)
         .single();
-        
+
       if (userError) {
         console.warn("Error loading captain profile:", userError.message);
         // Use default values
@@ -921,12 +927,12 @@
           total_withdrawn: userData.total_withdrawn || 0
         };
       }
-      
+
       // Update UI elements
       document.getElementById('captain-name').textContent = captainProfile.full_name;
       document.getElementById('captain-email').textContent = captainProfile.email;
       document.getElementById('captain-phone').textContent = captainProfile.phone;
-      
+
       // Update avatar
       const avatarImg = document.getElementById('captain-avatar');
       if (captainProfile.avatar_url) {
@@ -934,9 +940,7 @@
       } else {
         avatarImg.src = 'https://placehold.co/150?text=' + encodeURIComponent(captainProfile.full_name.charAt(0));
       }
-      
       updateWelcomeMessage();
-      
     } catch (error) {
       console.error("Error in loadCaptainProfile:", error);
       captainProfile = {
@@ -952,6 +956,7 @@
       updateWelcomeMessage();
     }
   }
+
   // Update welcome message
   function updateWelcomeMessage() {
     const welcomeElement = document.getElementById('captain-welcome');
@@ -961,14 +966,20 @@
       welcomeElement.textContent = 'مرحباً أيها الكابتن!';
     }
   }
+
   // Load withdrawals for today only
   async function loadWithdrawals() {
+    if (!currentUser) {
+      console.warn("No current user for withdrawals loading");
+      return;
+    }
+
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       const { data, error } = await supabase
         .from('captain_withdrawals')
         .select('id, amount, notes, created_at, withdrawal_date')
@@ -976,7 +987,7 @@
         .gte('withdrawal_date', today.toISOString().split('T')[0])
         .lt('withdrawal_date', tomorrow.toISOString().split('T')[0])
         .order('created_at', { ascending: false });
-        
+
       if (error) {
         console.warn("Error loading withdrawals:", error.message);
         allWithdrawals = [];
@@ -988,6 +999,7 @@
       allWithdrawals = [];
     }
   }
+
   // Handle custody delivery (partial custody payment)
   async function handleCustodyDelivery(e) {
     e.preventDefault();
@@ -996,6 +1008,13 @@
     
     if (!amount || amount <= 0) {
       showNotification('يرجى إدخال مبلغ صحيح أكبر من صفر', 'error');
+      playErrorSound();
+      return;
+    }
+    
+    if (!currentUser) {
+      showNotification('يجب تسجيل الدخول أولاً', 'error');
+      playErrorSound();
       return;
     }
     
@@ -1004,24 +1023,32 @@
         .from('custodies')
         .insert({
           captain_id: currentUser.id,
-          amount: amount,
+    amount: -Math.abs(amount), // ضروري يكون بالسالب
           custody_date: new Date().toISOString().split('T')[0],
           notes: notes ? `تسليم نقدي: ${notes}` : 'تسليم نقدي للإدارة',
           status: 'مفعلة'
         });
-        
+
       if (error) throw error;
       
       showNotification(`تم تسجيل تسليم ${amount.toFixed(2)} ج.م من العهدة بنجاح`);
+      playSuccessSound();
       document.getElementById('custody-delivery-form').reset();
       await loadCustodyData();
     } catch (error) {
       console.error("Error delivering custody:", error);
       showNotification('حدث خطأ أثناء تسجيل التسليم: ' + (error.message || 'خطأ غير معروف'), 'error');
+      playErrorSound();
     }
   }
+
   // Load orders for today only
   async function loadOrders() {
+    if (!currentUser) {
+      console.warn("No current user for orders loading");
+      return;
+    }
+
     try {
       const container = document.getElementById('orders-container');
       container.innerHTML = '<p class="loading">جارٍ تحميل الطلبات...</p>';
@@ -1030,36 +1057,23 @@
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       // First, get the orders
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
-        .select(`
-          id,
-          custom_name,
-          custom_phone,
-          custom_address,
-          order_price,
-          service_price,
-          status,
-          created_at,
-          commission_percent,
-          notes,
-          restaurant_id
-        `)
+        .select('id, restaurant_id, custom_name, custom_phone, custom_address, order_price, service_price, commission_percent, notes, status, created_at')
         .eq('captain_id', currentUser.id)
-        .in('status', ['في انتظار التسليم', 'جاري التوصيل', 'تم التوصيل'])
         .gte('created_at', today.toISOString())
         .lt('created_at', tomorrow.toISOString())
         .order('created_at', { ascending: false });
-        
+
       if (ordersError) {
         console.warn("Error loading orders:", ordersError.message);
-        container.innerHTML = `<p class="error">❌ خطأ في تحميل الطلبات: ${ordersError.message}</p>`;
+        container.innerHTML = `<p class="error">❌ ${ordersError.message}</p>`;
         allOrders = [];
         return;
       }
-      
+
       if (!ordersData || ordersData.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -1072,7 +1086,7 @@
         updateDashboardStats();
         return;
       }
-      
+
       // Get restaurant names separately to avoid JOIN issues
       const restaurantIds = [...new Set(ordersData.map(order => order.restaurant_id).filter(id => id !== null))];
       let restaurantNames = {};
@@ -1083,18 +1097,21 @@
             .from('restaurants')
             .select('id, restaurant_name')
             .in('id', restaurantIds);
-            
-          if (!restaurantsError && restaurantsData) {
-            restaurantNames = restaurantsData.reduce((acc, restaurant) => {
-              acc[restaurant.id] = restaurant.restaurant_name;
+          
+          if (restaurantsError) {
+            console.warn("Error loading restaurant names:", restaurantsError.message);
+            // Continue with orders even if restaurant names fail
+          } else {
+            restaurantNames = restaurantsData.reduce((acc, r) => {
+              acc[r.id] = r.restaurant_name;
               return acc;
             }, {});
           }
         } catch (error) {
-          console.warn("Error loading restaurant names:", error.message);
+          console.error("Error fetching restaurant names:", error);
         }
       }
-      
+
       // Combine orders with restaurant names
       allOrders = ordersData.map(order => ({
         ...order,
@@ -1104,7 +1121,7 @@
       updateStats();
       updateDashboardStats();
       displayOrders(allOrders);
-      
+      playNotificationSound();
     } catch (err) {
       console.error("Error loading orders:", err);
       document.getElementById('orders-container').innerHTML = 
@@ -1112,6 +1129,7 @@
       allOrders = [];
     }
   }
+
   // Update stats for today only
   function updateStats() {
     const totalOrders = allOrders.length;
@@ -1131,6 +1149,7 @@
     document.getElementById('profile-total-profit').textContent = `${totalProfit.toFixed(2)} ج.م`;
     document.getElementById('profile-total-withdrawals').textContent = `${totalWithdrawals.toFixed(2)} ج.م`;
   }
+
   // Update dashboard stats
   function updateDashboardStats() {
     const totalOrders = allOrders.length;
@@ -1143,6 +1162,7 @@
     document.getElementById('dash-pending-orders').textContent = pendingOrders;
     document.getElementById('dash-waiting-orders').textContent = waitingOrders;
   }
+
   // Display orders
   function displayOrders(orders) {
     const container = document.getElementById('orders-container');
@@ -1176,21 +1196,21 @@
               ${order.status}
             </div>
           </div>
-              <div class="detail-row">
-                <div class="detail-label">
-                  <i class="fas fa-utensils"></i>
-                  <span>عنوان التوصيل:</span>
-                </div>
-                <span class="detail-value"> ${order.custom_address || 'غير محدد'}</span>
+          <div class="order-details">
+            <div class="detail-row">
+              <div class="detail-label">
+                <i class="fas fa-user"></i>
+                <span>العميل:</span>
               </div>
-          </div>
-              <div class="detail-row">
-                <div class="detail-label">
-                  <i class="fas fa-utensils"></i>
-                  <span>المطعم:</span>
-                </div>
-                <span class="detail-value">${order.restaurant_name || 'غير محدد'}</span>
-              </div> 
+              <span class="detail-value">${order.custom_name || 'غير محدد'}</span>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">
+                <i class="fas fa-utensils"></i>
+                <span>المطعم:</span>
+              </div>
+              <span class="detail-value">${order.restaurant_name || 'غير محدد'}</span>
+            </div>
             <div class="detail-row">
               <div class="detail-label">
                 <i class="fas fa-coins"></i>
@@ -1230,6 +1250,7 @@
       btn.addEventListener('click', (e) => showOrderDetails(e.target.closest('.view-details-btn').dataset.orderId));
     });
   }
+
   // Show order details
   function showOrderDetails(orderId) {
     const order = allOrders.find(o => o.id === orderId);
@@ -1254,10 +1275,10 @@
         </div>
         <div style="text-align: right; line-height: 2; color: var(--dark);">
           <p><strong><i class="fas fa-barcode" style="margin-left: 0.5rem;"></i> رقم الطلب:</strong> ${order.id.substring(0, 8)}</p>
-                    <p style="font-size: 1.8rem; font-weight: 600">  <strong><i class="fas fa-utensils" style="margin-left: 0.5rem;"></i> المطعم:</strong> ${order.restaurant_name || 'غير محدد'}</p>
-
+          <p><strong><i class="fas fa-user" style="margin-left: 0.5rem;"></i> اسم العميل:</strong> ${order.custom_name || 'غير محدد'}</p>
+          <p><strong><i class="fas fa-phone" style="margin-left: 0.5rem;"></i> رقم الهاتف:</strong> ${order.custom_phone || 'غير محدد'}</p>
           <p><strong><i class="fas fa-map-marker-alt" style="margin-left: 0.5rem;"></i> عنوان التوصيل:</strong> ${order.custom_address || 'غير محدد'}</p>
-          <p><strong><i class="fas fa-shipping-fast" style="margin-left: 0.5rem;"></i> سعر التوصيل:</strong> ${order.service_price || 0} ج.م</p>
+          <p><strong><i class="fas fa-utensils" style="margin-left: 0.5rem;"></i> المطعم:</strong> ${order.restaurant_name || 'غير محدد'}</p>
           <p><strong><i class="fas fa-sticky-note" style="margin-left: 0.5rem;"></i> ملاحظات:</strong> ${order.notes || 'لا توجد ملاحظات'}</p>
           <p><strong><i class="fas fa-percentage" style="margin-left: 0.5rem;"></i> نسبة العمولة:</strong> ${commission}%</p>
           <p><strong><i class="fas fa-coins" style="margin-left: 0.5rem;"></i> ربحك من هذا الطلب:</strong> <span class="profit-amount">${profit.toFixed(2)} ج.م</span></p>
@@ -1277,81 +1298,130 @@
     document.getElementById('close-modal-btn').addEventListener('click', () => document.body.removeChild(modal));
     modal.addEventListener('click', (e) => { if (e.target === modal) document.body.removeChild(modal); });
   }
+
   // Start delivery
   async function startDelivery(orderId) {
+    if (!currentUser) {
+      showNotification('يجب تسجيل الدخول أولاً', 'error');
+      playErrorSound();
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('orders')
         .update({ status: 'جاري التوصيل' })
         .eq('id', orderId);
-        
+      
       if (error) throw error;
       
       showNotification('تم تحديث حالة الطلب إلى "جاري التوصيل"');
+      playSuccessSound();
       await loadOrders();
     } catch (error) {
       console.error("Error starting delivery:", error);
       showNotification('حدث خطأ أثناء تحديث الحالة', 'error');
+      playErrorSound();
     }
   }
+
   // Complete delivery
   async function completeDelivery(orderId) {
+    if (!currentUser) {
+      showNotification('يجب تسجيل الدخول أولاً', 'error');
+      playErrorSound();
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('orders')
         .update({ status: 'تم التوصيل' })
         .eq('id', orderId);
-        
+      
       if (error) throw error;
       
       showNotification('تم إتمام التسليم بنجاح');
+      playSuccessSound();
       await loadOrders();
     } catch (error) {
       console.error("Error completing delivery:", error);
       showNotification('حدث خطأ أثناء إتمام التسليم', 'error');
+      playErrorSound();
     }
   }
+
   // Filter history
   async function filterHistory() {
+    if (!currentUser) {
+      console.warn("No current user for history filtering");
+      return;
+    }
+
     try {
       const startDate = document.getElementById('start-date').value;
       const endDate = document.getElementById('end-date').value;
       const container = document.getElementById('history-container');
       container.innerHTML = '<p class="loading">جارٍ تحميل السجل...</p>';
       
+      // Build the query
       let query = supabase
         .from('orders')
-        .select(`
-          id,
-          custom_name,
-          custom_phone,
-          custom_address,
-          order_price,
-          service_price,
-          status,
-          created_at,
-          commission_percent,
-          notes,
-          restaurant_id
-        `)
+        .select('id, restaurant_id, custom_name, custom_phone, custom_address, order_price, service_price, commission_percent, notes, status, created_at')
         .eq('captain_id', currentUser.id)
-        .eq('status', 'تم التوصيل')
-        .order('created_at', { ascending: false });
-        
+        .eq('status', 'تم التوصيل');
+
       if (startDate) {
         query = query.gte('created_at', startDate);
       }
+      
       if (endDate) {
         const endOfDay = new Date(endDate);
         endOfDay.setDate(endOfDay.getDate() + 1);
         query = query.lt('created_at', endOfDay.toISOString());
       }
       
+      query = query.order('created_at', { ascending: false });
+
       const { data: ordersData, error: ordersError } = await query;
+
+      if (ordersError) {
+        console.warn("Error loading history:", ordersError.message);
+        container.innerHTML = `<p class="error">❌ ${ordersError.message}</p>`;
+        return;
+      }
+
+      // Get restaurant names
+      const restaurantIds = [...new Set(ordersData.map(order => order.restaurant_id).filter(id => id !== null))];
+      let restaurantNames = {};
       
-      if (ordersError) throw ordersError;
-      
-      if (!ordersData || ordersData.length === 0) {
+      if (restaurantIds.length > 0) {
+        try {
+          const { data: restaurantsData, error: restaurantsError } = await supabase
+            .from('restaurants')
+            .select('id, restaurant_name')
+            .in('id', restaurantIds);
+          
+          if (restaurantsError) {
+            console.warn("Error loading restaurant names:", restaurantsError.message);
+          } else {
+            restaurantNames = restaurantsData.reduce((acc, r) => {
+              acc[r.id] = r.restaurant_name;
+              return acc;
+            }, {});
+          }
+        } catch (error) {
+          console.error("Error fetching restaurant names:", error);
+        }
+      }
+
+      // Combine with restaurant names
+      const ordersWithNames = ordersData.map(order => ({
+        ...order,
+        restaurant_name: restaurantNames[order.restaurant_id] || 'مطعم غير محدد'
+      }));
+
+      if (ordersWithNames.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-history"></i>
@@ -1360,34 +1430,6 @@
         `;
         return;
       }
-      
-      // Get restaurant names separately
-      const restaurantIds = [...new Set(ordersData.map(order => order.restaurant_id).filter(id => id !== null))];
-      let restaurantNames = {};
-      
-      if (restaurantIds.length > 0) {
-        try {
-          const { data: restaurantsData } = await supabase
-            .from('restaurants')
-            .select('id, restaurant_name')
-            .in('id', restaurantIds);
-            
-          if (restaurantsData) {
-            restaurantNames = restaurantsData.reduce((acc, restaurant) => {
-              acc[restaurant.id] = restaurant.restaurant_name;
-              return acc;
-            }, {});
-          }
-        } catch (error) {
-          console.warn("Error loading restaurant names:", error.message);
-        }
-      }
-      
-      // Combine with restaurant names
-      const ordersWithNames = ordersData.map(order => ({
-        ...order,
-        restaurant_name: restaurantNames[order.restaurant_id] || 'مطعم غير محدد'
-      }));
       
       container.innerHTML = ordersWithNames.map(order => {
         const commission = order.commission_percent || 0;
@@ -1399,20 +1441,13 @@
               <div class="order-id">#${order.id.substring(0, 8)}</div>
               <div class="order-status status-delivered">تم التوصيل</div>
             </div>
+            <div class="order-details">
               <div class="detail-row">
                 <div class="detail-label">
-                  <i class="fas fa-utensils"></i>
-                  <span>عنوان التوصيل:</span>
+                  <i class="fas fa-user"></i>
+                  <span>العميل:</span>
                 </div>
-                <span class="detail-value"> ${order.custom_address || 'غير محدد'}</span>
-              </div>
-          </div>
-              <div class="detail-row">
-                <div class="detail-label">
-                  <i class="fas fa-utensils"></i>
-                  <span>المطعم:</span>
-                </div>
-                <span class="detail-value">${order.restaurant_name || 'غير محدد'}</span>
+                <span class="detail-value">${order.custom_name || 'غير محدد'}</span>
               </div>
               <div class="detail-row">
                 <div class="detail-label">
@@ -1423,10 +1458,10 @@
               </div>
               <div class="detail-row">
                 <div class="detail-label">
-                  <i class="fas fa-money-bill"></i>
-                  <span>الإجمالي:</span>
+                  <i class="fas fa-utensils"></i>
+                  <span>المطعم:</span>
                 </div>
-                <span class="detail-value">${(order.order_price || 0) + (order.service_price || 0)} ج.م</span>
+                <span class="detail-value">${order.restaurant_name || 'غير محدد'}</span>
               </div>
               <div class="detail-row">
                 <div class="detail-label">
@@ -1442,7 +1477,7 @@
             </button>
           </div>
         `;
-      }).join('');
+      }).join();
       
       document.querySelectorAll('.view-details-btn').forEach(btn => {
         btn.addEventListener('click', (e) => showOrderDetails(e.target.closest('.view-details-btn').dataset.orderId));
@@ -1453,40 +1488,47 @@
         `<p class="error">❌ حدث خطأ أثناء تحميل السجل: ${error.message}</p>`;
     }
   }
+
   // Load custody data
   async function loadCustodyData() {
+    if (!currentUser) {
+      console.warn("No current user for custody loading");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('custodies')
         .select('id, amount, custody_date, status, notes')
         .eq('captain_id', currentUser.id)
         .order('custody_date', { ascending: false });
-        
+      
       if (error) {
-        console.warn("Error loading custody data:", error.message);
+        console.warn("Error loading custody ", error.message);
         custodyRecords = [];
       } else {
         custodyRecords = data || [];
       }
-      
+
       const remainingCustody = custodyRecords
         .filter(c => c.status === 'مفعلة' || c.status === 'active')
         .reduce((sum, c) => sum + c.amount, 0);
       const paidCustody = custodyRecords
         .filter(c => c.amount < 0)
         .reduce((sum, c) => sum + Math.abs(c.amount), 0);
-        
+      
       document.getElementById('remaining-custody').textContent = `${remainingCustody.toFixed(2)} ج.م`;
       document.getElementById('paid-custody').textContent = `${paidCustody.toFixed(2)} ج.م`;
       displayCustodyHistory(custodyRecords);
     } catch (error) {
-      console.error("Error loading custody data:", error);
+      console.error("Error loading custody ", error);
       document.getElementById('custody-history-body').innerHTML = 
         `<tr><td colspan="4" class="error">❌ حدث خطأ أثناء تحميل سجل العهدة: ${error.message}</td></tr>`;
       custodyRecords = [];
       displayCustodyHistory([]);
     }
   }
+
   // Display custody history
   function displayCustodyHistory(records) {
     const tbody = document.getElementById('custody-history-body');
@@ -1518,6 +1560,7 @@
       </tr>
     `).join('');
   }
+
   // Switch view
   function switchView(viewName) {
     navTabs.forEach(tab => {
@@ -1545,6 +1588,7 @@
       updateStats();
     }
   }
+
   // Show notification
   function showNotification(message, type = 'success') {
     const existing = document.querySelector('.notification');
@@ -1554,6 +1598,34 @@
     notif.textContent = message;
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 3000);
+  }
+
+  // Audio functions
+  function playSuccessSound() {
+    try {
+      successSound.currentTime = 0;
+      successSound.play().catch(e => console.log('Audio play failed:', e));
+    } catch (e) {
+      console.log('Audio play failed:', e);
+    }
+  }
+
+  function playErrorSound() {
+    try {
+      errorSound.currentTime = 0;
+      errorSound.play().catch(e => console.log('Audio play failed:', e));
+    } catch (e) {
+      console.log('Audio play failed:', e);
+    }
+  }
+
+  function playNotificationSound() {
+    try {
+      notificationSound.currentTime = 0;
+      notificationSound.play().catch(e => console.log('Audio play failed:', e));
+    } catch (e) {
+      console.log('Audio play failed:', e);
+    }
   }
 </script>
 </body>

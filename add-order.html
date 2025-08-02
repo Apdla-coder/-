@@ -37,60 +37,7 @@
       display: flex;
       min-height: 100vh;
     }
-    .nav-links {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .nav-item {
-      margin: 0;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      color: #d1d5db;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      border-right: 3px solid transparent;
-    }
-    .nav-link:hover {
-      background: rgba(255,255,255,0.05);
-      color: white;
-    }
-    .nav-link.active {
-      background: rgba(249, 115, 22, 0.1);
-      color: var(--primary);
-      border-right: 3px solid var(--primary);
-    }
-    .nav-link i {
-      margin-left: 0.75rem;
-      font-size: 1.1rem;
-      width: 24px;
-      text-align: center;
-    }
-    .logout-btn {
-      margin-top: auto;
-      padding: 1rem 1.5rem;
-      background: rgba(255,255,255,0.05);
-      color: #f87171;
-      border: none;
-      border-radius: 0;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-      text-align: right;
-      display: flex;
-      align-items: center;
-    }
-    .logout-btn:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    .logout-btn i {
-      margin-left: 0.75rem;
-    }
+
     /* Main Content Styles */
     .header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -266,7 +213,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&crop=center" alt="شعار المكتب">
+        <img src="./logo.png" alt="شعار المكتب">
         <h2>المكتب</h2>
       </div>
       <a class="nav-link active" href="./dashboard.html">
@@ -280,6 +227,10 @@
       <a class="nav-link" href="./customers.html">
         <i class="fas fa-users"></i>
         <span>إدارة المستخدمين</span>
+      </a>
+      <a class="nav-link" href="./restaurant-management.html">
+        <i class="fas fa-users"></i>
+        <span>إدارة المطاعم</span>
       </a>
       <a class="nav-link" href="./covenant.html">
         <i class="fas fa-users"></i>

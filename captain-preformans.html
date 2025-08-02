@@ -8,657 +8,697 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="bar.css">
   <style>
-:root {
-  --primary: #f97316;
-  --primary-dark: #ea580c;
-  --secondary: #3b82f6;
-  --secondary-dark: #2563eb;
-  --success: #10b981;
-  --success-dark: #059669;
-  --danger: #ef4444;
-  --danger-dark: #dc2626;
-  --warning: #f59e0b;
-  --warning-dark: #d97706;
-  --info: #0ea5e9;
-  --info-dark: #0284c7;
-  --dark: #1f2937;
-  --darker: #111827;
-  --light: #f3f4f6;
-  --lighter: #f9fafb;
-  --gray: #6b7280;
-  --gray-light: #9ca3af;
-  --border: #e5e7eb;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  font-family: 'Inter', sans-serif;
-  background: #f5f7fa;
-  color: var(--darker);
-  direction: rtl;
-}
-.container {
-  display: flex;
-  min-height: 100vh;
-}
-.main {
-  flex: 1;
-  padding: 2rem;
-  margin: 0 auto;
-  max-width: 1400px;
-  width: 100%;
-}
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.header h2 {
-  color: var(--darker);
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0;
-}
-.search-container {
-  position: relative;
-  max-width: 300px;
-  width: 100%;
-}
-.search-container i {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gray);
-}
-.search-input {
-  width: 100%;
-  padding: 0.8rem 2.5rem 0.8rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: white;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-}
-.search-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-}
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.2rem;
-  margin-bottom: 2rem;
-}
-.card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px var(--shadow);
-  transition: transform 0.3s ease;
-}
-.card:hover {
-  transform: translateY(-5px);
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.card-title {
-  font-size: 0.9rem;
-  color: var(--gray);
-  font-weight: 500;
-}
-.card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
-.card-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--darker);
-}
-.card-footer {
-  font-size: 0.85rem;
-  color: var(--gray);
-  margin-top: 0.5rem;
-}
-.positive {
-  color: var(--success);
-}
-.negative {
-  color: var(--danger);
-}
-/* Captain Cards */
-.captains-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-.captain-card {
-  background: white;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 4px 12px var(--shadow);
-  transition: all 0.3s ease;
-  border: 1px solid var(--border);
-}
-.captain-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px var(--shadow);
-}
-.captain-header {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.captain-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-.captain-info {
-  flex: 1;
-}
-.captain-name {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin: 0;
-}
-.captain-status {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  margin: 0;
-}
-.captain-body {
-  padding: 1.5rem;
-}
-.captain-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.stat-item {
-  display: flex;
-  flex-direction: column;
-}
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--gray);
-  margin-bottom: 0.25rem;
-}
-.stat-value {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--darker);
-}
-.status-badge {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  display: inline-block;
-  white-space: nowrap;
-}
-.status-busy {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
-}
-.status-free {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--success);
-}
-.status-pending {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--warning);
-}
-.captain-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-.btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-.btn-sm {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-}
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-.btn-primary:hover {
-  background: var(--primary-dark);
-}
-.btn-secondary {
-  background: var(--secondary);
-  color: white;
-}
-.btn-secondary:hover {
-  background: var(--secondary-dark);
-}
-.btn-success {
-  background: var(--success);
-  color: white;
-}
-.btn-success:hover {
-  background: var(--success-dark);
-}
-.btn-danger {
-  background: var(--danger);
-  color: white;
-}
-.btn-danger:hover {
-  background: var(--danger-dark);
-}
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--dark);
-}
-.btn-outline:hover {
-  background: var(--light);
-}
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-.modal-content {
-  background: white;
-  border-radius: 1rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: modalSlideIn 0.3s ease;
-}
-@keyframes modalSlideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-.modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: var(--darker);
-}
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--gray);
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s;
-}
-.modal-close:hover {
-  background: var(--light);
-  color: var(--dark);
-}
-.modal-body {
-  padding: 1.5rem;
-}
-.form-group {
-  margin-bottom: 1.2rem;
-}
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--dark);
-  font-size: 0.9rem;
-}
-.form-control {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-  background: var(--lighter);
-}
-.form-control:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-}
-.form-row {
-  display: flex;
-  gap: 1rem;
-}
-.form-row > div {
-  flex: 1;
-}
-.modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.8rem;
-}
-/* Responsive */
-@media (max-width: 992px) {
-  .main {
-    padding: 1.5rem;
-  }
-  .form-row {
-    flex-direction: column;
-    gap: 0;
-  }
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .search-container {
-    max-width: 100%;
-  }
-}
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-  .captains-container {
-    grid-template-columns: 1fr;
-  }
-}
-/* Loading State */
-.loading {
-  text-align: center;
-  padding: 3rem;
-  color: var(--gray);
-}
-.spinner {
-  border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top: 3px solid var(--primary);
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--gray);
-}
-.empty-state i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: var(--gray-light);
-}
-.empty-state h3 {
-  margin-bottom: 0.5rem;
-  color: var(--dark);
-}
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  padding: 1rem;
-}
-.pagination button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.pagination button:hover:not(:disabled) {
-  background: var(--light);
-}
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.pagination button.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-/* No Data */
-.no-data {
-  text-align: center;
-  padding: 2rem;
-  color: var(--gray);
-}
-/* Toast */
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-}
-.toast.show {
-  transform: translateX(0);
-}
-.toast.success {
-  background: var(--success);
-}
-.toast.error {
-  background: var(--danger);
-}
-/* Performance Badge */
-.performance-badge {
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  margin-right: 0.5rem;
-}
-.performance-excellent {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--success);
-}
-.performance-good {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--warning);
-}
-.performance-average {
-  background: rgba(249, 115, 22, 0.15);
-  color: var(--primary);
-}
-.performance-poor {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--danger);
-}
-/* Captain Details Modal */
-.captain-details-modal .modal-content {
-  max-width: 800px;
-}
-.captain-details-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-.captain-details-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: var(--primary);
-}
-.captain-details-info h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-}
-.captain-details-meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: var(--gray);
-}
-.captain-details-tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  margin: 1.5rem 0;
-}
-.captain-details-tab {
-  padding: 0.8rem 1.5rem;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s;
-}
-.captain-details-tab.active {
-  border-bottom-color: var(--primary);
-  color: var(--primary);
-  font-weight: 600;
-}
-.captain-details-content {
-  padding: 1rem 0;
-}
-.orders-list {
-  max-height: 400px;
-  overflow-y: auto;
-}
-.order-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.order-item:last-child {
-  border-bottom: none;
-}
-.order-info {
-  flex: 1;
-}
-.order-status {
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-.order-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-/* Filter Controls */
-.filter-controls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-.filter-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9rem;
-}
-.filter-btn.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-.filter-btn:hover:not(.active) {
-  background: var(--light);
-}
-</style> 
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --secondary: #3b82f6;
+      --secondary-dark: #2563eb;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --danger-dark: #dc2626;
+      --warning: #f59e0b;
+      --warning-dark: #d97706;
+      --info: #0ea5e9;
+      --info-dark: #0284c7;
+      --dark: #1f2937;
+      --darker: #111827;
+      --light: #f3f4f6;
+      --lighter: #f9fafb;
+      --gray: #6b7280;
+      --gray-light: #9ca3af;
+      --border: #e5e7eb;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fa;
+      color: var(--darker);
+      direction: rtl;
+    }
+    
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .header h1 {
+      color: var(--darker);
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .search-container {
+      position: relative;
+      max-width: 300px;
+      width: 100%;
+    }
+    
+    .search-container i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.8rem 2.5rem 0.8rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card h3 {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    
+    .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--darker);
+    }
+    
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .filter-btn:hover:not(.active) {
+      background: var(--light);
+    }
+    
+    /* Captains Grid */
+    .captains-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .captain-card {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+    }
+    
+    .captain-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+    
+    .captain-header {
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .captain-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .captain-info {
+      flex: 1;
+    }
+    
+    .captain-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    
+    .captain-status {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+    
+    .captain-body {
+      padding: 1.5rem;
+    }
+    
+    .captain-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--darker);
+    }
+    
+    .performance-badge {
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    
+    .performance-excellent {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .performance-good {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .performance-average {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--primary);
+    }
+    
+    .performance-poor {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .captain-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--secondary-dark);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: var(--success-dark);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: var(--danger-dark);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--dark);
+    }
+    
+    .btn-outline:hover {
+      background: var(--light);
+    }
+    
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--darker);
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    
+    .close-btn:hover {
+      background: var(--light);
+      color: var(--dark);
+    }
+    
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+      font-size: 0.9rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      background: var(--lighter);
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .form-row > div {
+      flex: 1;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+    }
+    
+    /* Captain Details Modal */
+    .captain-details-modal .modal-content {
+      max-width: 800px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+    
+    .captain-details-tab {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .captain-details-tab.active {
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .tab-content {
+      padding: 1rem 0;
+    }
+    
+    .orders-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .order-info {
+      flex: 1;
+    }
+    
+    .order-status {
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .status-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .status-warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .status-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .status-info {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--primary);
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table th {
+      text-align: right;
+      padding: 0.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .pagination button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .pagination button:hover:not(:disabled) {
+      background: var(--light);
+    }
+    
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .pagination button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+    
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--gray-light);
+    }
+    
+    .empty-state h3 {
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast.success {
+      background: var(--success);
+    }
+    
+    .toast.error {
+      background: var(--danger);
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        border-left: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+      }
+      
+      .main-content {
+        padding: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .captains-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-  
   <div class="container">
-        <!-- Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar">
-<div class="sidebar-logo">
-  <img src="" alt="شعار المكتب">
-  <h2>مكتب السريع</h2>
-</div>      <a class="nav-link active" href="./dashboard.html">
+      <div class="sidebar-logo">
+        <img src="./logo.png" alt="شعار المكتب">
+        <h2>المكتب</h2>
+      </div>
+      <a class="nav-link active" href="./dashboard.html">
         <i class="fas fa-tachometer-alt"></i>
         <span>لوحة التحكم</span>
       </a>
@@ -670,9 +710,13 @@ body {
         <i class="fas fa-users"></i>
         <span>إدارة المستخدمين</span>
       </a>
+      <a class="nav-link" href="./restaurant-management.html">
+        <i class="fas fa-utensils"></i>
+        <span>إدارة المطاعم</span>
+      </a>
       <a class="nav-link" href="./covenant.html">
-        <i class="fas fa-users"></i>
-        <span>نظام العهدة </span>
+        <i class="fas fa-handshake"></i>
+        <span>نظام العهدة</span>
       </a>
       <a class="nav-link" href="./captain-preformans.html">
         <i class="fas fa-chart-line"></i>
@@ -687,230 +731,155 @@ body {
         <span>تسجيل الخروج</span>
       </button>
     </div>
-
-    <div class="main">
+    
+    <!-- Main Content -->
+    <div class="main-content">
       <div class="header">
-        <h2><i class="fas fa-chart-line me-2"></i> تقرير أداء الكباتن - اليوم الحالي</h2>
+        <h1>أداء الكباتن اليوم</h1>
         <div class="search-container">
+          <input type="text" id="search-input" class="search-input" placeholder="بحث عن كابتن..." />
           <i class="fas fa-search"></i>
-          <input type="text" id="search-input" class="search-input" placeholder="ابحث عن كابتن...">
         </div>
       </div>
       
-      <!-- Filter Controls -->
-      <div class="filter-controls">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>إجمالي الكباتن</h3>
+          <div class="value" id="total-captains">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>إجمالي الطلبات</h3>
+          <div class="value" id="total-orders">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>تم التوصيل</h3>
+          <div class="value" id="delivered-orders">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>إجمالي العمولة</h3>
+          <div class="value" id="total-commission">0.00 جنيه</div>
+        </div>
+      </div>
+      
+      <!-- Filters -->
+      <div class="filters">
         <button class="filter-btn active" data-filter="all">الكل</button>
-        <button class="filter-btn" data-filter="busy">مشغولين</button>
-        <button class="filter-btn" data-filter="free">أحرار</button>
+        <button class="filter-btn" data-filter="free">فاضي</button>
+        <button class="filter-btn" data-filter="busy">مشغول</button>
         <button class="filter-btn" data-filter="high-performance">أداء عالي</button>
       </div>
       
-      <div class="stats-cards">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">إجمالي الكباتن</div>
-            <div class="card-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary);">
-              <i class="fas fa-user-tie"></i>
-            </div>
-          </div>
-          <div class="card-value" id="total-captains">0</div>
-          <div class="card-footer">كباتن مسجلين في النظام</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">إجمالي الطلبات</div>
-            <div class="card-icon" style="background: rgba(249, 115, 22, 0.15); color: var(--primary);">
-              <i class="fas fa-box"></i>
-            </div>
-          </div>
-          <div class="card-value" id="total-orders">0</div>
-          <div class="card-footer">طلب اليوم الحالي</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">الطلبات المُسلمة</div>
-            <div class="card-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
-              <i class="fas fa-check-circle"></i>
-            </div>
-          </div>
-          <div class="card-value" id="delivered-orders">0</div>
-          <div class="card-footer">طلب تم تسليمه اليوم</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">إجمالي العمولة</div>
-            <div class="card-icon" style="background: rgba(147, 51, 234, 0.15); color: #9333ea;">
-              <i class="fas fa-wallet"></i>
-            </div>
-          </div>
-          <div class="card-value" id="total-commission">0.00 جنيه</div>
-          <div class="card-footer">عمولة الطلبات المُسلمة</div>
-        </div>
-      </div>
+      <!-- Captains List -->
+      <div class="captains-grid" id="captains-container"></div>
       
-      <!-- Captains Cards -->
-      <div class="captains-container" id="captains-container">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>جارٍ تحميل بيانات الكباتن...</p>
-        </div>
-      </div>
-      
-      <div id="pagination" class="pagination"></div>
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
     </div>
   </div>
   
-  <!-- Toast for notifications -->
-  <div id="toast" class="toast">
-    <i class="fas fa-check-circle"></i>
-    <span id="toast-message"></span>
-  </div>
-  
-  <!-- Withdraw Commission Modal -->
-  <div id="withdraw-modal" class="modal">
+  <!-- Withdraw Modal -->
+  <div class="modal" id="withdraw-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>سحب العمولة</h3>
-        <button class="modal-close" id="close-withdraw-modal">&times;</button>
+        <h2>سحب عمولة الكابتن</h2>
+        <button class="close-btn" id="close-withdraw-modal">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
           <label>اسم الكابتن</label>
-          <input type="text" id="captain-name" class="form-control" disabled>
+          <input type="text" id="captain-name" class="form-control" disabled />
         </div>
         <div class="form-group">
-          <label>إجمالي العمولة المتاحة</label>
-          <input type="text" id="available-commission" class="form-control" disabled>
+          <label>العمولة المتاحة</label>
+          <input type="text" id="available-commission" class="form-control" disabled />
         </div>
         <div class="form-group">
-          <label for="withdraw-amount">مبلغ السحب</label>
-          <input type="number" id="withdraw-amount" class="form-control" placeholder="أدخل المبلغ المراد سحبه" step="0.01" min="0">
+          <label>مبلغ السحب (جنيه)</label>
+          <input type="number" id="withdraw-amount" class="form-control" step="0.01" min="0" />
         </div>
         <div class="form-group">
-          <label for="withdraw-notes">ملاحظات (اختياري)</label>
-          <textarea id="withdraw-notes" class="form-control" rows="3" placeholder="أضف ملاحظات حول السحب"></textarea>
+          <label>ملاحظات (اختياري)</label>
+          <textarea id="withdraw-notes" class="form-control" rows="3"></textarea>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" id="cancel-withdraw">إلغاء</button>
-        <button class="btn btn-danger" id="confirm-withdraw">تأكيد السحب</button>
+        <button class="btn btn-primary" id="confirm-withdraw">تأكيد السحب</button>
       </div>
     </div>
   </div>
   
   <!-- Captain Details Modal -->
-  <div id="captain-details-modal" class="modal captain-details-modal">
+  <div class="modal captain-details-modal" id="captain-details-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>تفاصيل الكابتن</h3>
-        <button class="modal-close" id="close-details-modal">&times;</button>
+        <h2>تفاصيل الكابتن</h2>
+        <button class="close-btn" id="close-details-btn">&times;</button>
       </div>
-      <div class="modal-body">
-        <div class="captain-details-header">
-          <div class="captain-details-avatar">
-            <i class="fas fa-user"></i>
+      
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="captain-details-tab active" data-tab="overview">ملخص</div>
+        <div class="captain-details-tab" data-tab="orders">الطلبات</div>
+        <div class="captain-details-tab" data-tab="history">سجل السحب</div>
+      </div>
+      
+      <!-- Overview Tab -->
+      <div class="tab-content" id="tab-overview" style="display: block;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <p><strong>الاسم:</strong> <span id="details-captain-name"></span></p>
+            <p><strong>الهاتف:</strong> <span id="details-captain-phone"></span></p>
+            <p><strong>تاريخ الانضمام:</strong> <span id="details-captain-joined"></span></p>
           </div>
-          <div class="captain-details-info">
-            <h3 id="details-captain-name">اسم الكابتن</h3>
-            <div class="captain-details-meta">
-              <span><i class="fas fa-phone"></i> <span id="details-captain-phone">0123456789</span></span>
-              <span><i class="fas fa-calendar"></i> <span id="details-captain-joined">تاريخ الانضمام</span></span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="captain-details-tabs">
-          <div class="captain-details-tab active" data-tab="overview">نظرة عامة</div>
-          <div class="captain-details-tab" data-tab="orders">الطلبات</div>
-          <div class="captain-details-tab" data-tab="history">سجل السحب</div>
-        </div>
-        
-        <div class="captain-details-content">
-          <!-- Overview Tab -->
-          <div id="tab-overview" class="tab-content">
-            <div class="card">
-              <div class="card-body">
-                <div class="captain-stats">
-                  <div class="stat-item">
-                    <div class="stat-label">إجمالي الطلبات</div>
-                    <div class="stat-value" id="details-total-orders">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">تم التوصيل</div>
-                    <div class="stat-value" id="details-delivered">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">جاري التوصيل</div>
-                    <div class="stat-value" id="details-pending">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">فشل التوصيل</div>
-                    <div class="stat-value" id="details-failed">0</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">إجمالي العمولة</div>
-                    <div class="stat-value" id="details-total-commission">0.00 جنيه</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-label">العمولة المسحوبة</div>
-                    <div class="stat-value" id="details-withdrawn">0.00 جنيه</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Orders Tab -->
-          <div id="tab-orders" class="tab-content" style="display: none;">
-            <div class="orders-list" id="orders-list">
-              <!-- Orders will be populated here -->
-            </div>
-          </div>
-          
-          <!-- History Tab -->
-          <div id="tab-history" class="tab-content" style="display: none;">
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>التاريخ</th>
-                    <th>المبلغ</th>
-                    <th>الحالة</th>
-                    <th>ملاحظات</th>
-                  </tr>
-                </thead>
-                <tbody id="withdrawals-history">
-                  <!-- History will be populated here -->
-                </tbody>
-              </table>
-            </div>
+          <div>
+            <p><strong>إجمالي الطلبات:</strong> <span id="details-total-orders"></span></p>
+            <p><strong>تم التوصيل:</strong> <span id="details-delivered"></span></p>
+            <p><strong>جاري التوصيل:</strong> <span id="details-pending"></span></p>
+            <p><strong>فشل التوصيل:</strong> <span id="details-failed"></span></p>
+            <p><strong>إجمالي العمولة:</strong> <span id="details-total-commission"></span></p>
+            <p><strong>المستلم:</strong> <span id="details-withdrawn"></span></p>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" id="close-details-btn">إغلاق</button>
+      
+      <!-- Orders Tab -->
+      <div class="tab-content" id="tab-orders" style="display: none;">
+        <h3>آخر 5 طلبات</h3>
+        <div class="orders-list" id="orders-list"></div>
+      </div>
+      
+      <!-- History Tab -->
+      <div class="tab-content" id="tab-history" style="display: none;">
+        <h3>سجل السحب</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>المبلغ</th>
+              <th>الحالة</th>
+              <th>ملاحظات</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawals-history"></tbody>
+        </table>
       </div>
     </div>
   </div>
-
+  
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span id="toast-message"></span>
+  </div>
+  
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    // Initialize Supabase
+    
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-    // Get today's date in ISO format
-    const today = new Date();
-    const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-    const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-    // Pagination variables
-    let currentPage = 1;
-    const itemsPerPage = 8;
-    let captainsData = [];
-    let filteredData = [];
-    let selectedCaptain = null;
-    let selectedFilter = 'all';
     
     // DOM Elements
     const searchInput = document.getElementById('search-input');
@@ -919,14 +888,41 @@ body {
     const withdrawModal = document.getElementById('withdraw-modal');
     const captainDetailsModal = document.getElementById('captain-details-modal');
     const closeWithdrawModal = document.getElementById('close-withdraw-modal');
-    const closeDetailsModal = document.getElementById('close-details-modal');
+    const closeDetailsBtn = document.getElementById('close-details-btn');
     const cancelWithdraw = document.getElementById('cancel-withdraw');
     const confirmWithdraw = document.getElementById('confirm-withdraw');
-    const closeDetailsBtn = document.getElementById('close-details-btn');
     const toast = document.getElementById('toast');
     const filterButtons = document.querySelectorAll('.filter-btn');
     
-    // Debounce function for search
+    // State
+    let captainsData = [];
+    let filteredData = [];
+    let selectedCaptain = null;
+    let currentPage = 1;
+    const itemsPerPage = 8;
+    
+    // Load office logo
+    async function loadOfficeLogo() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { data: userData } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+          
+        const logoTitle = document.querySelector('.sidebar-logo h2');
+        if (logoTitle && userData?.full_name) {
+          logoTitle.textContent = userData.full_name;
+        }
+      } catch (err) {
+        console.warn("Failed to load office logo:", err.message);
+      }
+    }
+    
+    // Debounce
     const debounce = (func, wait) => {
       let timeout;
       return function executedFunction(...args) {
@@ -939,139 +935,81 @@ body {
       };
     };
     
-    // Search functionality
+    // Search
     const handleSearch = debounce(() => {
       const term = searchInput.value.toLowerCase().trim();
-      filteredData = term 
-        ? captainsData.filter(captain => captain.full_name.toLowerCase().includes(term))
+      filteredData = term
+        ? captainsData.filter(c => c.full_name.toLowerCase().includes(term))
         : [...captainsData];
-      
-      // Apply filter after search
       applyFilter(selectedFilter);
       currentPage = 1;
       renderCaptains();
       renderPagination();
     }, 300);
     
-    // Filter functionality
+    // Filter
+    let selectedFilter = 'all';
     function applyFilter(filter) {
       selectedFilter = filter;
       filterButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.filter === filter);
       });
-      
-      // Reset to first page when filter changes
       currentPage = 1;
+      let data = [...captainsData];
       
-      // Apply filter
-      switch(filter) {
+      switch (filter) {
         case 'busy':
-          filteredData = captainsData.filter(captain => captain.status === 'مشغول');
+          data = data.filter(c => c.status === 'مشغول');
           break;
         case 'free':
-          filteredData = captainsData.filter(captain => captain.status === 'فاضي');
+          data = data.filter(c => c.status === 'فاضي');
           break;
         case 'high-performance':
-          filteredData = captainsData.filter(captain => captain.delivered >= 5);
-          break;
-        case 'all':
-        default:
-          filteredData = [...captainsData];
+          data = data.filter(c => c.performance_score >= 60);
           break;
       }
       
-      // Apply search term if exists
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      if (searchTerm) {
-        filteredData = filteredData.filter(captain => 
-          captain.full_name.toLowerCase().includes(searchTerm)
-        );
+      const term = searchInput.value.toLowerCase().trim();
+      if (term) {
+        data = data.filter(c => c.full_name.toLowerCase().includes(term));
       }
       
+      filteredData = data;
       renderCaptains();
       renderPagination();
     }
-    // Load office logo
-async function loadOfficeLogo() {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
     
-    const { data: userData, error } = await supabase
-      .from("users")
-      .select("full_name, avatar_url")
-      .eq("id", user.id)
-      .single();
-      
-    if (error) throw error;
-    
-    // تحديث شعار المكتب
-    const logoImg = document.querySelector('.sidebar-logo img');
-    const logoTitle = document.querySelector('.sidebar-logo h2');
-    
-    if (logoImg) {
-      if (userData.avatar_url) {
-        logoImg.src = userData.avatar_url;
-        logoImg.alt = userData.full_name || "شعار المكتب";
-      } else {
-        logoImg.src = './assets/images/logo-placeholder.png';
-        logoImg.alt = "شعار المكتب";
-      }
-    }
-    
-    if (logoTitle && userData.full_name) {
-      logoTitle.textContent = userData.full_name;
-    }
-  } catch (error) {
-    console.error('خطأ في تحميل شعار المكتب:', error);
-    const logoImg = document.querySelector('.sidebar-logo img');
-    if (logoImg) {
-      logoImg.src = './assets/images/logo-placeholder.png';
-      logoImg.alt = "خطأ في تحميل الشعار";
-    }
-  }
-}
-
-    // Initialize data loading
+    // Load Data
     async function loadTodayData() {
       try {
-        // Show loading state
-        captainsContainer.innerHTML = `
-          <div class="loading">
-            <div class="spinner"></div>
-            <p>جارٍ تحميل بيانات اليوم...</p>
-          </div>
-        `;
+        captainsContainer.innerHTML = `<div class="loading"><div class="spinner"></div><p>جارٍ التحميل...</p></div>`;
         
-        // Fetch captains
-        const { data: captains, error: captainsError } = await supabase
-          .from("users")
-          .select("id, full_name, phone, created_at, total_withdrawn")
-          .eq("role", "captain");
-          
-        if (captainsError) throw captainsError;
+        const today = new Date();
+        const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+        const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
         
-        // Fetch today's orders only
-        const { data: orders, error: ordersError } = await supabase
-          .from("orders")
-          .select("*")
-          .not("captain_id", "is", null)
-          .gte('created_at', todayStart)
-          .lt('created_at', todayEnd);
-          
-        if (ordersError) throw ordersError;
+        const [{ data: captains }, { data: orders }] = await Promise.all([
+          supabase.from("users").select("id, full_name, phone, created_at, total_withdrawn").eq("role", "captain"),
+          supabase.from("orders")
+            .select("*")
+            .not("captain_id", "is", null)
+            .gte('created_at', todayStart)
+            .lt('created_at', todayEnd)
+        ]);
         
-        // Process data efficiently
+        if (!captains) throw new Error("فشل تحميل الكباتن");
+        if (!orders) throw new Error("فشل تحميل الطلبات");
+        
         const captainStats = new Map();
+        const captainOrders = new Map();
         
-        // Initialize all captains
-        captains.forEach(captain => {
-          captainStats.set(captain.id, {
-            id: captain.id,
-            full_name: captain.full_name,
-            phone: captain.phone,
-            created_at: captain.created_at,
-            total_withdrawn: captain.total_withdrawn || 0,
+        captains.forEach(c => {
+          captainStats.set(c.id, {
+            id: c.id,
+            full_name: c.full_name,
+            phone: c.phone,
+            created_at: c.created_at,
+            total_withdrawn: parseFloat(c.total_withdrawn) || 0,
             total_orders: 0,
             delivered: 0,
             pending: 0,
@@ -1086,28 +1024,23 @@ async function loadOfficeLogo() {
           });
         });
         
-        // Process orders
-        const captainOrders = new Map();
         orders.forEach(order => {
           const stats = captainStats.get(order.captain_id);
           if (!stats) return;
           
-          // Update order counts
           stats.total_orders++;
-          stats.total_order_price += order.order_price || 0;
-          stats.total_service_price += order.service_price || 0;
+          stats.total_order_price += parseFloat(order.order_price) || 0;
+          stats.total_service_price += parseFloat(order.service_price) || 0;
           
-          // Add to recent orders
           if (!captainOrders.has(order.captain_id)) {
             captainOrders.set(order.captain_id, []);
           }
           captainOrders.get(order.captain_id).push(order);
           
-          // Update status counts
-          switch(order.status) {
+          switch (order.status) {
             case 'تم التوصيل':
               stats.delivered++;
-              stats.total_commission += ((order.service_price || 0) * (order.commission_percent || 0) / 100);
+              stats.total_commission += (parseFloat(order.service_price) || 0) * (parseFloat(order.commission_percent) || 0) / 100;
               break;
             case 'جاري التوصيل':
               stats.pending++;
@@ -1122,9 +1055,7 @@ async function loadOfficeLogo() {
           }
         });
         
-        // Calculate performance score and recent orders
         captainsData = Array.from(captainStats.values()).map(captain => {
-          // Calculate performance score (0-100)
           const deliveryRate = captain.total_orders > 0 ? (captain.delivered / captain.total_orders) * 100 : 0;
           const completionRate = captain.total_orders > 0 ? ((captain.delivered + captain.pending) / captain.total_orders) * 100 : 0;
           const performanceScore = (deliveryRate * 0.6) + (completionRate * 0.4);
@@ -1132,266 +1063,225 @@ async function loadOfficeLogo() {
           return {
             ...captain,
             performance_score: Math.round(performanceScore),
-            recent_orders: (captainOrders.get(captain.id) || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5),
+            recent_orders: (captainOrders.get(captain.id) || [])
+              .filter(Boolean)
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+              .slice(0, 5),
             available_commission: captain.total_commission - captain.total_withdrawn
           };
         });
         
-        // Sort by performance score (descending)
         captainsData.sort((a, b) => b.performance_score - a.performance_score);
         
-        // Update statistics
-        updateStats(captains.length, orders.length, 
+        updateStats(
+          captains.length,
+          orders.length,
           orders.filter(o => o.status === 'تم التوصيل').length,
           captainsData.reduce((sum, c) => sum + c.total_commission, 0)
         );
         
-        // Filter and render
         filteredData = [...captainsData];
-        applyFilter('all'); // Apply default filter
+        applyFilter('all');
         renderCaptains();
         renderPagination();
         
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('Error:', error);
         captainsContainer.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-exclamation-triangle"></i>
-            <h3>خطأ في تحميل البيانات</h3>
-            <p>${error.message}</p>
-          </div>
-        `;
+            <h3>خطأ في التحميل</h3>
+            <p>${error.message || 'تحقق من الاتصال'}</p>
+          </div>`;
       }
     }
     
-    // Render captains cards
+    // Render Captains
     function renderCaptains() {
       captainsContainer.innerHTML = "";
+      
       if (filteredData.length === 0) {
         captainsContainer.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-search"></i>
             <h3>لا توجد نتائج</h3>
             <p>حاول تغيير معايير البحث أو الفلاتر</p>
-          </div>
-        `;
+          </div>`;
         return;
       }
       
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = Math.min(start + itemsPerPage, filteredData.length);
       
-      for (let i = startIndex; i < endIndex; i++) {
-        const captain = filteredData[i];
-        const statusClass = captain.status === "مشغول" ? "status-busy" : "status-free";
-        
-        // Performance badge
-        let performanceBadge = "performance-average";
-        let performanceText = "متوسط";
-        if (captain.performance_score >= 80) {
-          performanceBadge = "performance-excellent";
-          performanceText = "ممتاز";
-        } else if (captain.performance_score >= 60) {
-          performanceBadge = "performance-good";
-          performanceText = "جيد";
-        } else if (captain.performance_score >= 40) {
-          performanceBadge = "performance-average";
-          performanceText = "متوسط";
-        } else {
-          performanceBadge = "performance-poor";
-          performanceText = "ضعيف";
-        }
+      for (let i = start; i < end; i++) {
+        const c = filteredData[i];
+        const perf = c.performance_score >= 80 ? "excellent" :
+                     c.performance_score >= 60 ? "good" :
+                     c.performance_score >= 40 ? "average" : "poor";
+                     
+        const perfText = { 
+          excellent: "ممتاز", 
+          good: "جيد", 
+          average: "متوسط", 
+          poor: "ضعيف" 
+        }[perf];
         
         const card = document.createElement("div");
         card.className = "captain-card";
         card.innerHTML = `
           <div class="captain-header">
-            <div class="captain-avatar">
-              <i class="fas fa-user"></i>
-            </div>
+            <div class="captain-avatar"><i class="fas fa-user"></i></div>
             <div class="captain-info">
-              <h3 class="captain-name">${captain.full_name}</h3>
-              <p class="captain-status"><i class="fas fa-circle ${captain.status === 'مشغول' ? 'fa-xs' : 'fa-2xs'}" style="color: ${captain.status === 'مشغول' ? '#ef4444' : '#10b981'};"></i> ${captain.status}</p>
+              <h3 class="captain-name">${c.full_name}</h3>
+              <p class="captain-status"><i class="fas fa-circle fa-xs" style="color:${c.status === 'مشغول' ? '#ef4444' : '#10b981'};"></i> ${c.status}</p>
             </div>
           </div>
           <div class="captain-body">
             <div class="captain-stats">
               <div class="stat-item">
-                <div class="stat-label">إجمالي الطلبات</div>
-                <div class="stat-value">${captain.total_orders}</div>
+                <div class="stat-label">إجمالي</div>
+                <div class="stat-value">${c.total_orders}</div>
               </div>
               <div class="stat-item">
                 <div class="stat-label">تم التوصيل</div>
-                <div class="stat-value">${captain.delivered}</div>
+                <div class="stat-value">${c.delivered}</div>
               </div>
               <div class="stat-item">
                 <div class="stat-label">جاري التوصيل</div>
-                <div class="stat-value">${captain.pending}</div>
+                <div class="stat-value">${c.pending}</div>
               </div>
               <div class="stat-item">
-                <div class="stat-label">فشل التوصيل</div>
-                <div class="stat-value">${captain.failed}</div>
+                <div class="stat-label">فشل</div>
+                <div class="stat-value">${c.failed}</div>
               </div>
               <div class="stat-item">
                 <div class="stat-label">إجمالي العمولة</div>
-                <div class="stat-value">${captain.total_commission.toFixed(2)} جنيه</div>
+                <div class="stat-value">${c.total_commission.toFixed(2)} جنيه</div>
               </div>
               <div class="stat-item">
-                <div class="stat-label">العمولة المتاحة</div>
-                <div class="stat-value">${captain.available_commission.toFixed(2)} جنيه</div>
+                <div class="stat-label">المتاحة</div>
+                <div class="stat-value">${c.available_commission.toFixed(2)} جنيه</div>
               </div>
             </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
-              <span class="performance-badge ${performanceBadge}">${performanceText}</span>
-              <div style="font-size: 0.9rem; color: var(--gray);">أداء: ${captain.performance_score}%</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:1rem 0;">
+              <span class="performance-badge performance-${perf}">${perfText}</span>
+              <small style="color:var(--gray)">أداء: ${c.performance_score}%</small>
             </div>
-            
             <div class="captain-actions">
-              <button class="btn btn-primary view-details-btn" data-id="${captain.id}">
-                <i class="fas fa-eye"></i> تفاصيل
-              </button>
-              <button class="btn btn-danger withdraw-btn" data-id="${captain.id}">
-                <i class="fas fa-money-bill-wave"></i> سحب
-              </button>
+              <button class="btn btn-primary view-details-btn" data-id="${c.id}"><i class="fas fa-eye"></i> تفاصيل</button>
+              <button class="btn btn-danger withdraw-btn" data-id="${c.id}"><i class="fas fa-money-bill-wave"></i> سحب</button>
             </div>
-          </div>
-        `;
+          </div>`;
+          
         captainsContainer.appendChild(card);
       }
       
-      // Add event listeners
-      document.querySelectorAll('.withdraw-btn').forEach(button => {
-        button.addEventListener('click', () => {
-          const captainId = button.getAttribute('data-id');
-          selectedCaptain = captainsData.find(c => c.id === captainId);
+      attachEventListeners();
+    }
+    
+    function attachEventListeners() {
+      document.querySelectorAll('.withdraw-btn').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-id');
+          selectedCaptain = captainsData.find(c => c.id === id);
           if (selectedCaptain) {
             document.getElementById('captain-name').value = selectedCaptain.full_name;
             document.getElementById('available-commission').value = `${selectedCaptain.available_commission.toFixed(2)} جنيه`;
             document.getElementById('withdraw-amount').max = selectedCaptain.available_commission;
             withdrawModal.style.display = 'flex';
           }
-        });
+        };
       });
       
-      document.querySelectorAll('.view-details-btn').forEach(button => {
-        button.addEventListener('click', () => {
-          const captainId = button.getAttribute('data-id');
-          selectedCaptain = captainsData.find(c => c.id === captainId);
-          if (selectedCaptain) {
-            showCaptainDetails(selectedCaptain);
-          }
-        });
+      document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-id');
+          selectedCaptain = captainsData.find(c => c.id === id);
+          if (selectedCaptain) showCaptainDetails(selectedCaptain);
+        };
       });
     }
     
-    // Render pagination
     function renderPagination() {
       paginationElement.innerHTML = "";
       if (filteredData.length <= itemsPerPage) return;
       
       const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      const maxVisible = 5;
+      let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let end = Math.min(totalPages, start + maxVisible - 1);
       
-      // Previous button
-      const prevBtn = document.createElement("button");
-      prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.addEventListener("click", () => {
-        if (currentPage > 1) {
-          currentPage--;
-          renderCaptains();
-          renderPagination();
-        }
-      });
-      paginationElement.appendChild(prevBtn);
+      if (end - start + 1 < maxVisible) start = Math.max(1, end - maxVisible + 1);
       
-      // Page buttons
-      const maxVisiblePages = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      const prev = document.createElement("button");
+      prev.innerHTML = '<i class="fas fa-chevron-right"></i>';
+      prev.disabled = currentPage === 1;
+      prev.onclick = () => { 
+        if (currentPage > 1) { 
+          currentPage--; 
+          renderCaptains(); 
+          renderPagination(); 
+        } 
+      };
+      paginationElement.appendChild(prev);
       
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      if (start > 1) {
+        const first = createPageButton(1);
+        paginationElement.appendChild(first);
+        if (start > 2) addEllipsis();
       }
       
-      if (startPage > 1) {
-        const firstBtn = document.createElement("button");
-        firstBtn.textContent = "1";
-        firstBtn.addEventListener("click", () => {
-          currentPage = 1;
-          renderCaptains();
-          renderPagination();
-        });
-        paginationElement.appendChild(firstBtn);
-        
-        if (startPage > 2) {
-          const ellipsis = document.createElement("span");
-          ellipsis.textContent = "...";
-          ellipsis.style.padding = "0.5rem";
-          paginationElement.appendChild(ellipsis);
-        }
+      for (let i = start; i <= end; i++) {
+        paginationElement.appendChild(createPageButton(i, i === currentPage));
       }
       
-      for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement("button");
-        pageBtn.textContent = i;
-        pageBtn.classList.toggle("active", i === currentPage);
-        pageBtn.addEventListener("click", () => {
-          currentPage = i;
-          renderCaptains();
-          renderPagination();
-        });
-        paginationElement.appendChild(pageBtn);
+      if (end < totalPages) {
+        if (end < totalPages - 1) addEllipsis();
+        const last = createPageButton(totalPages);
+        paginationElement.appendChild(last);
       }
       
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          const ellipsis = document.createElement("span");
-          ellipsis.textContent = "...";
-          ellipsis.style.padding = "0.5rem";
-          paginationElement.appendChild(ellipsis);
-        }
-        
-        const lastBtn = document.createElement("button");
-        lastBtn.textContent = totalPages;
-        lastBtn.addEventListener("click", () => {
-          currentPage = totalPages;
-          renderCaptains();
-          renderPagination();
-        });
-        paginationElement.appendChild(lastBtn);
-      }
-      
-      // Next button
-      const nextBtn = document.createElement("button");
-      nextBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-      nextBtn.disabled = currentPage === totalPages;
-      nextBtn.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          renderCaptains();
-          renderPagination();
-        }
-      });
-      paginationElement.appendChild(nextBtn);
+      const next = document.createElement("button");
+      next.innerHTML = '<i class="fas fa-chevron-left"></i>';
+      next.disabled = currentPage === totalPages;
+      next.onclick = () => { 
+        if (currentPage < totalPages) { 
+          currentPage++; 
+          renderCaptains(); 
+          renderPagination(); 
+        } 
+      };
+      paginationElement.appendChild(next);
     }
     
-    // Update statistics
-    function updateStats(totalCaptains, totalOrders, deliveredOrders, totalCommission) {
-      document.getElementById("total-captains").textContent = totalCaptains;
-      document.getElementById("total-orders").textContent = totalOrders;
-      document.getElementById("delivered-orders").textContent = deliveredOrders;
-      document.getElementById("total-commission").textContent = `${totalCommission.toFixed(2)} جنيه`;
+    function createPageButton(page, active = false) {
+      const btn = document.createElement("button");
+      btn.textContent = page;
+      if (active) btn.classList.add("active");
+      btn.onclick = () => { currentPage = page; renderCaptains(); renderPagination(); };
+      return btn;
     }
     
-    // Show captain details
+    function addEllipsis() {
+      const span = document.createElement("span");
+      span.textContent = "...";
+      span.style.padding = "0.5rem";
+      return paginationElement.appendChild(span);
+    }
+    
+    function updateStats(total, orders, delivered, commission) {
+      document.getElementById("total-captains").textContent = total;
+      document.getElementById("total-orders").textContent = orders;
+      document.getElementById("delivered-orders").textContent = delivered;
+      document.getElementById("total-commission").textContent = `${commission.toFixed(2)} جنيه`;
+    }
+    
     function showCaptainDetails(captain) {
-      // Set basic info
+      if (!captain) return showToast("الكابتن غير موجود", "error");
+      
       document.getElementById('details-captain-name').textContent = captain.full_name;
       document.getElementById('details-captain-phone').textContent = captain.phone || 'غير متوفر';
       document.getElementById('details-captain-joined').textContent = new Date(captain.created_at).toLocaleDateString('ar-EG');
-      
-      // Set overview stats
       document.getElementById('details-total-orders').textContent = captain.total_orders;
       document.getElementById('details-delivered').textContent = captain.delivered;
       document.getElementById('details-pending').textContent = captain.pending;
@@ -1399,57 +1289,50 @@ async function loadOfficeLogo() {
       document.getElementById('details-total-commission').textContent = `${captain.total_commission.toFixed(2)} جنيه`;
       document.getElementById('details-withdrawn').textContent = `${captain.total_withdrawn.toFixed(2)} جنيه`;
       
-      // Set orders
       const ordersList = document.getElementById('orders-list');
       ordersList.innerHTML = '';
       
-      if (captain.recent_orders.length === 0) {
-        ordersList.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 1rem;">لا توجد طلبات حديثة</p>';
+      if (captain.recent_orders.length === 0 || !captain.recent_orders.some(Boolean)) {
+        ordersList.innerHTML = '<p style="text-align:center;color:var(--gray);padding:1rem;">لا توجد طلبات</p>';
       } else {
-        captain.recent_orders.forEach(order => {
-          const orderStatusClass = order.status === 'تم التوصيل' ? 'success' : 
-                                 order.status === 'جاري التوصيل' ? 'warning' : 
-                                 order.status === 'فشل التوصيل' ? 'danger' : 'info';
-          
-          const orderItem = document.createElement('div');
-          orderItem.className = 'order-item';
-          orderItem.innerHTML = `
+        captain.recent_orders.filter(Boolean).forEach(order => {
+          const statusClass = order.status === 'تم التوصيل' ? 'success' :
+                              order.status === 'جاري التوصيل' ? 'warning' :
+                              order.status === 'فشل التوصيل' ? 'danger' : 'info';
+                              
+          const item = document.createElement('div');
+          item.className = 'order-item';
+          item.innerHTML = `
             <div class="order-info">
-              <div style="font-weight: 500;">طلب #${order.id}</div>
-              <div style="font-size: 0.8rem; color: var(--gray); margin: 0.25rem 0;">
-                ${new Date(order.created_at).toLocaleTimeString('ar-EG')}
-              </div>
+              <div>${(order.order_price ? parseFloat(order.order_price).toFixed(2) : '0.00')} جنيه</div>
+              <small>${(order.service_price ? parseFloat(order.service_price).toFixed(2) : '0.00')} (الخدمة)</small>
             </div>
-            <div class="order-info" style="text-align: left;">
-              <div style="font-weight: 500;">${order.order_price.toFixed(2)} جنيه</div>
-              <div style="font-size: 0.8rem; color: var(--gray); margin: 0.25rem 0;">
-                ${order.service_price.toFixed(2)} جنيه (الخدمة)
-              </div>
-            </div>
-            <div class="order-status status-${orderStatusClass}">
-              ${order.status}
-            </div>
+            <div class="order-status status-${statusClass}">${order.status}</div>
             <div class="order-actions">
-              <button class="btn btn-sm btn-outline" onclick="showOrderDetails('${order.id}')">
+              <button class="btn btn-sm btn-outline view-order-btn" data-id="${order.id}">
                 <i class="fas fa-eye"></i>
               </button>
-            </div>
-          `;
-          ordersList.appendChild(orderItem);
+            </div>`;
+          ordersList.appendChild(item);
+        });
+        
+        // Delegate view order click
+        ordersList.querySelectorAll('.view-order-btn').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const orderId = btn.getAttribute('data-id');
+            window.showOrderDetails(orderId);
+          };
         });
       }
       
-      // Fetch withdrawals history
       fetchWithdrawalsHistory(captain.id);
-      
-      // Show modal
       captainDetailsModal.style.display = 'flex';
     }
     
-    // Fetch withdrawals history
     async function fetchWithdrawalsHistory(captainId) {
       try {
-        const { data: withdrawals, error } = await supabase
+        const { data, error } = await supabase
           .from('captain_withdrawals')
           .select('*')
           .eq('captain_id', captainId)
@@ -1458,192 +1341,117 @@ async function loadOfficeLogo() {
           
         if (error) throw error;
         
-        const historyBody = document.getElementById('withdrawals-history');
-        historyBody.innerHTML = '';
+        const body = document.getElementById('withdrawals-history');
+        body.innerHTML = '';
         
-        if (withdrawals.length === 0) {
-          historyBody.innerHTML = `
-            <tr>
-              <td colspan="4" style="text-align: center; color: var(--gray); padding: 1rem;">
-                لا توجد عمليات سحب
-              </td>
-            </tr>
-          `;
+        if (data.length === 0) {
+          body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--gray);">لا توجد عمليات</td></tr>`;
         } else {
-          withdrawals.forEach(withdrawal => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${new Date(withdrawal.created_at).toLocaleDateString('ar-EG')}</td>
-              <td>${withdrawal.amount.toFixed(2)} جنيه</td>
+          data.forEach(w => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${new Date(w.created_at).toLocaleDateString('ar-EG')}</td>
+              <td>${w.amount.toFixed(2)} جنيه</td>
               <td><span class="status-badge status-success">تم السحب</span></td>
-              <td>${withdrawal.notes || '-'}</td>
-            `;
-            historyBody.appendChild(row);
+              <td>${w.notes || '-'}</td>`;
+            body.appendChild(tr);
           });
         }
-      } catch (error) {
-        console.error('Error fetching withdrawals history:', error);
-        document.getElementById('withdrawals-history').innerHTML = `
-          <tr>
-            <td colspan="4" style="text-align: center; color: var(--danger); padding: 1rem;">
-              خطأ في تحميل السجل
-            </td>
-          </tr>
-        `;
+      } catch (err) {
+        console.error("Fetch history error:", err);
+        document.getElementById('withdrawals-history').innerHTML = `<tr><td colspan="4" style="color:var(--danger);">خطأ</td></tr>`;
       }
     }
     
-    // Show toast notifications
-    function showToast(message, type = 'success') {
-      const toastMessage = document.getElementById('toast-message');
-      toastMessage.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 5000);
-    }
-    
-    // Withdraw commission
-    async function handleWithdraw() {
-      const amountInput = document.getElementById('withdraw-amount');
-      const amount = parseFloat(amountInput.value);
-      const notes = document.getElementById('withdraw-notes').value;
-      
-      if (!amount || amount <= 0) {
-        showToast('يرجى إدخال مبلغ سحب صحيح', 'error');
-        return;
-      }
-      
-      if (amount > selectedCaptain.available_commission) {
-        showToast('مبلغ السحب أكبر من العمولة المتاحة', 'error');
-        return;
-      }
-      
-      try {
-        // Insert withdrawal record
-        const { error: insertError } = await supabase
-          .from('captain_withdrawals')
-          .insert([
-            {
-              captain_id: selectedCaptain.id,
-              amount: amount,
-              notes: notes,
-              created_at: new Date().toISOString()
-            }
-          ]);
-          
-        if (insertError) throw insertError;
-        
-        // Update captain's total withdrawn
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ 
-            total_withdrawn: selectedCaptain.total_withdrawn + amount
-          })
-          .eq('id', selectedCaptain.id);
-          
-        if (updateError) throw updateError;
-        
-        // Update local data
-        selectedCaptain.total_withdrawn += amount;
-        selectedCaptain.available_commission -= amount;
-        
-        // Update UI
-        withdrawModal.style.display = 'none';
-        renderCaptains();
-        showToast('تم سحب العمولة بنجاح');
-        
-        // Reset form
-        amountInput.value = '';
-        document.getElementById('withdraw-notes').value = '';
-        
-      } catch (error) {
-        console.error('Error withdrawing commission:', error);
-        let errorMessage = 'حدث خطأ أثناء سحب العمولة';
-        if (error.message.includes('row-level security policy')) {
-          errorMessage = 'ليس لديك الصلاحيات اللازمة لسحب العمولة لهذا الكابتن.';
-        } else if (error.message.includes('column')) {
-          errorMessage = 'خطأ في أسماء الأعمدة. يرجى التحقق من جدول captain_withdrawals.';
-        }
-        showToast(errorMessage, 'error');
-      }
-    }
-    
-    // Tab switching for captain details
     function setupTabSwitching() {
-      const tabButtons = document.querySelectorAll('.captain-details-tab');
-      const tabContents = document.querySelectorAll('.tab-content');
-      
-      tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const tab = button.dataset.tab;
-          
-          // Update active tab button
-          tabButtons.forEach(btn => {
-            btn.classList.remove('active');
-          });
-          button.classList.add('active');
-          
-          // Show active tab content
-          tabContents.forEach(content => {
-            content.style.display = 'none';
-          });
+      document.querySelectorAll('.captain-details-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.dataset.tab;
+          document.querySelectorAll('.captain-details-tab').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+          btn.classList.add('active');
           document.getElementById(`tab-${tab}`).style.display = 'block';
         });
       });
     }
     
-    // Event Listeners
-    document.addEventListener("DOMContentLoaded", () => {
-      loadTodayData();
+    function showToast(message, type = 'success') {
+      const msg = document.getElementById('toast-message');
+      msg.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5000);
+    }
+    
+    async function handleWithdraw() {
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+      const notes = document.getElementById('withdraw-notes').value;
+      
+      if (!amount || amount <= 0) return showToast('أدخل مبلغًا صحيحًا', 'error');
+      if (amount > selectedCaptain.available_commission) return showToast('المبلغ أكبر من المتاح', 'error');
+      
+      try {
+        const { error: insertErr } = await supabase.from('captain_withdrawals').insert([{
+          captain_id: selectedCaptain.id,
+          amount,
+          notes,
+          created_at: new Date().toISOString()
+        }]);
+        
+        if (insertErr) throw insertErr;
+        
+        const { error: updateErr } = await supabase.from('users')
+          .update({ total_withdrawn: selectedCaptain.total_withdrawn + amount })
+          .eq('id', selectedCaptain.id);
+          
+        if (updateErr) throw updateErr;
+        
+        selectedCaptain.total_withdrawn += amount;
+        selectedCaptain.available_commission -= amount;
+        
+        withdrawModal.style.display = 'none';
+        renderCaptains();
+        showToast('تم السحب بنجاح');
+        
+        document.getElementById('withdraw-amount').value = '';
+        document.getElementById('withdraw-notes').value = '';
+        
+      } catch (err) {
+        console.error('Withdraw error:', err);
+        showToast('خطأ في السحب', 'error');
+      }
+    }
+    
+    // Events
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadOfficeLogo();
+      await loadTodayData();
       setupTabSwitching();
     });
     
     searchInput.addEventListener('input', handleSearch);
     
-    // Filter buttons
-    filterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        applyFilter(button.dataset.filter);
+    filterButtons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.filter)));
+    
+    [closeWithdrawModal, cancelWithdraw, closeDetailsBtn].forEach(el => {
+      el.addEventListener('click', () => {
+        withdrawModal.style.display = 'none';
+        captainDetailsModal.style.display = 'none';
       });
     });
     
-    // Modal events
-    closeWithdrawModal.addEventListener('click', () => withdrawModal.style.display = 'none');
-    closeDetailsModal.addEventListener('click', () => captainDetailsModal.style.display = 'none');
-    cancelWithdraw.addEventListener('click', () => withdrawModal.style.display = 'none');
-    closeDetailsBtn.addEventListener('click', () => captainDetailsModal.style.display = 'none');
     confirmWithdraw.addEventListener('click', handleWithdraw);
     
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-      if (e.target === withdrawModal) {
-        withdrawModal.style.display = 'none';
-      }
-      if (e.target === captainDetailsModal) {
-        captainDetailsModal.style.display = 'none';
-      }
+    window.addEventListener('click', e => {
+      if (e.target === withdrawModal) withdrawModal.style.display = 'none';
+      if (e.target === captainDetailsModal) captainDetailsModal.style.display = 'none';
     });
     
-    // Auto-refresh every 5 minutes
+    window.showOrderDetails = (id) => showToast(`عرض الطلب #${id}`);
+    window.logout = () => confirm('تسجيل الخروج؟') && showToast('تم الخروج');
+    
+    // Auto-refresh
     setInterval(loadTodayData, 5 * 60 * 1000);
-    
-    // Helper function for order details (placeholder)
-    window.showOrderDetails = function(orderId) {
-      showToast(`عرض تفاصيل الطلب #${orderId}`);
-    };
-    
-    // Logout function
-    window.logout = function() {
-      if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
-        showToast('تم تسجيل الخروج بنجاح');
-        // In a real app, you would redirect to login page
-        // window.location.href = 'login.html';
-      }
-    };
-        await loadOfficeLogo();
-
   </script>
 </body>
 </html>
