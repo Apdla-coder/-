@@ -744,13 +744,6 @@ setTimeout(() => {
       // showMessage(successMessage, "سيتم توجيهك إلى لوحة الكابتن...", 0);
       // console.log("توجيه إلى: captain.html");
       break;
-    case "restaurant":
-      window.location.href = "resturant.html"; // <-- تفعيل التوجيه
-      // showMessage(successMessage, "سيتم توجيهك إلى لوحة المطعم...", 0);
-      // console.log("توجيه إلى: resturant.html");
-      break;
-    default:
-      throw new Error("هذا الحساب غير مصرح له بالدخول. الدور: " + profile.role);
   }
 }, 1500);    } catch (error) {
       console.error('خطأ في تسجيل الدخول:', error);

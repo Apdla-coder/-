@@ -238,26 +238,6 @@
       border-bottom: 2px solid var(--border);
       color: var(--primary);
     }
-    .optional-section {
-      background: #f8fafc;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      margin: 1rem 0;
-    }
-    .toggle-optional {
-      color: var(--primary);
-      background: none;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-    }
-    .toggle-optional:hover {
-      text-decoration: underline;
-    }
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -336,7 +316,6 @@
             <label for="customName">اسم العميل *</label>
             <input type="text" class="form-control" id="customName" placeholder="أدخل اسم العميل" required>
           </div>
-          
           <div class="form-row">
             <div class="form-col">
               <div class="form-group">
@@ -351,51 +330,56 @@
               </div>
             </div>
           </div>
-          
           <div class="form-row">
             <div class="form-col">
               <div class="form-group">
-                <label for="orderPrice">سعر الطلب (ج.م) *</label>
-                <input type="number" class="form-control" id="orderPrice" placeholder="0.00" min="0" step="0.01" required>
+                <label for="serviceType">نوع الخدمة *</label>
+                <select class="form-control" id="serviceType" required>
+                  <option value="">اختر نوع الخدمة</option>
+                  <option value="توصيل">توصيل</option>
+                  <option value="شراء">شراء</option>
+                  <option value="تحصيل">تحصيل</option>
+                  <option value="أخرى">أخرى</option>
+                </select>
               </div>
             </div>
             <div class="form-col">
               <div class="form-group">
-                <label for="servicePrice">سعر التوصيل (ج.م) *</label>
+                <label for="servicePrice">سعر الخدمة (ج.م) *</label>
                 <input type="number" class="form-control" id="servicePrice" placeholder="0.00" min="0" step="0.01" required>
               </div>
             </div>
           </div>
-          
-          <div class="optional-section">
-            <button type="button" class="toggle-optional" id="toggleRestaurant">
-              <i class="fas fa-chevron-down"></i>
-              إضافة معلومات المطعم (اختياري)
-            </button>
-            <div id="restaurantSection" style="display: none; margin-top: 1rem;">
+          <div class="form-group">
+            <label for="captainSelect">اختيار الكابتن *</label>
+            <select class="form-control" id="captainSelect" required>
+              <option value="">اختر الكابتن</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-col">
               <div class="form-group">
-                <label for="restaurantSelect">اسم المطعم</label>
-                <select class="form-control" id="restaurantSelect">
-                  <option value="">اختر المطعم</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="commissionPercent">نسبة العمولة (%)</label>
-                <select class="form-control" id="commissionPercent">
-                  <option value="15">15%</option>
+                <label for="captainCommission">نسبة عمولة الكابتن (%)</label>
+                <select class="form-control" id="captainCommission">
                   <option value="20" selected>20%</option>
                   <option value="25">25%</option>
                   <option value="30">30%</option>
+                  <option value="35">35%</option>
+                  <option value="40">40%</option>
                 </select>
               </div>
             </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="captainEarning">ربح الكابتن (ج.م)</label>
+                <input type="number" class="form-control" id="captainEarning" placeholder="0.00" min="0" step="0.01" readonly>
+              </div>
+            </div>
           </div>
-          
           <div class="form-group">
             <label for="notes">ملاحظات</label>
             <textarea class="form-control" id="notes" rows="3" placeholder="أدخل أي ملاحظات إضافية"></textarea>
           </div>
-          
           <div class="form-footer">
             <button type="submit" class="btn btn-primary" id="submitBtn">
               <span id="submitText">إضافة الطلب</span>
@@ -409,112 +393,109 @@
       </div>
     </div>
   </div>
-  
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    
     // إنشاء عميل Supabase
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-    
-    // تحميل المطاعم عند تحميل الصفحة
-    async function loadRestaurants() {
+    // تحميل الكباتن عند تحميل الصفحة
+    async function loadCaptains() {
       try {
         const { data, error } = await supabase
           .from("users")
           .select("id, full_name")
-          .eq("role", "restaurant");
-        
+          .eq("role", "captain");
         if (error) {
-          console.error('خطأ في تحميل المطاعم:', error);
+          console.error('خطأ في تحميل الكباتن:', error);
           return;
         }
-        
-        const restaurantSelect = document.getElementById("restaurantSelect");
-        if (!restaurantSelect) return;
-        
-        restaurantSelect.innerHTML = '<option value="">اختر المطعم</option>';
-        
-        data.forEach(restaurant => {
+        const captainSelect = document.getElementById("captainSelect");
+        if (!captainSelect) return;
+        captainSelect.innerHTML = '<option value="">اختر الكابتن</option>';
+        data.forEach(captain => {
           const option = document.createElement("option");
-          option.value = restaurant.id;
-          option.textContent = restaurant.full_name;
-          restaurantSelect.appendChild(option);
+          option.value = captain.id;
+          option.textContent = captain.full_name;
+          captainSelect.appendChild(option);
         });
-        
-        console.log(`✅ تم تحميل ${data.length} مطعم`);
+        console.log(`✅ تم تحميل ${data.length} كابتن`);
       } catch (error) {
-        console.error('خطأ في تحميل المطاعم:', error);
+        console.error('خطأ في تحميل الكباتن:', error);
       }
     }
-    
+    // حساب ربح الكابتن (الباقي من سعر الخدمة بعد خصم نسبة العمولة)
+    function calculateCaptainEarnings() {
+      const servicePrice = parseFloat(document.getElementById("servicePrice").value) || 0;
+      const commissionPercent = parseInt(document.getElementById("captainCommission")?.value || "20");
+      // ربح الكابتن = سعر الخدمة - (سعر الخدمة * نسبة العمولة / 100)
+      const commissionAmount = (servicePrice * commissionPercent / 100);
+      const earnings = (servicePrice - commissionAmount).toFixed(2);
+      document.getElementById("captainEarning").value = earnings;
+    }
+    // تحديث حساب ربح الكابتن عند تغيير القيم
+    function setupEarningsCalculation() {
+      const servicePriceInput = document.getElementById("servicePrice");
+      const commissionSelect = document.getElementById("captainCommission");
+      
+      if (servicePriceInput) {
+        servicePriceInput.addEventListener("input", calculateCaptainEarnings);
+      }
+      if (commissionSelect) {
+        commissionSelect.addEventListener("change", calculateCaptainEarnings);
+      }
+    }
     // إضافة طلب جديد
     async function addNewOrder(event) {
       event.preventDefault();
-      
       // الحصول على القيم من النموذج
       const customName = document.getElementById("customName").value.trim();
       const customPhone = document.getElementById("customPhone").value.trim();
       const customAddress = document.getElementById("customAddress").value.trim();
-      const orderPrice = parseFloat(document.getElementById("orderPrice").value);
+      const serviceType = document.getElementById("serviceType").value.trim();
       const servicePrice = parseFloat(document.getElementById("servicePrice").value);
+      const captainId = document.getElementById("captainSelect").value;
       const notes = document.getElementById("notes").value.trim();
-      
       // التحقق من صحة البيانات الأساسية
-      if (!customName || !customPhone || !customAddress || isNaN(orderPrice) || isNaN(servicePrice)) {
+      if (!customName || !customPhone || !customAddress || !serviceType || isNaN(servicePrice) || !captainId) {
         showError('يرجى ملء جميع الحقول المطلوبة');
         return;
       }
-      
-      // الحصول على قيم المطعم إذا كانت محددة
-      const restaurantId = document.getElementById("restaurantSelect")?.value || null;
-      const commissionPercent = restaurantId ? parseInt(document.getElementById("commissionPercent")?.value || "20") : 0;
-      
+      // الحصول على نسبة العمولة
+      const commissionPercent = parseInt(document.getElementById("captainCommission")?.value || "20");
       // إظهار حالة التحميل
       const submitBtn = document.getElementById("submitBtn");
       const submitText = document.getElementById("submitText");
       const submitSpinner = document.getElementById("submitSpinner");
-      
       submitBtn.disabled = true;
       submitText.textContent = 'جاري الإضافة...';
       submitSpinner.style.display = 'inline-block';
-      
       try {
         // إضافة الطلب إلى قاعدة البيانات
         const orderData = {
           custom_name: customName,
           custom_phone: customPhone,
           custom_address: customAddress,
-          order_price: orderPrice,
+          service_type: serviceType,
           service_price: servicePrice,
+          captain_id: captainId,
+          commission_percent: commissionPercent,
           notes: notes || null,
-          status: 'قيد التوزيع'
+          status: 'في انتظار التسليم' // تم التحويل للكابتن في حالة انتظار التسليم
         };
-        
-        // إضافة معلومات المطعم فقط إذا تم تحديده
-        if (restaurantId) {
-          orderData.restaurant_id = restaurantId;
-          orderData.commission_percent = commissionPercent;
-        }
-        
         const { data, error } = await supabase
           .from("orders")
           .insert(orderData)
           .select();
-        
         if (error) {
           console.error('خطأ في إضافة الطلب:', error);
           throw error;
         }
-        
         console.log('✅ تم إضافة الطلب بنجاح:', data);
-        showSuccess('تم إضافة الطلب بنجاح');
-        
+        showSuccess('تم إضافة الطلب بنجاح وتحويله للكابتن في انتظار التسليم');
         // إعادة تعيين النموذج
         document.getElementById("addOrderForm").reset();
-        
       } catch (error) {
         console.error('خطأ في إضافة الطلب:', error);
         showError('حدث خطأ في إضافة الطلب: ' + error.message);
@@ -525,7 +506,6 @@
         submitSpinner.style.display = 'none';
       }
     }
-    
     // دالة تسجيل الخروج
     window.logout = async function () {
       try {
@@ -536,55 +516,31 @@
         showError('حدث خطأ في تسجيل الخروج');
       }
     }
-    
     // عرض رسالة نجاح
     function showSuccess(message) {
       showNotification(message, 'success');
     }
-    
     // عرض رسالة خطأ
     function showError(message) {
       showNotification(message, 'error');
     }
-    
     // عرض إشعار تحذيري
     function showWarning(message) {
       showNotification(message, 'warning');
     }
-    
     // عرض الإشعار
     function showNotification(message, type = 'info') {
       const existingNotifications = document.querySelectorAll('.notification');
       existingNotifications.forEach(notif => notif.remove());
-      
       const notification = document.createElement('div');
       notification.className = `notification notification-${type}`;
       notification.textContent = message;
       document.body.appendChild(notification);
-      
       setTimeout(() => {
         notification.style.animation = 'slideUp 0.3s ease-in forwards';
         setTimeout(() => notification.remove(), 300);
       }, 4000);
     }
-    
-    // تبديل قسم المطعم
-    function toggleRestaurantSection() {
-      const section = document.getElementById("restaurantSection");
-      const toggleBtn = document.getElementById("toggleRestaurant");
-      const icon = toggleBtn.querySelector("i");
-      
-      if (section.style.display === "none") {
-        section.style.display = "block";
-        icon.className = "fas fa-chevron-up";
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> إخفاء معلومات المطعم';
-      } else {
-        section.style.display = "none";
-        icon.className = "fas fa-chevron-down";
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> إضافة معلومات المطعم (اختياري)';
-      }
-    }
-    
     // تهيئة التطبيق
     async function initializeApp() {
       try {
@@ -594,41 +550,29 @@
           window.location.href = './index.html';
           return;
         }
-        
         console.log("✅ المستخدم مُصادق عليه");
-        
-        // تحميل المطاعم
-        await loadRestaurants();
-        
+        // تحميل الكباتن
+        await loadCaptains();
         // إضافة مستمع لنموذج الإرسال
         const form = document.getElementById("addOrderForm");
         if (form) {
           form.addEventListener("submit", addNewOrder);
         }
-        
-        // إضافة مستمع لتبديل قسم المطعم
-        const toggleBtn = document.getElementById("toggleRestaurant");
-        if (toggleBtn) {
-          toggleBtn.addEventListener("click", toggleRestaurantSection);
-        }
-        
+        // إعداد حساب ربح الكابتن
+        setupEarningsCalculation();
         showSuccess('مرحبًا بك في صفحة إضافة الطلبات');
-        
       } catch (error) {
         console.error('خطأ في تهيئة التطبيق:', error);
         showError('حدث خطأ في تحميل الصفحة: ' + error.message);
       }
     }
-    
     // بدء تشغيل التطبيق
     document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
+  <div class="footer-links" style="text-align: center; margin-top: 2rem; padding: 1rem;">
+    <a href="https://wa.me/201220200747?text=مرحبًا، أود الاستفسار عن..." style="color: var(--primary); text-decoration: none; margin: 0 1rem;">الدعم الفني</a>
+    <a href="#" style="color: var(--primary); text-decoration: none; margin: 0 1rem;">شروط الاستخدام</a>
+    <a href="#" style="color: var(--primary); text-decoration: none; margin: 0 1rem;">سياسة الخصوصية</a>
+  </div>
 </body>
 </html>
-
-      <div class="footer-links">
-        <a href="https://wa.me/201220200747?text=مرحبًا، أود الاستفسار عن...">الدعم الفني</a>
-        <a href="#">شروط الاستخدام</a>
-        <a href="#">سياسة الخصوصية</a>
-      </div>
-

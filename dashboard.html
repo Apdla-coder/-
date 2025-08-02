@@ -38,14 +38,6 @@
       min-height: 100vh;
       margin-right: 0;
     }
-    .nav-links {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .nav-item {
-      margin: 0;
-    }
     .nav-link {
       display: flex;
       align-items: center;
@@ -428,37 +420,6 @@
       color: #059669;
       font-weight: bold;
     }
-    .notification {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3000;
-      padding: 1rem 2rem;
-      border-radius: 0.8rem;
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      animation: slideDown 0.3s ease-out;
-    }
-    .notification-success {
-      background: linear-gradient(135deg, #059669, #047857);
-    }
-    .notification-error {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-    .notification-info {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-    }
-    .new-order {
-      background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), transparent);
-      border-left: 4px solid #f97316;
-      animation: highlightNew 2s ease-in-out;
-    }
-    @keyframes highlightNew {
-      0% { background: rgba(249, 115, 22, 0.3); }
-      100% { background: rgba(249, 115, 22, 0.1); }
-    }
     .notification-bar {
       position: fixed;
       top: 0;
@@ -494,6 +455,57 @@
       font-size: 1.5rem;
       cursor: pointer;
       padding: 0.5rem;
+    }
+    .add-order-form {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: none;
+    }
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .btn-add-order {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-add-order:hover {
+      background: #047857;
+      transform: translateY(-2px);
+    }
+    .btn-cancel {
+      background: #d1d5db;
+      color: var(--dark);
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 1rem;
+    }
+    .btn-cancel:hover {
+      background: #9ca3af;
     }
     @media (max-width: 768px) {
       .header {
@@ -547,15 +559,6 @@
         font-size: 0.8rem;
       }
     }
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      .filter-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -567,7 +570,6 @@
     </div>
     <button class="notification-bar-close" onclick="closeNotificationBar()">&times;</button>
   </div>
-
   <div class="container">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -583,13 +585,13 @@
         <i class="fas fa-plus-circle"></i>
         <span>اضافة طلب يدويا</span>
       </a>
-      <a class="nav-link" href="./customers.html">
-        <i class="fas fa-users"></i>
-        <span>إدارة المستخدمين</span>
+      <a class="nav-link" href="./restaurant-management.html">
+        <i class="fas fa-plus-circle"></i>
+        <span>ادارة المطاعم</span>
       </a>
       <a class="nav-link" href="./covenant.html">
         <i class="fas fa-users"></i>
-        <span>نظام العهدة </span>
+        <span>نظام العهدة</span>
       </a>
       <a class="nav-link" href="./captain-preformans.html">
         <i class="fas fa-chart-line"></i>
@@ -604,7 +606,6 @@
         <span>تسجيل الخروج</span>
       </button>
     </div>
-
     <!-- Main Content -->
     <div class="main-content">
       <div class="header">
@@ -616,6 +617,56 @@
           <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </button>
       </div>
+      <!-- زر إضافة طلب -->
+      <div style="margin-bottom: 1rem;">
+        <button class="filter-btn" onclick="toggleAddOrderForm()">
+          <i class="fas fa-plus"></i> إضافة طلب يدويًا
+        </button>
+      </div>
+      <!-- نموذج إضافة طلب -->
+      <div class="add-order-form" id="add-order-form">
+        <h3 style="margin-bottom: 1rem; color: var(--dark);">إضافة طلب جديد</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="restaurant-select">اسم المطعم</label>
+            <select class="select-field" id="restaurant-select" required>
+              <option value="">اختر مطعمًا</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="delivery-address">عنوان التوصيل</label>
+            <input type="text" class="input-field" id="delivery-address" placeholder="أدخل عنوان التوصيل" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="service-price">سعر خدمة التوصيل (ج.م)</label>
+            <input type="number" class="input-field" id="service-price" placeholder="مثلاً: 30" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="commission-percent">نسبة العمولة من خدمة التوصيل (%)</label>
+            <select class="select-field" id="commission-percent" required>
+              <option value="20">20%</option>
+              <option value="25">25%</option>
+              <option value="30">30%</option>
+              <option value="35">35%</option>
+              <option value="40">40%</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="captain-select-new">اختيار الكابتن</label>
+            <select class="select-field" id="captain-select-new" required>
+              <option value="">اختر كابتن</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn-add-order" onclick="addManualOrder()">إضافة وتحويل لل delivery</button>
+          <button class="btn-cancel" onclick="toggleAddOrderForm()">إلغاء</button>
+        </div>
+      </div>
       <div class="stats-grid">
         <div class="stat-card">
           <i class="fas fa-shopping-cart fa-2x"></i>
@@ -626,11 +677,6 @@
           <i class="fas fa-check-circle fa-2x"></i>
           <div class="stat-value" id="delivered">0</div>
           <div class="stat-label">تم التوصيل</div>
-        </div>
-        <div class="stat-card pending">
-          <i class="fas fa-clock fa-2x"></i>
-          <div class="stat-value" id="pending">0</div>
-          <div class="stat-label">قيد التوزيع</div>
         </div>
         <div class="stat-card waiting">
           <i class="fas fa-box fa-2x"></i>
@@ -647,10 +693,7 @@
         <button class="filter-btn" data-status="all" onclick="setFilterStatus('all')">
           <i class="fas fa-list"></i> جميع الطلبات
         </button>
-        <button class="filter-btn active" data-status="قيد التوزيع" onclick="setFilterStatus('قيد التوزيع')">
-          <i class="fas fa-clock"></i> قيد التوزيع <span id="orders-count-pending">(0)</span>
-        </button>
-        <button class="filter-btn" data-status="في انتظار التسليم" onclick="setFilterStatus('في انتظار التسليم')">
+        <button class="filter-btn active" data-status="في انتظار التسليم" onclick="setFilterStatus('في انتظار التسليم')">
           <i class="fas fa-box"></i> في انتظار التسليم
         </button>
         <button class="filter-btn" data-status="جاري التوصيل" onclick="setFilterStatus('جاري التوصيل')">
@@ -670,7 +713,6 @@
             <tr>
               <th>اسم المطعم</th>
               <th>عنوان التوصيل</th>
-              <th>سعر الطلب</th>
               <th>سعر التوصيل</th>
               <th>الكابتن</th>
               <th>العمولة</th>
@@ -680,7 +722,7 @@
           </thead>
           <tbody id="orders-body">
             <tr>
-              <td colspan="8" class="loading-state">
+              <td colspan="7" class="loading-state">
                 <div class="loading-spinner"></div>
                 جارٍ تحميل الطلبات...
               </td>
@@ -698,1166 +740,349 @@
         <button class="close-modal" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body" id="modal-details">
-        <!-- Order details will be loaded here -->
       </div>
     </div>
   </div>
-  <!-- Hidden audio element for notifications -->
+  <!-- Hidden audio for notifications -->
   <audio id="notification-sound" src="notification.mp3.mp3" preload="auto"></audio>
-<script type="module">
+  <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-    let currentStatusFilter = "قيد التوزيع";
+    let currentStatusFilter = "في انتظار التسليم";
     let currentSearchText = "";
-    let latestOrderIds = new Set();
-    let allOrders = [];
     let displayedOrders = [];
     let captains = [];
     let restaurants = [];
     const alertSound = document.getElementById("notification-sound");
-    let audioContext;
     let audioAllowed = false;
-    let autoRefreshInterval;
-    let lastNotificationTime = 0;
-    let notificationTimeout;
-    let pendingOrdersCheckInterval;
-    function getUrlParams() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        filter: params.get('filter') || "قيد التوزيع",
-        search: params.get('search') || ""
-      };
-    }
-    function updateUrlParams(filter, search) {
-      const url = new URL(window.location);
-      url.searchParams.set('filter', filter);
-      if (search) {
-        url.searchParams.set('search', search);
-      } else {
-        url.searchParams.delete('search');
-      }
-      window.history.replaceState({}, '', url);
-    }
-    async function initAudio() {
-      try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const buffer = audioContext.createBuffer(1, 1, 22050);
-        const source = audioContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioContext.destination);
-        source.start();
-        await audioContext.resume();
-        audioAllowed = true;
-        console.log("✅ السماح بتشغيل الصوت تم بنجاح");
-      } catch (err) {
-        console.warn("❌ رفض المتصفح تشغيل الصوت:", err.message);
-      }
-    }
-    document.addEventListener("click", initAudio, { once: true });
-    document.addEventListener("click", (e) => {
-      if (e.target.closest(".order-row button, .order-row select, .order-row input")) {
-        if (alertSound) {
-          alertSound.pause();
-          alertSound.currentTime = 0;
-        }
-      }
-    });
-    window.setFilterStatus = function (status) {
-      currentStatusFilter = status;
-      console.log(`🔄 تم تغيير الفلتر إلى: ${status}`);
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.status === status) {
-          btn.classList.add('active');
-        }
-      });
-      updateUrlParams(status, currentSearchText);
-      fetchOrdersByStatus(status);
-    }
-    window.handleSearch = function () {
-      const searchInput = document.getElementById("searchInput");
-      currentSearchText = searchInput ? searchInput.value.trim() : "";
-      console.log(`🔍 البحث: "${currentSearchText}"`);
-      updateUrlParams(currentStatusFilter, currentSearchText);
-      fetchOrdersByStatus(currentStatusFilter);
-    }
-    async function loadInitialData() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          window.location.href = './index.html';
-          return;
-        }
-        console.log("✅ المستخدم مُصادق عليه");
-        const urlParams = getUrlParams();
-        currentStatusFilter = urlParams.filter;
-        currentSearchText = urlParams.search;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-          btn.classList.remove('active');
-          if (btn.dataset.status === currentStatusFilter) {
-            btn.classList.add('active');
-          }
-        });
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) {
-          searchInput.value = currentSearchText;
-        }
-        await Promise.all([
-          loadCaptains(),
-          loadRestaurants(),
-          loadOfficeLogo()
-        ]);
-        console.log(`📋 تم تحميل ${captains.length} كابتن و ${restaurants.length} مطعم`);
-        await Promise.all([
-          loadStatistics(),
-          fetchOrdersByStatus(currentStatusFilter)
-        ]);
-        console.log("✅ تم تحميل جميع البيانات الأولية");
-      } catch (error) {
-        console.error('خطأ في تحميل البيانات:', error);
-        showError('حدث خطأ في تحميل البيانات: ' + error.message);
-      }
-    }
-    
-    async function loadOfficeLogo() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        const { data: userData, error } = await supabase
-          .from("users")
-          .select("full_name, avatar_url")
-          .eq("id", user.id)
-          .single();
-        if (error) throw error;
-        // تحديث شعار المكتب
-        const logoImg = document.querySelector('.sidebar-logo img');
-        const logoTitle = document.querySelector('.sidebar-logo h2');
-        if (logoImg) {
-          if (userData.avatar_url) {
-            logoImg.src = userData.avatar_url;
-            logoImg.alt = userData.full_name || "شعار المكتب";
-          } else {
-            logoImg.src = './assets/images/logo-placeholder.png';
-            logoImg.alt = "شعار المكتب";
-          }
-        }
-        if (logoTitle && userData.full_name) {
-          logoTitle.textContent = userData.full_name;
-        }
-      } catch (error) {
-        console.error('خطأ في تحميل شعار المكتب:', error);
-        const logoImg = document.querySelector('.sidebar-logo img');
-        if (logoImg) {
-          logoImg.src = './assets/images/logo-placeholder.png';
-          logoImg.alt = "خطأ في تحميل الشعار";
-        }
-      }
-    }
+    // تفعيل الصوت
+    document.addEventListener("click", () => { audioAllowed = true; }, { once: true });
+    // تحميل الكباتن
     async function loadCaptains() {
-      try {
-        console.log("🔄 جاري تحميل الكباتن...");
-        const { data, error } = await supabase
-          .from("users")
-          .select("id, full_name")
-          .eq("role", "captain");
-        if (error) {
-          console.error('خطأ في تحميل الكباتن:', error);
-          captains = [];
-          showError('خطأ في تحميل الكباتن: ' + error.message);
-        } else {
-          captains = data || [];
-          console.log(`✅ تم تحميل ${captains.length} كابتن:`, captains);
-          if (captains.length === 0) {
-            console.warn("⚠️ لا توجد كباتن في قاعدة البيانات");
-            showError('لا توجد كباتن مسجلة في النظام. يرجى إضافة كباتن أولاً.');
-          }
-        }
-      } catch (error) {
-        console.error('خطأ في تحميل الكباتن:', error);
-        captains = [];
-        showError('حدث خطأ في تحميل الكباتن: ' + error.message);
-      }
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, full_name")
+        .eq("role", "captain");
+      if (error) throw error;
+      captains = data || [];
+      populateCaptainSelects();
     }
+    // تحميل المطاعم من جدول restaurants
     async function loadRestaurants() {
-      try {
-        const { data, error } = await supabase
-          .from("users")
-          .select("id, full_name")
-          .eq("role", "restaurant");
-        if (error) {
-          console.error('خطأ في تحميل المطاعم:', error);
-          restaurants = [];
-        } else {
-          restaurants = data || [];
-          console.log(`✅ تم تحميل ${restaurants.length} مطعم`);
-        }
-      } catch (error) {
-        console.error('خطأ في تحميل المطاعم:', error);
-        restaurants = [];
-      }
+      const { data, error } = await supabase
+        .from("restaurants")
+        .select("id, restaurant_name");
+      if (error) throw error;
+      restaurants = data || [];
+      populateRestaurantSelect();
+      console.log("المطاعم المحملة من قاعدة البيانات:", restaurants);
     }
+    // ملء قائمة المطاعم من جدول restaurants فقط
+    function populateRestaurantSelect() {
+      const select = document.getElementById("restaurant-select");
+      if (!select) return;
+      select.innerHTML = '<option value="">اختر مطعمًا</option>';
+      restaurants.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.id;
+        opt.textContent = r.restaurant_name;
+        select.appendChild(opt);
+      });
+    }
+    // ملء قوائم الكباتن
+    function populateCaptainSelects() {
+      [document.getElementById("captain-select-new")].forEach(select => {
+        if (!select) return;
+        select.innerHTML = '<option value="">اختر كابتن</option>';
+        captains.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.textContent = c.full_name;
+          select.appendChild(opt);
+        });
+      });
+    }
+    // تحميل شعار المكتب
+    async function loadOfficeLogo() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: userData } = await supabase
+        .from("users")
+        .select("full_name, avatar_url")
+        .eq("id", user.id)
+        .single();
+      const logoImg = document.querySelector('.sidebar-logo img');
+      const logoTitle = document.querySelector('.sidebar-logo h2');
+      if (logoImg) logoImg.src = userData.avatar_url || './assets/images/logo-placeholder.png';
+      if (logoTitle) logoTitle.textContent = userData.full_name || "مكتب السريع";
+    }
+    // تحميل الإحصائيات
     async function loadStatistics() {
-      try {
-        console.log("🔄 جاري تحميل الإحصائيات...");
-        const [totalResult, deliveredResult, pendingResult, waitingDeliveryResult, inTransitResult] = await Promise.all([
-          supabase.from("orders").select("id", { count: 'exact', head: true }),
-          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "تم التوصيل"),
-          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "قيد التوزيع"),
-          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "في انتظار التسليم"),
-          supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "جاري التوصيل")
-        ]);
-        const stats = {
-          total: totalResult.count || 0,
-          delivered: deliveredResult.count || 0,
-          pending: pendingResult.count || 0,
-          waitingDelivery: waitingDeliveryResult.count || 0,
-          inTransit: inTransitResult.count || 0
-        };
-        updateStatisticsDisplay(stats);
-        console.log("📊 إحصائيات محدثة:", stats);
-      } catch (error) {
-        console.error('خطأ في تحميل الإحصائيات:', error);
-      }
+      const [total, delivered, waiting, inTransit] = await Promise.all([
+        supabase.from("orders").select("id", { count: 'exact', head: true }),
+        supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "تم التوصيل"),
+        supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "في انتظار التسليم"),
+        supabase.from("orders").select("id", { count: 'exact', head: true }).eq("status", "جاري التوصيل")
+      ]);
+      document.getElementById("total-orders").textContent = total.count || 0;
+      document.getElementById("delivered").textContent = delivered.count || 0;
+      document.getElementById("waiting-delivery").textContent = waiting.count || 0;
+      document.getElementById("in-transit").textContent = inTransit.count || 0;
     }
-    function updateStatisticsDisplay(stats) {
-      const totalOrdersEl = document.getElementById("total-orders");
-      const deliveredEl = document.getElementById("delivered");
-      const pendingEl = document.getElementById("pending");
-      const waitingDeliveryEl = document.getElementById("waiting-delivery");
-      const inTransitEl = document.getElementById("in-transit");
-      if (totalOrdersEl) totalOrdersEl.textContent = stats.total;
-      if (deliveredEl) deliveredEl.textContent = stats.delivered;
-      if (pendingEl) pendingEl.textContent = stats.pending;
-      if (waitingDeliveryEl) waitingDeliveryEl.textContent = stats.waitingDelivery;
-      if (inTransitEl) inTransitEl.textContent = stats.inTransit;
-    }
+    // عرض الطلبات
     async function fetchOrdersByStatus(status) {
-      try {
-        console.log(`🔄 جاري تحميل الطلبات للحالة: ${status}`);
-        showLoadingState();
-        let query = supabase
-          .from("orders")
-          .select(`
-            id,
-            custom_name,
-            custom_phone,
-            custom_address,
-            restaurant_id,
-            captain_id,
-            status,
-            order_price,
-            service_price,
-            commission_percent,
-            notes,
-            created_at
-          `)
-          .order("created_at", { ascending: false });
-        if (status !== "all") {
-          query = query.eq("status", status);
-        }
-        const { data: orders, error } = await query;
-        if (error) {
-          console.error('خطأ في استعلام الطلبات:', error);
-          throw error;
-        }
-        let filteredOrders = orders || [];
-        if (currentSearchText) {
-          filteredOrders = filteredOrders.filter(order => {
-            const restaurant = restaurants.find(r => r.id === order.restaurant_id);
-            const captain = captains.find(c => c.id === order.captain_id);
-            const searchLower = currentSearchText.toLowerCase();
-            return (
-              (order.custom_name && order.custom_name.toLowerCase().includes(searchLower)) ||
-              (order.custom_phone && order.custom_phone.includes(currentSearchText)) ||
-              (order.custom_address && order.custom_address.toLowerCase().includes(searchLower)) ||
-              (restaurant?.full_name && restaurant.full_name.toLowerCase().includes(searchLower)) ||
-              (captain?.full_name && captain.full_name.toLowerCase().includes(searchLower))
-            );
-          });
-        }
-        displayedOrders = filteredOrders;
-        console.log(`✅ تم تحميل ${filteredOrders.length} طلب للحالة: ${status}`);
-        displayOrders(filteredOrders);
-        updateOrdersCount(filteredOrders.length);
-      } catch (error) {
-        console.error('خطأ في تحميل الطلبات:', error);
-        showError('حدث خطأ في تحميل الطلبات: ' + error.message);
-        showErrorState(error.message);
+      showLoadingState();
+      let query = supabase
+        .from("orders")
+        .select("id, custom_name, custom_phone, custom_address, restaurant_id, captain_id, status, order_price, service_price, created_at, commission_percent")
+        .order("created_at", { ascending: false });
+      if (status !== "all") query = query.eq("status", status);
+const { data: orders, error } = await query;      if (error) return showErrorState(error.message);
+      let filtered = orders || [];
+      if (currentSearchText) {
+        filtered = filtered.filter(order => {
+          const rest = restaurants.find(r => r.id === order.restaurant_id);
+          const cap = captains.find(c => c.id === order.captain_id);
+          const text = currentSearchText.toLowerCase();
+          return (
+            order.custom_name?.toLowerCase().includes(text) ||
+            order.custom_phone?.includes(currentSearchText) ||
+            order.custom_address?.toLowerCase().includes(text) ||
+            rest?.restaurant_name?.toLowerCase().includes(text) ||
+            cap?.full_name?.toLowerCase().includes(text)
+          );
+        });
       }
+      displayedOrders = filtered;
+      displayOrders(filtered);
     }
     function showLoadingState() {
-      const tbody = document.getElementById("orders-body");
-      if (tbody) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="loading-state">
-              <div class="loading-spinner"></div>
-              جارٍ تحميل الطلبات...
-            </td>
-          </tr>
-        `;
-      }
+      document.getElementById("orders-body").innerHTML = `
+        <tr><td colspan="7" class="loading-state">جاري التحميل...</td></tr>`;
     }
-    function showErrorState(errorMessage) {
-      const tbody = document.getElementById("orders-body");
-      if (tbody) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="loading-state" style="color: #ef4444;">
-              ❌ خطأ في تحميل الطلبات: ${errorMessage}
-              <br>
-              <button onclick="fetchOrdersByStatus('${currentStatusFilter}')" 
-                      style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
-                إعادة المحاولة
-              </button>
-            </td>
-          </tr>
-        `;
-      }
+    function showErrorState(msg) {
+      document.getElementById("orders-body").innerHTML = `
+        <tr><td colspan="7" class="loading-state" style="color:red;">❌ ${msg}</td></tr>`;
     }
-    function updateOrdersCount(count) {
-      const ordersCountEl = document.getElementById("orders-count-pending");
-      if (ordersCountEl) {
-        ordersCountEl.textContent = `(${count})`;
-      }
-    }
-    function generateCaptainOptions(selectedCaptainId) {
-      if (!captains || captains.length === 0) {
-        return '<option value="" disabled>لا توجد كباتن متاحة</option>';
-      }
-      return captains.map(captain => {
-        const isSelected = selectedCaptainId === captain.id;
-        return `<option value="${captain.id}" ${isSelected ? 'selected' : ''} data-captain-name="${captain.full_name}">
-          ${captain.full_name}
-        </option>`;
-      }).join('');
+    function generateCaptainOptions(selectedId) {
+      return captains.map(c => `
+        <option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.full_name}</option>
+      `).join('');
     }
     window.handleCaptainChange = async function(orderId, captainId) {
-      const transferBtn = document.getElementById(`transfer-btn-${orderId}`);
+      const select = document.getElementById(`captain-select-${orderId}`);
       const reassignBtn = document.getElementById(`reassign-btn-${orderId}`);
-      const captainInfo = document.getElementById(`captain-info-${orderId}`);
-      const captainSelect = document.getElementById(`captain-select-${orderId}`);
-      try {
-        if (captainSelect) {
-          captainSelect.disabled = true;
-          captainSelect.style.opacity = '0.6';
-        }
-        if (captainId) {
-          const { error } = await supabase
-            .from("orders")
-            .update({ captain_id: captainId })
-            .eq("id", orderId);
-          if (error) {
-            console.error('خطأ في تعيين الكابتن:', error);
-            showError('حدث خطأ في تعيين الكابتن');
-            if (captainSelect) {
-              captainSelect.value = "";
-            }
-            return;
-          }
-          const selectedCaptain = captains.find(c => c.id === captainId);
-          const captainName = selectedCaptain ? selectedCaptain.full_name : 'غير محدد';
-          if (transferBtn) {
-            transferBtn.disabled = false;
-            transferBtn.className = 'transfer-btn enabled';
-            transferBtn.textContent = 'تحويل الطلب';
-          }
-          if (reassignBtn) {
-            reassignBtn.disabled = false;
-            reassignBtn.className = 'reassign-btn enabled';
-            reassignBtn.textContent = 'إعادة تعيين الكابتن';
-          }
-          if (captainInfo) {
-            captainInfo.innerHTML = `
-              <span class="captain-badge success">
-                ✓ تم تعيين: ${captainName}
-              </span>
-            `;
-            captainInfo.style.display = 'block';
-          } else {
-            const captainContainer = captainSelect.closest('.captain-select-container');
-            if (captainContainer) {
-              const newCaptainInfo = document.createElement('div');
-              newCaptainInfo.className = 'captain-info';
-              newCaptainInfo.id = `captain-info-${orderId}`;
-              newCaptainInfo.innerHTML = `
-                <span class="captain-badge success">
-                  ✓ تم تعيين: ${captainName}
-                </span>
-              `;
-              captainContainer.appendChild(newCaptainInfo);
-            }
-          }
-          showSuccess(`تم تعيين الكابتن "${captainName}" بنجاح`);
-          const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-          if (orderIndex !== -1) {
-            displayedOrders[orderIndex].captain_id = captainId;
-          }
-        } else {
-          const { error } = await supabase
-            .from("orders")
-            .update({ captain_id: null })
-            .eq("id", orderId);
-          if (error) {
-            console.error('خطأ في إلغاء تعيين الكابتن:', error);
-            showError('حدث خطأ في إلغاء تعيين الكابتن');
-            return;
-          }
-          if (transferBtn) {
-            transferBtn.disabled = true;
-            transferBtn.className = 'transfer-btn disabled';
-            transferBtn.textContent = 'اختر كابتن';
-          }
-          if (reassignBtn) {
-            reassignBtn.disabled = true;
-            reassignBtn.className = 'reassign-btn disabled';
-            reassignBtn.textContent = 'اختر كابتن';
-          }
-          if (captainInfo) {
-            captainInfo.style.display = 'none';
-          }
-          showSuccess('تم إلغاء تعيين الكابتن');
-          const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-          if (orderIndex !== -1) {
-            displayedOrders[orderIndex].captain_id = null;
-          }
-        }
-      } catch (error) {
-        console.error('خطأ في معالجة تغيير الكابتن:', error);
-        showError('حدث خطأ في معالجة العملية: ' + error.message);
-      } finally {
-        if (captainSelect) {
-          captainSelect.disabled = false;
-          captainSelect.style.opacity = '1';
-        }
+      const info = document.getElementById(`captain-info-${orderId}`);
+      select.disabled = true;
+      const { error } = await supabase
+        .from("orders")
+        .update({ captain_id: captainId })
+        .eq("id", orderId);
+      select.disabled = false;
+      if (error) return alert("خطأ في التحديث");
+      const cap = captains.find(c => c.id === captainId);
+      if (captainId) {
+        reassignBtn.disabled = false;
+        reassignBtn.classList.replace('disabled', 'enabled');
+        info.style.display = 'block';
+        info.innerHTML = `<span class="captain-badge success">✓ ${cap?.full_name}</span>`;
+      } else {
+        reassignBtn.disabled = true;
+        reassignBtn.classList.replace('enabled', 'disabled');
+        info.style.display = 'none';
       }
-    }
-    async function loadProfile() {
-  try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) return;
-    const { data: userData, error: userError } = await supabase
-      .from("users")
-      .select("full_name, created_at, avatar_url") // أضف avatar_url هنا
-      .eq("id", user.id)
-      .single();
-    if (userError) throw userError;
-    const { count: orderCount, error: countError } = await supabase
-      .from("orders")
-      .select("id", { count: 'exact', head: true })
-      .eq("restaurant_id", user.id);
-    if (countError) throw countError;
-    // تحديث بيانات الملف الشخصي
-    document.getElementById('profile-name').value = userData.full_name || 'غير محدد';
-    document.getElementById('profile-email').value = user.email || 'غير محدد';
-    document.getElementById('profile-joined').value = formatDate(userData.created_at);
-    document.getElementById('profile-total-orders').value = orderCount || 0;
-    // تحديث اسم المطعم في الشريط الجانبي
-    document.getElementById('restaurant-name').textContent = userData.full_name || 'مطعم غير محدد';
-    // تحديث صورة المطعم
-    const restaurantPic = document.getElementById('restaurant-pic');
-    if (restaurantPic && userData.avatar_url) {
-      restaurantPic.src = userData.avatar_url;
-      restaurantPic.alt = userData.full_name || 'صورة المطعم';
-    } else {
-      // صورة افتراضية إذا لم تكن هناك صورة
-      restaurantPic.src = './assets/images/placeholder-restaurant.png';
-      restaurantPic.alt = 'صورة غير متوفرة';
-    }
-  } catch (error) {
-    console.error('Error loading profile:', error);
-    const restaurantPic = document.getElementById('restaurant-pic');
-    if (restaurantPic) {
-      restaurantPic.src = './assets/images/placeholder-restaurant.png';
-      restaurantPic.alt = 'خطأ في تحميل الصورة';
-    }
-  }
-}  
+    };
     function displayOrders(orders) {
       const tbody = document.getElementById("orders-body");
-      if (!tbody) return;
-      if (!orders || orders.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="loading-state">
-              لا توجد طلبات متاحة حاليًا
-            </td>
-          </tr>
-        `;
-        return;
-      }
       tbody.innerHTML = "";
-      orders.forEach((order) => {
-        try {
-          const restaurant = restaurants.find(r => r.id === order.restaurant_id);
-          const row = document.createElement("tr");
-          row.classList.add("order-row");
-          row.dataset_orderId = order.id;
-          if (order.status === "قيد التوزيع") {
-            row.innerHTML = `
-              <td>
-                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  class="input-field"
-                  value="${order.custom_address || ""}"
-                  onchange="updateAddress('${order.id}', this.value)"
-                  placeholder="أدخل عنوان التوصيل"
-                />
-              </td>
-              <td>
-                <span style="color: #059669; font-weight: 600;">
-                  ${order.order_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <span style="color: #f97316; font-weight: 600;">
-                  ${order.service_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <div class="captain-select-container">
-                  <select class="select-field captain-select" id="captain-select-${order.id}" onchange="handleCaptainChange('${order.id}', this.value)">
-                    <option value="" ${!order.captain_id ? 'selected' : ''}>
-                      ${captains.length > 0 ? 'اختر كابتن للتوصيل' : 'لا توجد كباتن متاحة'}
-                    </option>
-                    ${generateCaptainOptions(order.captain_id)}
-                  </select>
-                  ${order.captain_id ? `
-                    <div class="captain-info" id="captain-info-${order.id}">
-                      <span class="captain-badge success">✓ تم التعيين</span>
-                    </div>
-                  ` : ''}
-                </div>
-              </td>
-              <td>
-                <span style="font-weight: 600; color: #374151;">
-                  20%
-                </span>
-              </td>
-              <td>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <button class="transfer-btn ${!order.captain_id || captains.length === 0 ? 'disabled' : 'enabled'}"
-                          onclick="transferOrder('${order.id}', this)"
-                          id="transfer-btn-${order.id}"
-                          ${!order.captain_id || captains.length === 0 ? 'disabled' : ''}>
-                    ${!order.captain_id ? 'اختر كابتن' : 'تحويل الطلب'}
-                  </button>
-                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
-                    تفاصيل
-                  </button>
-                </div>
-              </td>
-              <td>
-                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
-                    حذف
-                 </button>
-              </td>
-            `;
-          }
-          else if (order.status === "في انتظار التسليم") {
-            const captain = captains.find(c => c.id === order.captain_id);
-            row.innerHTML = `
-              <td>
-                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  class="input-field"
-                  value="${order.custom_address || ""}"
-                  onchange="updateAddress('${order.id}', this.value)"
-                  placeholder="أدخل عنوان التوصيل"
-                />
-              </td>
-              <td>
-                <span style="color: #059669; font-weight: 600;">
-                  ${order.order_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <span style="color: #f97316; font-weight: 600;">
-                  ${order.service_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <div class="captain-select-container">
-                  <select class="select-field captain-select" id="captain-select-${order.id}" onchange="handleCaptainChange('${order.id}', this.value)">
-                    <option value="" ${!order.captain_id ? 'selected' : ''}>
-                      ${captains.length > 0 ? 'اختر كابتن للتوصيل' : 'لا توجد كباتن متاحة'}
-                    </option>
-                    ${generateCaptainOptions(order.captain_id)}
-                  </select>
-                  ${order.captain_id ? `
-                    <div class="captain-info" id="captain-info-${order.id}">
-                      <span class="captain-badge success">✓ تم التعيين</span>
-                    </div>
-                  ` : ''}
-                </div>
-              </td>
-              <td>
-                <span style="font-weight: 600; color: #374151;">
-                  20%
-                </span>
-              </td>
-              <td>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <button class="reassign-btn ${!order.captain_id || captains.length === 0 ? 'disabled' : 'enabled'}"
-                          onclick="reassignCaptain('${order.id}', this)"
-                          id="reassign-btn-${order.id}"
-                          ${!order.captain_id || captains.length === 0 ? 'disabled' : ''}>
-                    ${!order.captain_id ? 'اختر كابتن' : 'إعادة تعيين الكابتن'}
-                  </button>
-                  <button class="deliver-btn enabled"
-                          onclick="markAsDelivered('${order.id}', this)">
-                    تم التوصيل
-                  </button>
-                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})'>
-                    تفاصيل
-                  </button>
-                </div>
-              </td>
-              <td>
-                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
-                    حذف
-                 </button>
-              </td>
-            `;
-          }
-          else {
-            const captain = captains.find(c => c.id === order.captain_id);
-            const statusColor = getStatusColor(order.status);
-            row.innerHTML = `
-              <td>
-                <strong>${restaurant?.full_name || "مطعم غير محدد"}</strong>
-              </td>
-              <td>
-                <span>${order.custom_address || "غير محدد"}</span>
-              </td>
-              <td>
-                <span style="color: #059669; font-weight: 600;">
-                  ${order.order_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <span style="color: #f97316; font-weight: 600;">
-                  ${order.service_price || 0} ج.م
-                </span>
-              </td>
-              <td>
-                <div class="captain-display">
-                  <span class="captain-name" style="font-weight: 600;">
-                    ${captain?.full_name || "غير محدد"}
-                  </span>
-                  ${captain ? '<span class="captain-assigned-badge">✓</span>' : ''}
-                </div>
-              </td>
-              <td>
-                <span style="font-weight: 600; color: #374151;">
-                  20%
-                </span>
-              </td>
-              <td>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                  <span style="color: ${statusColor}; font-weight: 600; padding: 0.4rem 0.8rem; background: ${statusColor}15; border-radius: 0.5rem; font-size: 0.85rem;">
-                    ${order.status}
-                  </span>
-                  <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order).replace(/'/g, "&#39;")})' style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
-                    تفاصيل
-                  </button>
-                </div>
-              </td>
-              <td>
-                 <button class="delete-btn" onclick="deleteOrder('${order.id}', this)">
-                    حذف
-                 </button>
-              </td>
-            `;
-          }
-          tbody.appendChild(row);
-        } catch (error) {
-          console.error(`خطأ في عرض الطلب ${order.id}:`, error);
-        }
-      });
-    }
-    window.showOrderDetails = function (order) {
-      try {
+      if (!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="loading-state">لا توجد طلبات</td></tr>`;
+        return;
+      }
+      orders.forEach(order => {
         const restaurant = restaurants.find(r => r.id === order.restaurant_id);
-        const captain = captains.find(c => c.id === order.captain_id);
-        const html = `
-          <div style="text-align: right; line-height: 2;">
-            <p><strong>اسم العميل:</strong> ${order.custom_name || "غير محدد"}</p>
-            <p><strong>رقم الهاتف:</strong> ${order.custom_phone || "غير محدد"}</p>
-            <p><strong>عنوان التوصيل:</strong> ${order.custom_address || "غير محدد"}</p>
-            <p><strong>اسم المطعم:</strong> ${restaurant?.full_name || "غير محدد"}</p>
-            <p><strong>الكابتن المُعيَّن:</strong> ${captain?.full_name || "لم يتم التعيين بعد"}</p>
-            <p><strong>حالة الطلب:</strong>
-              <span style="color: ${getStatusColor(order.status)}; font-weight: 600;">
-                ${order.status || "غير محدد"}
-              </span>
-            </p>
-            <p><strong>سعر الطلب:</strong>
-              <span style="color: #059669; font-weight: 600;">${order.order_price || 0} ج.م</span>
-            </p>
-            <p><strong>سعر التوصيل:</strong>
-              <span style="color: #f97316; font-weight: 600;">${order.service_price || 0} ج.م</span>
-            </p>
-            <p><strong>الإجمالي:</strong>
-              <span style="color: #111827; font-weight: 700; font-size: 1.1em;">
-                ${(order.order_price || 0) + (order.service_price || 0)} ج.م
-              </span>
-            </p>
-            <p><strong>نسبة العمولة:</strong> 20%</p>
-            <p><strong>ملاحظات:</strong> ${order.notes || "لا توجد ملاحظات"}</p>
-            <p><strong>تاريخ الطلب:</strong> ${formatDate(order.created_at)}</p>
-          </div>
-        `;
-        const modalDetailsEl = document.getElementById("modal-details");
-        const modalEl = document.getElementById("modal");
-        if (modalDetailsEl) modalDetailsEl.innerHTML = html;
-        if (modalEl) modalEl.style.display = "flex";
-      } catch (error) {
-        console.error('خطأ في عرض تفاصيل الطلب:', error);
-        showError('حدث خطأ في عرض تفاصيل الطلب');
-      }
-    }
-    function getStatusColor(status) {
-      const statusColors = {
-        'تم التوصيل': '#059669',
-        'جاري التوصيل': '#0ea5e9',
-        'قيد التوزيع': '#f59e0b',
-        'في انتظار التسليم': '#8b5cf6'
-      };
-      return statusColors[status] || '#6b7280';
-    }
-    function formatDate(dateString) {
-      if (!dateString) return "غير محدد";
-      try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffTime = Math.abs(now - date);
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays === 0) {
-          return `اليوم، ${date.toLocaleTimeString('ar-EG', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })}`;
-        } else if (diffDays === 1) {
-          return `أمس، ${date.toLocaleTimeString('ar-EG', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })}`;
+        const row = document.createElement("tr");
+        row.classList.add("order-row");
+        row.dataset.orderId = order.id;
+        if (order.status === "في انتظار التسليم") {
+          row.innerHTML = `
+            <td><strong>${restaurant?.restaurant_name || "مطعم غير محدد"}</strong></td>
+            <td><input type="text" class="input-field" value="${order.custom_address}" onchange="updateAddress('${order.id}', this.value)"/></td>
+            <td><span style="color:#f97316">${order.service_price} ج.م</span></td>
+            <td>
+              <div class="captain-select-container">
+                <select class="select-field" id="captain-select-${order.id}" onchange="handleCaptainChange('${order.id}', this.value)">
+                  <option value="">اختر كابتن</option>${generateCaptainOptions(order.captain_id)}
+                </select>
+                <div class="captain-info" id="captain-info-${order.id}" style="display: ${order.captain_id ? 'block' : 'none'}">
+                  <span class="captain-badge success">✓ تم التعيين</span>
+                </div>
+              </div>
+            </td>
+            <td>${order.commission_percent || 0}%</td>
+            <td>
+              <button class="reassign-btn ${order.captain_id ? 'enabled' : 'disabled'}" id="reassign-btn-${order.id}" ${order.captain_id ? '' : 'disabled'} onclick="reassignCaptain('${order.id}', this)">إعادة تعيين</button>
+              <button class="deliver-btn enabled" onclick="markAsDelivered('${order.id}', this)">تم التوصيل</button>
+              <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order)})'>تفاصيل</button>
+            </td>
+            <td><button class="delete-btn" onclick="deleteOrder('${order.id}', this)">حذف</button></td>
+          `;
         } else {
-          return date.toLocaleDateString('ar-EG', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
+          const cap = captains.find(c => c.id === order.captain_id);
+          row.innerHTML = `
+            <td><strong>${restaurant?.restaurant_name || "مطعم غير محدد"}</strong></td>
+            <td>${order.custom_address}</td>
+            <td><span style="color:#f97316">${order.service_price} ج.م</span></td>
+            <td><div class="captain-display"><span class="captain-name">${cap?.full_name || "غير محدد"}</span></div></td>
+            <td>${order.commission_percent || 0}%</td>
+            <td><span style="color:#059669;font-weight:600;">${order.status}</span> <button class="details-btn" onclick='showOrderDetails(${JSON.stringify(order)})'>تفاصيل</button></td>
+            <td><button class="delete-btn" onclick="deleteOrder('${order.id}', this)">حذف</button></td>
+          `;
         }
-      } catch (error) {
-        console.error('خطأ في تنسيق التاريخ:', error);
-        return "تاريخ غير صحيح";
-      }
-    }
-    window.closeModal = function () {
-      const modalEl = document.getElementById("modal");
-      if (modalEl) modalEl.style.display = "none";
-    }
-    const modalEl = document.getElementById("modal");
-    if (modalEl) {
-      modalEl.addEventListener("click", function (e) {
-        if (e.target === this) {
-          closeModal();
-        }
+        tbody.appendChild(row);
       });
     }
-    window.transferOrder = async function (orderId, buttonElement) {
-      const captainSelect = document.getElementById(`captain-select-${orderId}`);
-      const captainId = captainSelect ? captainSelect.value : null;
-      if (!captainId) {
-        showError('يرجى اختيار كابتن أولاً');
-        return;
-      }
-      try {
-        buttonElement.disabled = true;
-        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
-        console.log(`🔄 جاري تحويل الطلب ${orderId} للكابتن ${captainId}`);
-        const { error } = await supabase
-          .from("orders")
-          .update({
-            captain_id: captainId,
-            status: "في انتظار التسليم",
-            commission_percent: 20
-          })
-          .eq("id", orderId);
-        if (error) {
-          console.error('خطأ في تحويل الطلب:', error);
-          throw error;
-        }
-        showSuccess('تم تحويل الطلب للكابتن بنجاح');
-        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-        if (orderIndex !== -1) {
-          displayedOrders[orderIndex].captain_id = captainId;
-          displayedOrders[orderIndex].status = "في انتظار التسليم";
-          displayedOrders[orderIndex].commission_percent = 20;
-        }
-        await loadStatistics();
-        const row = buttonElement.closest('.order-row');
-        if (row) {
-          row.style.transition = 'all 0.3s ease-out';
-          row.style.opacity = '0';
-          row.style.transform = 'translateX(-20px)';
-          setTimeout(() => {
-            if (row.parentNode) {
-              row.parentNode.removeChild(row);
-            }
-            const currentCount = displayedOrders.length;
-            updateOrdersCount(Math.max(0, currentCount - 1));
-          }, 300);
-        }
-      } catch (error) {
-        console.error('خطأ في تحويل الطلب:', error);
-        showError('حدث خطأ في تحويل الطلب: ' + error.message);
-        buttonElement.disabled = false;
-        buttonElement.textContent = 'تحويل الطلب';
-      }
-    }
-    window.reassignCaptain = async function (orderId, buttonElement) {
-      const captainSelect = document.getElementById(`captain-select-${orderId}`);
-      const captainId = captainSelect ? captainSelect.value : null;
-      if (!captainId) {
-        showError('يرجى اختيار كابتن أولاً');
-        return;
-      }
-      try {
-        buttonElement.disabled = true;
-        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
-        console.log(`🔄 جاري إعادة تعيين الكابتن للطلب ${orderId} للكابتن ${captainId}`);
-        const { error } = await supabase
-          .from("orders")
-          .update({
-            captain_id: captainId,
-            commission_percent: 20
-          })
-          .eq("id", orderId);
-        if (error) {
-          console.error('خطأ في إعادة تعيين الكابتن:', error);
-          throw error;
-        }
-        showSuccess('تم إعادة تعيين الكابتن بنجاح');
-        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-        if (orderIndex !== -1) {
-          displayedOrders[orderIndex].captain_id = captainId;
-          displayedOrders[orderIndex].commission_percent = 20;
-        }
-        const selectedCaptain = captains.find(c => c.id === captainId);
-        if (selectedCaptain) {
-          const captainInfo = document.getElementById(`captain-info-${orderId}`);
-          if (captainInfo) {
-            captainInfo.innerHTML = `
-              <span class="captain-badge success">
-                ✓ تم التعيين: ${selectedCaptain.full_name}
-              </span>
-            `;
-            captainInfo.style.display = 'block';
-          }
-        }
-      } catch (error) {
-        console.error('خطأ في إعادة تعيين الكابتن:', error);
-        showError('حدث خطأ في إعادة تعيين الكابتن: ' + error.message);
-      } finally {
-        buttonElement.disabled = false;
-        buttonElement.textContent = 'إعادة تعيين الكابتن';
-      }
-    }
-    window.markAsDelivered = async function (orderId, buttonElement) {
-      try {
-        buttonElement.disabled = true;
-        buttonElement.innerHTML = '<div class="loading-spinner" style="width: 15px; height: 15px; border-width: 2px; margin: 0 auto;"></div>';
-        console.log(`🔄 جاري تحديث حالة الطلب ${orderId} إلى "تم التوصيل"`);
-        const { error } = await supabase
-          .from("orders")
-          .update({
-            status: "تم التوصيل",
-            commission_percent: 20
-          })
-          .eq("id", orderId);
-        if (error) {
-          console.error('خطأ في تحديث حالة الطلب:', error);
-          throw error;
-        }
-        showSuccess('تم تحديث حالة الطلب إلى "تم التوصيل"');
-        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-        if (orderIndex !== -1) {
-          displayedOrders[orderIndex].status = "تم التوصيل";
-          displayedOrders[orderIndex].commission_percent = 20;
-        }
-        await loadStatistics();
-        const row = buttonElement.closest('.order-row');
-        if (row) {
-          row.style.transition = 'all 0.3s ease-out';
-          row.style.opacity = '0';
-          row.style.transform = 'translateX(-20px)';
-          setTimeout(() => {
-            if (row.parentNode) {
-              row.parentNode.removeChild(row);
-            }
-            const currentCount = displayedOrders.length;
-            updateOrdersCount(Math.max(0, currentCount - 1));
-          }, 300);
-        }
-      } catch (error) {
-        console.error('خطأ في تحديث حالة الطلب:', error);
-        showError('حدث خطأ في تحديث حالة الطلب: ' + error.message);
-        buttonElement.disabled = false;
-        buttonElement.textContent = 'تم التوصيل';
-      }
-    }
-    window.updateAddress = async function (orderId, newAddress) {
-      if (!newAddress || !newAddress.trim()) {
-        showError('يرجى إدخال عنوان صحيح');
-        return;
-      }
-      try {
-        console.log(`🔄 جاري تحديث العنوان للطلب ${orderId}`);
-        const { error } = await supabase
-          .from("orders")
-          .update({
-            custom_address: newAddress.trim(),
-            commission_percent: 20
-          })
-          .eq("id", orderId);
-        if (error) {
-          console.error('خطأ في تحديث العنوان:', error);
-          throw error;
-        }
-        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-        if (orderIndex !== -1) {
-          displayedOrders[orderIndex].custom_address = newAddress.trim();
-          displayedOrders[orderIndex].commission_percent = 20;
-        }
-        showSuccess('تم تحديث العنوان بنجاح');
-      } catch (error) {
-        console.error('خطأ في تحديث العنوان:', error);
-        showError('حدث خطأ في تحديث العنوان: ' + error.message);
-      }
-    }
-    window.deleteOrder = async function (orderId, buttonElement) {
-      if (!confirm(`هل أنت متأكد من أنك تريد حذف الطلب رقم ${orderId}؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
-        return;
-      }
-      try {
-        const originalText = buttonElement.textContent;
-        buttonElement.disabled = true;
-        buttonElement.textContent = 'جاري الحذف...';
-        buttonElement.style.backgroundColor = '#9ca3af';
-        console.log(`🗑️ جاري حذف الطلب ${orderId}`);
-        const { error } = await supabase
-          .from("orders")
-          .delete()
-          .eq("id", orderId);
-        if (error) {
-          console.error('خطأ في حذف الطلب:', error);
-          throw error;
-        }
-        showSuccess('تم حذف الطلب بنجاح');
-        const orderIndex = displayedOrders.findIndex(o => o.id === orderId);
-        if (orderIndex !== -1) {
-          displayedOrders.splice(orderIndex, 1);
-        }
-        const allOrderIndex = allOrders.findIndex(o => o.id === orderId);
-        if (allOrderIndex !== -1) {
-            allOrders.splice(allOrderIndex, 1);
-        }
-        await loadStatistics();
-        const row = buttonElement.closest('.order-row');
-        if (row) {
-          row.style.transition = 'all 0.3s ease-out';
-          row.style.opacity = '0';
-          row.style.transform = 'translateX(20px)';
-          setTimeout(() => {
-            if (row.parentNode) {
-              row.parentNode.removeChild(row);
-            }
-            const currentCount = displayedOrders.length;
-            updateOrdersCount(currentCount);
-            console.log(`✅ تم حذف الطلب ${orderId} من الواجهة`);
-          }, 300);
-        }
-      } catch (error) {
-        console.error('خطأ في حذف الطلب:', error);
-        showError('حدث خطأ في حذف الطلب: ' + (error.message || 'خطأ غير معروف'));
-        buttonElement.disabled = false;
-        buttonElement.textContent = 'حذف';
-        buttonElement.style.backgroundColor = '#ef4444';
-      }
-    }
-    function playNotificationSound() {
-      if (!audioAllowed) {
-        console.warn("⚠️ الصوت غير مسموح به بعد");
-        return;
-      }
-      try {
-        if (alertSound) {
-          alertSound.currentTime = 0;
-          const playPromise = alertSound.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                console.log("🔊 تم تشغيل صوت الإشعار");
-              })
-              .catch(error => {
-                console.warn("❌ فشل تشغيل الصوت:", error.message);
-              });
-          }
-        } else {
-          console.warn("⚠️ عنصر الصوت غير متوفر");
-        }
-      } catch (error) {
-        console.warn("❌ خطأ في تشغيل الصوت:", error.message);
-      }
-    }
-    function showNotificationBar(message) {
-      const now = Date.now();
-      if (now - lastNotificationTime < 2000) {
-        return;
-      }
-      lastNotificationTime = now;
-      const notificationBar = document.getElementById('notification-bar');
-      const notificationMessage = document.getElementById('notification-message');
-      if (notificationMessage) {
-        notificationMessage.textContent = message;
-      }
-      if (notificationBar) {
-        notificationBar.classList.add('show');
-        playNotificationSound();
-        clearTimeout(notificationTimeout);
-        notificationTimeout = setTimeout(() => {
-          notificationBar.classList.remove('show');
-        }, 5000);
-      }
-    }
-    window.closeNotificationBar = function() {
-      const notificationBar = document.getElementById('notification-bar');
-      if (notificationBar) {
-        notificationBar.classList.remove('show');
-      }
-    }
-    function showSuccess(message) {
-      showNotification(message, 'success');
-    }
-    function showError(message) {
-      showNotification(message, 'error');
-    }
-    function showNotification(message, type = 'info') {
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notif => notif.remove());
-      const notification = document.createElement('div');
-      notification.className = `notification notification-${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      setTimeout(() => {
-        notification.style.animation = 'slideUp 0.3s ease-in forwards';
-        setTimeout(() => notification.remove(), 300);
-      }, 4000);
-    }
-    window.logout = async function () {
-      try {
-        await supabase.auth.signOut();
-        window.location.href = './index.html';
-      } catch (error) {
-        console.error('خطأ في تسجيل الخروج:', error);
-        showError('حدث خطأ في تسجيل الخروج');
-      }
-    }
-    async function checkForNewPendingOrders() {
-      try {
-        const { data: pendingOrders, error } = await supabase
-          .from("orders")
-          .select("id")
-          .eq("status", "قيد التوزيع")
-          .order("created_at", { ascending: false });
-        if (error) {
-          console.error('خطأ في التحقق من الطلبات الجديدة:', error);
-          return;
-        }
-        const currentPendingOrderIds = new Set(pendingOrders.map(o => o.id));
-        const hasNewPendingOrder = pendingOrders.some(order => !latestOrderIds.has(order.id));
-        if (hasNewPendingOrder && latestOrderIds.size > 0) {
-          showNotificationBar("طلب جديد وصل للوحة التحكم");
-        }
-        latestOrderIds = currentPendingOrderIds;
-      } catch (error) {
-        console.error('خطأ في التحقق من الطلبات الجديدة:', error);
-      }
-    }
-    function setupAutoRefresh() {
-      if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-      }
-      autoRefreshInterval = setInterval(async () => {
-        console.log('🔄 تحديث تلقائي للبيانات...');
-        try {
-          await loadStatistics();
-          const isEditing = document.activeElement.tagName === 'INPUT' ||
-                           document.activeElement.tagName === 'SELECT' ||
-                           document.activeElement.classList.contains('input-field') ||
-                           document.activeElement.classList.contains('select-field');
-          if (!isEditing) {
-            await fetchOrdersByStatus(currentStatusFilter);
-          }
-        } catch (error) {
-          console.error('خطأ في التحديث التلقائي:', error);
-        }
-      }, 10000);
-      if (pendingOrdersCheckInterval) {
-        clearInterval(pendingOrdersCheckInterval);
-      }
-      pendingOrdersCheckInterval = setInterval(async () => {
-        await checkForNewPendingOrders();
-      }, 5000);
-      console.log('✅ تم إعداد التحديث التلقائي كل 10 ثانية وفحص الطلبات الجديدة كل 5 ثوانٍ');
-    }
-    window.addEventListener('beforeunload', () => {
-      if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-      }
-      if (pendingOrdersCheckInterval) {
-        clearInterval(pendingOrdersCheckInterval);
-      }
-    });
-    window.fetchOrdersByStatus = fetchOrdersByStatus;
-    async function initializeApp() {
-      try {
-        console.log('🚀 بدء تهيئة التطبيق...');
-        await loadInitialData();
-        setupAutoRefresh();
-        console.log('✅ تم تحميل لوحة التحكم بنجاح');
-        showSuccess('تم تحميل لوحة التحكم بنجاح');
-      } catch (error) {
-        console.error('خطأ في تهيئة التطبيق:', error);
-        showError('حدث خطأ في تحميل التطبيق: ' + error.message);
-      }
-    }
-    initializeApp();
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        console.log('📄 الصفحة أصبحت مرئية - تحديث البيانات...');
-        fetchOrdersByStatus(currentStatusFilter);
-        loadStatistics();
-      }
-    });
-    window.addEventListener('focus', () => {
-      console.log('🔍 النافذة أصبحت نشطة - تحديث البيانات...');
-      fetchOrdersByStatus(currentStatusFilter);
+    window.showOrderDetails = function(order) {
+      const restaurant = restaurants.find(r => r.id === order.restaurant_id);
+      const captain = captains.find(c => c.id === order.captain_id);
+      document.getElementById("modal-details").innerHTML = `
+        <p><strong>اسم العميل:</strong> ${order.custom_name}</p>
+        <p><strong>الهاتف:</strong> ${order.custom_phone}</p>
+        <p><strong>العنوان:</strong> ${order.custom_address}</p>
+        <p><strong>اسم المطعم:</strong> ${restaurant?.restaurant_name || "غير محدد"}</p>
+        <p><strong>الكابتن:</strong> ${captain?.full_name || "غير محدد"}</p>
+        <p><strong>الحالة:</strong> ${order.status}</p>
+        <p><strong>سعر التوصيل:</strong> ${order.service_price} ج.م</p>
+        <p><strong>نسبة العمولة من خدمة التوصيل:</strong> ${order.commission_percent || 0}%</p>
+      `;
+      document.getElementById("modal").style.display = "flex";
+    };
+    window.closeModal = () => {
+      document.getElementById("modal").style.display = "none";
+    };
+    // دوال التفاعل
+    window.reassignCaptain = async (id, btn) => {
+      const captainId = document.getElementById(`captain-select-${id}`).value;
+      if (!captainId) return alert("اختر كابتن");
+      btn.disabled = true;
+      await supabase.from("orders").update({ captain_id: captainId }).eq("id", id);
+      btn.disabled = false;
+    };
+    window.markAsDelivered = async (id, btn) => {
+      btn.disabled = true;
+      await supabase.from("orders").update({ status: "تم التوصيل" }).eq("id", id);
       loadStatistics();
-    });
-  </script>    </body>
+      btn.parentElement.parentElement.remove();
+    };
+    window.updateAddress = async (id, addr) => {
+      if (!addr.trim()) return alert("أدخل عنوان صحيح");
+      await supabase.from("orders").update({ custom_address: addr }).eq("id", id);
+    };
+    window.deleteOrder = async (id, btn) => {
+      if (!confirm("هل تريد حذف هذا الطلب؟")) return;
+      btn.disabled = true;
+      await supabase.from("orders").delete().eq("id", id);
+      btn.parentElement.parentElement.remove();
+      loadStatistics();
+    };
+    // التحكم في الفلاتر والبحث
+    window.setFilterStatus = (status) => {
+      currentStatusFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-status="${status}"]`).classList.add('active');
+      fetchOrdersByStatus(currentStatusFilter);
+    };
+    window.handleSearch = () => {
+      currentSearchText = document.getElementById("searchInput").value.trim();
+      fetchOrdersByStatus(currentStatusFilter);
+    };
+    // إضافة طلب يدويًا
+    function toggleAddOrderForm() {
+      const form = document.getElementById("add-order-form");
+      form.style.display = form.style.display === "block" ? "none" : "block";
+    }
+    window.addManualOrder = async () => {
+      const restaurantId = document.getElementById("restaurant-select").value;
+      const address = document.getElementById("delivery-address").value;
+      const servicePrice = document.getElementById("service-price").value;
+      const commissionPercent = document.getElementById("commission-percent").value;
+      const captainId = document.getElementById("captain-select-new").value;
+
+      if (!restaurantId || !address || !servicePrice || !captainId) {
+        return alert("يرجى تعبئة جميع الحقول المطلوبة");
+      }
+
+      // التحقق من أن المطعم مختار من القائمة المحلية
+      if (!restaurants.some(r => r.id === restaurantId)) {
+        console.error("الـ ID غير موجود في القائمة المحلية:", restaurantId);
+        return alert("المطعم المحدد غير متوفر في القائمة الحالية. يرجى تحديث الصفحة.");
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .insert([{
+          restaurant_id: restaurantId,
+          custom_address: address,
+          order_price: 0,
+          service_price: parseFloat(servicePrice),
+          commission_percent: parseFloat(commissionPercent),
+          captain_id: captainId,
+          status: "في انتظار التسليم"
+        }]);
+        
+      if (error) {
+        console.error("Error details:", error);
+        return alert("خطأ في الإضافة: " + error.message);
+      }
+      
+      showSuccess("تم إضافة الطلب بنجاح");
+      toggleAddOrderForm();
+      document.getElementById("restaurant-select").value = "";
+      document.getElementById("delivery-address").value = "";
+      document.getElementById("service-price").value = "";
+      document.getElementById("commission-percent").value = "20";
+      document.getElementById("captain-select-new").value = "";
+      
+      loadStatistics();
+      fetchOrdersByStatus(currentStatusFilter);
+    };
+    window.logout = async () => {
+      await supabase.auth.signOut();
+      window.location.href = './index.html';
+    };
+    // بدء التشغيل
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return window.location.href = './index.html';
+      await Promise.all([loadCaptains(), loadRestaurants(), loadOfficeLogo()]);
+      await Promise.all([loadStatistics(), fetchOrdersByStatus(currentStatusFilter)]);
+      // تحديث تلقائي كل 10 ثواني
+      setInterval(() => {
+        loadStatistics();
+        fetchOrdersByStatus(currentStatusFilter);
+      }, 10000);
+    }
+    // إشعارات
+    function showSuccess(msg) {
+      const notif = document.createElement("div");
+      notif.className = "notification notification-success";
+      notif.textContent = msg;
+      document.body.appendChild(notif);
+      setTimeout(() => notif.remove(), 3000);
+    }
+    init();
+    // فتح/إغلاق نموذج إضافة طلب
+    window.toggleAddOrderForm = function () {
+      const form = document.getElementById("add-order-form");
+      if (form.style.display === "block") {
+        form.style.display = "none";
+      } else {
+        form.style.display = "block";
+      }
+    };
+  </script>
+</body>
 </html>
