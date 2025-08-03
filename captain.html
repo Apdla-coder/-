@@ -769,9 +769,7 @@
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // Audio notifications - using base64 encoded sounds to avoid CORS issues
-  const successSound = new Audio("");
-  const errorSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
-  const notificationSound = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
+  const notificationSound = new Audio("mixkit-software-interface-remove-2576.wav");
 
   // DOM Elements
   const views = document.querySelectorAll('.view');
@@ -784,6 +782,9 @@
   let allOrders = [];
   let allWithdrawals = [];
   let custodyRecords = [];
+  let realTimeSubscription = null;
+  let lastOrderCount = 0;
+  let notificationTimeout = null;
 
   // Default app titles (used when app_settings table is not available)
   const defaultAppTitles = {
@@ -795,6 +796,9 @@
 
   // Initialize the app
   document.addEventListener('DOMContentLoaded', async () => {
+    // Create notification bar if it doesn't exist
+    createNotificationBar();
+    
     // Set up navigation
     navTabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -818,12 +822,333 @@
     // Load initial data
     await loadAppData();
     await checkAuth();
+    
+    // Show welcome notification when app opens
+    if (currentUser) {
+      showNotificationBar('🎉 مرحباً بك في نظام الكابتن!', 'success', 4000);
+    }
+    
     await loadCaptainProfile();
     await loadOrders();
     await loadWithdrawals();
     await loadCustodyData();
     updateWelcomeMessage();
+    
+    // Set up real-time updates for new orders only
+    setupRealTimeUpdates();
+    
+    // Set up periodic refresh (fallback) for new orders only
+    setInterval(async () => {
+      await checkForNewOrders();
+    }, 30000); // Check every 30 seconds
   });
+
+  // Create notification bar
+  function createNotificationBar() {
+    if (document.getElementById('notification-bar')) return;
+    
+    const notificationBar = document.createElement('div');
+    notificationBar.id = 'notification-bar';
+    notificationBar.className = 'notification-bar';
+    notificationBar.innerHTML = `
+      <div class="notification-content">
+        <i class="notification-icon fas fa-bell"></i>
+        <span class="notification-message"></span>
+        <button class="close-btn" onclick="hideNotificationBar()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    
+    // Add CSS styles
+    const style = document.createElement('style');
+    style.textContent = `
+      .notification-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .notification-bar.show {
+        transform: translateY(0);
+      }
+
+      .notification-bar.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+
+      .notification-bar.warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+      }
+
+      .notification-bar.info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+      }
+
+      .notification-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 12px;
+        position: relative;
+      }
+
+      .notification-icon {
+        font-size: 16px;
+        opacity: 0.9;
+        flex-shrink: 0;
+      }
+
+      .notification-message {
+        flex: 1;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .notification-bar .close-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .notification-bar .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .notification-bar .close-btn i {
+        font-size: 12px;
+      }
+
+      .notification-bar.pulse {
+        animation: notificationPulse 0.6s ease-in-out;
+      }
+
+      @keyframes notificationPulse {
+        0% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(0) scale(1.01); }
+        100% { transform: translateY(0) scale(1); }
+      }
+
+      /* Adjust main content to account for notification bar */
+      .app-container {
+        transition: margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .notification-bar.show ~ .app-container {
+        margin-top: 56px;
+      }
+
+      @media (max-width: 768px) {
+        .notification-content {
+          padding: 10px 15px;
+        }
+        
+        .notification-message {
+          font-size: 13px;
+        }
+        
+        .notification-bar .close-btn {
+          right: 10px;
+          width: 28px;
+          height: 28px;
+        }
+        
+        .notification-bar.show ~ .app-container {
+          margin-top: 52px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.insertBefore(notificationBar, document.body.firstChild);
+    
+    // Make hideNotificationBar available globally
+    window.hideNotificationBar = hideNotificationBar;
+  }
+
+  // Show notification bar
+  function showNotificationBar(message, type = 'success', duration = 5000) {
+    const notificationBar = document.getElementById('notification-bar');
+    const messageElement = notificationBar.querySelector('.notification-message');
+    const iconElement = notificationBar.querySelector('.notification-icon');
+    
+    // Clear previous timeout
+    if (notificationTimeout) {
+      clearTimeout(notificationTimeout);
+    }
+    
+    // Set message and type
+    messageElement.textContent = message;
+    
+    // Update icon based on type
+    let iconClass = 'fas fa-bell';
+    switch(type) {
+      case 'success':
+        iconClass = 'fas fa-check-circle';
+        break;
+      case 'error':
+        iconClass = 'fas fa-exclamation-circle';
+        break;
+      case 'warning':
+        iconClass = 'fas fa-exclamation-triangle';
+        break;
+      case 'info':
+        iconClass = 'fas fa-info-circle';
+        break;
+    }
+    iconElement.className = `notification-icon ${iconClass}`;
+    
+    // Set notification bar class
+    notificationBar.className = `notification-bar ${type} show pulse`;
+    
+    // Play sound based on type
+    if (type === 'success') {
+      playSuccessSound();
+    } else if (type === 'error') {
+      playErrorSound();
+    } else {
+      playNotificationSound();
+    }
+    
+    // Auto hide after duration
+    if (duration > 0) {
+      notificationTimeout = setTimeout(() => {
+        hideNotificationBar();
+      }, duration);
+    }
+    
+    // Remove pulse animation after it completes
+    setTimeout(() => {
+      notificationBar.classList.remove('pulse');
+    }, 600);
+  }
+
+  // Hide notification bar
+  function hideNotificationBar() {
+    const notificationBar = document.getElementById('notification-bar');
+    notificationBar.classList.remove('show');
+    
+    if (notificationTimeout) {
+      clearTimeout(notificationTimeout);
+      notificationTimeout = null;
+    }
+  }
+
+  // Setup real-time updates using Supabase subscriptions
+  function setupRealTimeUpdates() {
+    if (!currentUser) return;
+    
+    try {
+      // Subscribe to orders table changes for this captain - only for INSERT events
+      realTimeSubscription = supabase
+        .channel('captain-orders')
+        .on('postgres_changes', {
+          event: 'INSERT', // Only listen for new orders
+          schema: 'public',
+          table: 'orders',
+          filter: `captain_id=eq.${currentUser.id}`
+        }, async (payload) => {
+          console.log('New order received:', payload);
+          await handleNewOrderNotification(payload.new);
+        })
+        .subscribe((status) => {
+          console.log('Real-time subscription status:', status);
+          // No notification for subscription status
+        });
+    } catch (error) {
+      console.error('Error setting up real-time updates:', error);
+    }
+  }
+
+  // Handle new order notification only
+  async function handleNewOrderNotification(newOrder) {
+    try {
+      // Reload orders to get fresh data
+      await loadOrders(false); // Don't show loading state
+      
+      // Show notification for new order
+      showNotificationBar(`🎉 طلب جديد تم إستلامه! #${newOrder.id.substring(0, 8)}`, 'success', 8000);
+      
+      // If we're not on the orders view, show additional notification
+      const activeView = document.querySelector('.nav-tab.active')?.getAttribute('data-view');
+      if (activeView !== 'orders') {
+        setTimeout(() => {
+          showNotificationBar('💡 انتقل إلى صفحة الطلبات لرؤية الطلب الجديد', 'info', 5000);
+        }, 3000);
+      }
+      
+      // Update dashboard stats immediately
+      updateDashboardStats();
+      updateStats();
+      
+    } catch (error) {
+      console.error('Error handling new order notification:', error);
+    }
+  }
+
+  // Check for new orders (fallback method)
+  async function checkForNewOrders() {
+    if (!currentUser) return;
+    
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('captain_id', currentUser.id)
+        .gte('created_at', today.toISOString())
+        .lt('created_at', tomorrow.toISOString());
+
+      if (error) {
+        console.warn('Error checking for new orders:', error);
+        return;
+      }
+
+      const currentOrderCount = data ? data.length : 0;
+      
+      // If we have more orders than before, reload data
+      if (currentOrderCount > lastOrderCount && lastOrderCount > 0) {
+        await loadOrders(false);
+        const newOrdersCount = currentOrderCount - lastOrderCount;
+        showNotificationBar(`🔔 ${newOrdersCount} طلب جديد!`, 'success', 6000);
+      }
+      
+      lastOrderCount = currentOrderCount;
+    } catch (error) {
+      console.error('Error in checkForNewOrders:', error);
+    }
+  }
 
   // Load app data - with fallback to default titles
   async function loadAppData() {
@@ -882,14 +1207,12 @@
       if (error || !session) {
         console.warn("User not authenticated:", error?.message);
         // In a real app, you might redirect to login
-        showNotification("يجب تسجيل الدخول أولاً", "error");
         return false;
       }
       currentUser = session.user;
       return true;
     } catch (error) {
       console.error("Authentication error:", error);
-      showNotification("حدث خطأ في التحقق من الهوية", "error");
       return false;
     }
   }
@@ -1007,14 +1330,13 @@
     const notes = document.getElementById('custody-notes').value;
     
     if (!amount || amount <= 0) {
-      showNotification('يرجى إدخال مبلغ صحيح أكبر من صفر', 'error');
-      playErrorSound();
+      // Show error without notification - just console log
+      console.warn('Invalid custody amount entered');
       return;
     }
     
     if (!currentUser) {
-      showNotification('يجب تسجيل الدخول أولاً', 'error');
-      playErrorSound();
+      console.warn('User not authenticated for custody delivery');
       return;
     }
     
@@ -1023,7 +1345,7 @@
         .from('custodies')
         .insert({
           captain_id: currentUser.id,
-    amount: -Math.abs(amount), // ضروري يكون بالسالب
+          amount: -Math.abs(amount), // ضروري يكون بالسالب
           custody_date: new Date().toISOString().split('T')[0],
           notes: notes ? `تسليم نقدي: ${notes}` : 'تسليم نقدي للإدارة',
           status: 'مفعلة'
@@ -1031,19 +1353,17 @@
 
       if (error) throw error;
       
-      showNotification(`تم تسجيل تسليم ${amount.toFixed(2)} ج.م من العهدة بنجاح`);
-      playSuccessSound();
+      // Success - no notification, just console log
+      console.log(`Custody delivery of ${amount.toFixed(2)} EGP recorded successfully`);
       document.getElementById('custody-delivery-form').reset();
       await loadCustodyData();
     } catch (error) {
       console.error("Error delivering custody:", error);
-      showNotification('حدث خطأ أثناء تسجيل التسليم: ' + (error.message || 'خطأ غير معروف'), 'error');
-      playErrorSound();
     }
   }
 
   // Load orders for today only
-  async function loadOrders() {
+  async function loadOrders(showLoading = true) {
     if (!currentUser) {
       console.warn("No current user for orders loading");
       return;
@@ -1051,7 +1371,9 @@
 
     try {
       const container = document.getElementById('orders-container');
-      container.innerHTML = '<p class="loading">جارٍ تحميل الطلبات...</p>';
+      if (showLoading) {
+        container.innerHTML = '<p class="loading">جارٍ تحميل الطلبات...</p>';
+      }
       
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -1069,21 +1391,26 @@
 
       if (ordersError) {
         console.warn("Error loading orders:", ordersError.message);
-        container.innerHTML = `<p class="error">❌ ${ordersError.message}</p>`;
+        if (showLoading) {
+          container.innerHTML = `<p class="error">❌ ${ordersError.message}</p>`;
+        }
         allOrders = [];
         return;
       }
 
       if (!ordersData || ordersData.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-box-open"></i>
-            <p>لا توجد طلبات حالياً</p>
-          </div>
-        `;
+        if (showLoading) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <p>لا توجد طلبات حالياً</p>
+            </div>
+          `;
+        }
         allOrders = [];
         updateStats();
         updateDashboardStats();
+        lastOrderCount = 0;
         return;
       }
 
@@ -1118,14 +1445,22 @@
         restaurant_name: restaurantNames[order.restaurant_id] || 'مطعم غير محدد'
       }));
       
+      // Update last order count for change detection
+      lastOrderCount = allOrders.length;
+      
       updateStats();
       updateDashboardStats();
       displayOrders(allOrders);
-      playNotificationSound();
+      
+      if (showLoading) {
+        playNotificationSound();
+      }
     } catch (err) {
       console.error("Error loading orders:", err);
-      document.getElementById('orders-container').innerHTML = 
-        `<p class="error">❌ حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.</p>`;
+      if (showLoading) {
+        document.getElementById('orders-container').innerHTML = 
+          `<p class="error">❌ حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.</p>`;
+      }
       allOrders = [];
     }
   }
@@ -1302,8 +1637,7 @@
   // Start delivery
   async function startDelivery(orderId) {
     if (!currentUser) {
-      showNotification('يجب تسجيل الدخول أولاً', 'error');
-      playErrorSound();
+      console.warn('User not authenticated for starting delivery');
       return;
     }
 
@@ -1315,21 +1649,17 @@
       
       if (error) throw error;
       
-      showNotification('تم تحديث حالة الطلب إلى "جاري التوصيل"');
-      playSuccessSound();
+      // Success - no notification, just reload orders
       await loadOrders();
     } catch (error) {
       console.error("Error starting delivery:", error);
-      showNotification('حدث خطأ أثناء تحديث الحالة', 'error');
-      playErrorSound();
     }
   }
 
   // Complete delivery
   async function completeDelivery(orderId) {
     if (!currentUser) {
-      showNotification('يجب تسجيل الدخول أولاً', 'error');
-      playErrorSound();
+      console.warn('User not authenticated for completing delivery');
       return;
     }
 
@@ -1341,13 +1671,10 @@
       
       if (error) throw error;
       
-      showNotification('تم إتمام التسليم بنجاح');
-      playSuccessSound();
+      // Success - no notification, just reload orders
       await loadOrders();
     } catch (error) {
       console.error("Error completing delivery:", error);
-      showNotification('حدث خطأ أثناء إتمام التسليم', 'error');
-      playErrorSound();
     }
   }
 
@@ -1477,7 +1804,7 @@
             </button>
           </div>
         `;
-      }).join();
+      }).join('');
       
       document.querySelectorAll('.view-details-btn').forEach(btn => {
         btn.addEventListener('click', (e) => showOrderDetails(e.target.closest('.view-details-btn').dataset.orderId));
@@ -1504,7 +1831,7 @@
         .order('custody_date', { ascending: false });
       
       if (error) {
-        console.warn("Error loading custody ", error.message);
+        console.warn("Error loading custody data:", error.message);
         custodyRecords = [];
       } else {
         custodyRecords = data || [];
@@ -1521,7 +1848,7 @@
       document.getElementById('paid-custody').textContent = `${paidCustody.toFixed(2)} ج.م`;
       displayCustodyHistory(custodyRecords);
     } catch (error) {
-      console.error("Error loading custody ", error);
+      console.error("Error loading custody data:", error);
       document.getElementById('custody-history-body').innerHTML = 
         `<tr><td colspan="4" class="error">❌ حدث خطأ أثناء تحميل سجل العهدة: ${error.message}</td></tr>`;
       custodyRecords = [];
@@ -1589,15 +1916,10 @@
     }
   }
 
-  // Show notification
+  // Show notification (legacy function for backward compatibility - now only for new orders and app opening)
   function showNotification(message, type = 'success') {
-    const existing = document.querySelector('.notification');
-    if (existing) existing.remove();
-    const notif = document.createElement('div');
-    notif.className = `notification ${type === 'error' ? 'error' : ''}`;
-    notif.textContent = message;
-    document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 3000);
+    // Only log to console - no notifications for legacy calls
+    console.log(`Legacy notification: ${message} (${type})`);
   }
 
   // Audio functions
@@ -1627,6 +1949,21 @@
       console.log('Audio play failed:', e);
     }
   }
-</script>
-</body>
+
+  // Cleanup function for when the page is unloaded
+  window.addEventListener('beforeunload', () => {
+    if (realTimeSubscription) {
+      realTimeSubscription.unsubscribe();
+    }
+  });
+
+  // Expose some functions globally for debugging
+  window.debugCaptainSystem = {
+    loadOrders,
+    checkForNewOrders,
+    showNotificationBar,
+    currentUser,
+    allOrders
+  };
+</script>  </body>
 </html>
