@@ -72,21 +72,6 @@
       width: 100%;
       font-size: 1rem;
     }
-    .add-user-form {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 2rem;
-      transition: all 0.3s ease;
-    }
-    .add-user-form h3 {
-      margin-bottom: 1rem;
-      color: var(--secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
     .form-group {
       display: flex;
       gap: 1rem;
@@ -213,49 +198,101 @@
       background: var(--primary);
       color: white;
     }
-    .table-wrapper {
+    .user-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .user-card {
       background: white;
       border-radius: 1rem;
       overflow: hidden;
       box-shadow: var(--shadow);
-      overflow-x: auto;
+      transition: all 0.3s ease;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .user-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
     }
-    th {
-      background: var(--gray-100);
-      padding: 1rem;
-      text-align: right;
+    .user-header {
+      position: relative;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      margin-bottom: 0.5rem;
+      background: var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+    .user-name {
+      font-size: 1.3rem;
       font-weight: 600;
-      color: var(--gray-700);
-      position: sticky;
-      top: 0;
+      margin: 0;
     }
-    td {
-      padding: 1rem;
-      border-top: 1px solid var(--gray-200);
-    }
-    tr:hover {
-      background: var(--gray-100);
-    }
-    .role-badge {
+    .user-role {
+      display: inline-block;
       padding: 0.3rem 0.8rem;
       border-radius: 1rem;
       font-size: 0.85rem;
       font-weight: 600;
-      display: inline-block;
+      margin-top: 0.5rem;
     }
     .role-customer { background: #dcfce7; color: #059669; }
     .role-restaurant { background: #ffedd5; color: #f97316; }
     .role-captain { background: #dbeafe; color: #3b82f6; }
     .role-admin { background: #fee2e2; color: #ef4444; }
+    .user-details {
+      padding: 1.5rem;
+    }
+    .detail-item {
+      display: flex;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .detail-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .detail-label {
+      font-weight: 600;
+      color: var(--gray-700);
+      min-width: 100px;
+      margin-left: 1rem;
+    }
+    .detail-value {
+      flex: 1;
+      color: var(--secondary);
+    }
+    .edit-input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--gray-300);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    .email-value {
+      color: #64748b;
+      font-weight: 500;
+    }
     .action-buttons {
       display: flex;
       gap: 0.5rem;
       justify-content: center;
-      flex-wrap: wrap;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-200);
     }
     .save-btn {
       background: linear-gradient(135deg, var(--success), #059669);
@@ -417,6 +454,9 @@
       .stat-card {
         min-width: 100%;
       }
+      .user-cards {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -464,25 +504,6 @@
     <div class="main-content">
       <div class="header">
         <h1><i class="fas fa-users"></i> إدارة المستخدمين</h1>
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" id="search-input" placeholder="بحث عن مستخدم...">
-        </div>
-      </div>
-      <div class="add-user-form">
-        <h3><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</h3>
-        <form id="add-user-form">
-          <div class="form-group">
-            <input type="text" id="full-name" placeholder="الاسم الكامل" required>
-            <select id="user-role" required>
-              <option value="">اختر الدور</option>
-              <option value="restaurant">مطعم</option>
-              <option value="captain">كابتن</option>
-              <option value="admin">مدير</option>
-            </select>
-          </div>
-          <button type="submit"><i class="fas fa-plus"></i> إضافة</button>
-        </form>
       </div>
       <div class="stats-bar">
         <div class="stat-card">
@@ -503,7 +524,11 @@
         </div>
       </div>
       <div class="filter-section">
-        <h3><i class="fas fa-filter"></i> تصفية حسب الدور</h3>
+        <h3><i class="fas fa-filter"></i> تصفية وبحث</h3>
+        <div class="search-bar" style="margin-bottom: 1rem;">
+          <i class="fas fa-search"></i>
+          <input type="text" id="search-input" placeholder="بحث عن مستخدم...">
+        </div>
         <div class="filter-buttons">
           <button class="filter-btn active" data-type="all">
             <i class="fas fa-globe"></i>
@@ -523,32 +548,19 @@
           </button>
         </div>
       </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>الاسم الكامل</th>
-              <th>الدور</th>
-              <th>تاريخ الإنشاء</th>
-              <th>الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="users-table">
-            <tr>
-              <td colspan="4" class="loading">
-                <div class="loading-spinner"></div>
-                جارٍ التحميل...
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="user-cards" id="users-cards">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          جارٍ التحميل...
+        </div>
       </div>
       <div class="pagination" id="pagination">
         <!-- Pagination buttons will be generated here -->
       </div>
     </div>
   </div>
-  <script>
+
+<script>
     // Initialize Supabase client
     const { createClient } = supabase;
     const supabaseClient = createClient(
@@ -559,14 +571,13 @@
     let allUsers = [];
     let currentFilter = 'all';
     let currentPage = 1;
-    const usersPerPage = 10;
+    const usersPerPage = 6;
     let searchQuery = '';
     // DOM Elements
-    const usersTable = document.getElementById('users-table');
+    const usersCards = document.getElementById('users-cards');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const addUserForm = document.getElementById('add-user-form');
     const searchInput = document.getElementById('search-input');
-    const sidebar = document.querySelector('.sidebar');
     const pagination = document.getElementById('pagination');
     // Initialize the application
     document.addEventListener('DOMContentLoaded', async function() {
@@ -594,11 +605,6 @@
           filterAndDisplayUsers();
         });
       });
-      // Add user form
-      addUserForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        await addNewUser();
-      });
       // Search input
       searchInput.addEventListener('input', function() {
         searchQuery = this.value.toLowerCase();
@@ -612,7 +618,7 @@
         showMessage('جارٍ تحميل المستخدمين...', 'info');
         const { data: users, error } = await supabaseClient
           .from('users')
-          .select('id, full_name, role, created_at')
+          .select('*')
           .order('created_at', { ascending: false });
         if (error) {
           console.error('خطأ في تحميل المستخدمين:', error);
@@ -624,7 +630,7 @@
         showMessage('تم تحميل المستخدمين بنجاح', 'success');
       } catch (error) {
         console.error('خطأ في تحميل المستخدمين:', error);
-        usersTable.innerHTML = "<tr><td colspan='4' class='error-state'>حدث خطأ في تحميل البيانات: " + error.message + "</td></tr>";
+        usersCards.innerHTML = "<div class='error-state'>حدث خطأ في تحميل البيانات: " + error.message + "</div>";
         showMessage('حدث خطأ في تحميل البيانات: ' + error.message, 'error');
       }
     }
@@ -638,7 +644,9 @@
       // Apply search filter
       if (searchQuery) {
         filteredUsers = filteredUsers.filter(user => 
-          user.full_name.toLowerCase().includes(searchQuery)
+          user.full_name?.toLowerCase().includes(searchQuery) ||
+          user.email?.toLowerCase().includes(searchQuery) ||
+          user.phone?.toLowerCase().includes(searchQuery)
         );
       }
       // Calculate pagination
@@ -652,13 +660,13 @@
       // Update pagination controls
       updatePagination(totalPages);
     }
-    // Display users in table
+    // Display users as cards
     function displayUsers(users) {
       if (users.length === 0) {
-        usersTable.innerHTML = "<tr><td colspan='4' class='empty-state'>لا توجد بيانات لعرضها</td></tr>";
+        usersCards.innerHTML = "<div class='empty-state'>لا توجد بيانات لعرضها</div>";
         return;
       }
-      usersTable.innerHTML = "";
+      usersCards.innerHTML = "";
       users.forEach(user => {
         const roleArabic = getRoleArabic(user.role);
         const roleColorClass = getRoleColorClass(user.role);
@@ -667,28 +675,43 @@
           hour: '2-digit',
           minute: '2-digit'
         });
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>
-            <input 
-              type="text" 
-              data-id="${user.id}" 
-              data-original="${user.full_name}" 
-              value="${user.full_name}" 
-              style="width: 100%; padding: 0.5rem; border: 1px solid var(--gray-300); border-radius: 0.3rem;"
-            >
-          </td>
-          <td>
-            <span class="role-badge ${roleColorClass}">
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+          <div class="user-header">
+            <div class="user-avatar">
+              ${user.avatar_url ? 
+                `<img style="width:60px;     height: 60px;
+ border-radius: 50%;" src="${user.avatar_url}" alt="الصورة الشخصية">` : 
+                user.full_name ? user.full_name.charAt(0) : '?'}
+            </div>
+            <h3 class="user-name">${user.full_name || 'اسم غير محدد'}</h3>
+            <span class="user-role ${roleColorClass}">
               <i class="${getRoleIcon(user.role)}"></i>
               ${roleArabic}
             </span>
-          </td>
-          <td>
-            <div>${createdDate}</div>
-            <div style="font-size: 0.8rem; color: var(--gray-700);">${createdTime}</div>
-          </td>
-          <td>
+          </div>
+          <div class="user-details">
+            <div class="detail-item">
+              <span class="detail-label">البريد الإلكتروني:</span>
+              <span class="detail-value email-value">${user.email || 'غير محدد'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">رقم الهاتف:</span>
+              <input type="text" class="edit-input" data-id="${user.id}" data-field="phone" value="${user.phone || ''}" placeholder="رقم الهاتف">
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">الاسم الكامل:</span>
+              <input type="text" class="edit-input" data-id="${user.id}" data-field="full_name" value="${user.full_name || ''}" placeholder="الاسم الكامل">
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">رابط الصورة:</span>
+              <input type="text" class="edit-input" data-id="${user.id}" data-field="avatar_url" value="${user.avatar_url || ''}" placeholder="أدخل رابط الصورة">
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">تاريخ الإنشاء:</span>
+              <span class="detail-value">${createdDate} ${createdTime}</span>
+            </div>
             <div class="action-buttons">
               <button class="save-btn" data-id="${user.id}" disabled>
                 <i class="fas fa-save"></i>
@@ -699,9 +722,9 @@
                 حذف
               </button>
             </div>
-          </td>
+          </div>
         `;
-        usersTable.appendChild(row);
+        usersCards.appendChild(card);
       });
       // Add event listeners to inputs and buttons
       attachEventListeners();
@@ -725,6 +748,7 @@
       for (let i = 1; i <= totalPages; i++) {
         const pageButton = document.createElement('button');
         pageButton.textContent = i;
+        if (i === currentPage) pageButton.classList.add('active');
         pageButton.addEventListener('click', () => {
           currentPage = i;
           filterAndDisplayUsers();
@@ -746,13 +770,17 @@
     // Attach event listeners to inputs and save buttons
     function attachEventListeners() {
       // Input change events
-      document.querySelectorAll("input[data-id]").forEach(input => {
+      document.querySelectorAll(".edit-input").forEach(input => {
         input.addEventListener('input', function() {
           const userId = this.dataset.id;
-          const originalValue = this.dataset.original;
+          const field = this.dataset.field;
+          const originalValue = this.dataset.original || this.value;
+          this.dataset.original = originalValue;
           const saveBtn = document.querySelector(`.save-btn[data-id="${userId}"]`);
           if (saveBtn) {
-            saveBtn.disabled = (this.value === originalValue);
+            const inputs = document.querySelectorAll(`.edit-input[data-id="${userId}"]`);
+            const hasChanges = Array.from(inputs).some(input => input.value !== (input.dataset.original || ''));
+            saveBtn.disabled = !hasChanges;
           }
         });
         // Save on Enter key
@@ -761,7 +789,7 @@
             const userId = this.dataset.id;
             const saveBtn = document.querySelector(`.save-btn[data-id="${userId}"]`);
             if (saveBtn && !saveBtn.disabled) {
-              await updateUserName(saveBtn);
+              await updateUser(userId);
             }
           }
         });
@@ -769,7 +797,7 @@
       // Save button events
       document.querySelectorAll(".save-btn").forEach(btn => {
         btn.addEventListener('click', async function() {
-          await updateUserName(this);
+          await updateUser(this.dataset.id);
         });
       });
       // Delete button events
@@ -783,56 +811,68 @@
         });
       });
     }
-    // Update user name
-    async function updateUserName(button) {
+    // Update user information
+    async function updateUser(userId) {
       try {
-        const id = button.dataset.id;
-        const input = document.querySelector(`input[data-id="${id}"]`);
-        const newName = input.value.trim();
-        const originalName = input.dataset.original;
-        if (!newName) {
-          showMessage('يرجى إدخال اسم صحيح', 'error');
-          return;
-        }
-        if (newName === originalName) {
-          button.disabled = true;
-          return;
-        }
+        const inputs = document.querySelectorAll(`.edit-input[data-id="${userId}"]`);
+        const updates = {};
+        inputs.forEach(input => {
+          const field = input.dataset.field;
+          const value = input.value.trim();
+          // Handle numeric fields
+          if (field === 'total_withdrawn') {
+            updates[field] = value ? parseFloat(value) : 0;
+          } else {
+            updates[field] = value || null;
+          }
+        });
         // Disable button during update
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الحفظ...';
+        const saveBtn = document.querySelector(`.save-btn[data-id="${userId}"]`);
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الحفظ...';
         const { data, error } = await supabaseClient
           .from('users')
-          .update({ full_name: newName })
-          .eq('id', id)
+          .update(updates)
+          .eq('id', userId)
           .select();
         if (error) {
           console.error('خطأ في تحديث المستخدم:', error);
           showMessage('حدث خطأ أثناء التحديث: ' + error.message, 'error');
-          button.disabled = false;
-          button.innerHTML = '<i class="fas fa-save"></i> حفظ';
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ';
           return;
         }
-        showMessage('تم تحديث الاسم بنجاح', 'success');
-        input.dataset.original = newName;
+        showMessage('تم تحديث المعلومات بنجاح', 'success');
+        // Update original values
+        inputs.forEach(input => {
+          input.dataset.original = input.value;
+        });
         // Update local data
-        const userIndex = allUsers.findIndex(user => user.id === id);
+        const userIndex = allUsers.findIndex(user => user.id === userId);
         if (userIndex !== -1) {
-          allUsers[userIndex].full_name = newName;
+          Object.assign(allUsers[userIndex], updates);
         }
-        button.innerHTML = '<i class="fas fa-save"></i> حفظ';
-        button.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ';
+        saveBtn.disabled = true;
+        
+        // Update avatar image if URL changed
+        if (updates.avatar_url) {
+          const avatarImg = document.querySelector(`.user-card .user-avatar img`);
+          if (avatarImg) {
+            avatarImg.src = updates.avatar_url + '?t=' + new Date().getTime();
+          }
+        }
       } catch (error) {
         console.error('خطأ في تحديث المستخدم:', error);
         showMessage('حدث خطأ أثناء التحديث: ' + error.message, 'error');
-        const saveBtn = document.querySelector(`.save-btn[data-id="${id}"]`);
+        const saveBtn = document.querySelector(`.save-btn[data-id="${userId}"]`);
         if (saveBtn) {
           saveBtn.disabled = false;
           saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ';
         }
       }
     }
-    // Delete user - بدون قيود
+    // Delete user
     async function deleteUser(userId) {
       try {
         showMessage('جارٍ حذف المستخدم...', 'info');
@@ -861,51 +901,6 @@
       }
     }
     // Add new user
-    async function addNewUser() {
-      try {
-        const fullNameInput = document.getElementById('full-name');
-        const roleSelect = document.getElementById('user-role');
-        const fullName = fullNameInput.value.trim();
-        const role = roleSelect.value;
-        if (!fullName || !role) {
-          showMessage('يرجى ملء جميع الحقول', 'error');
-          return;
-        }
-        const submitButton = addUserForm.querySelector('button[type="submit"]');
-        const originalText = submitButton.innerHTML;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الإضافة...';
-        submitButton.disabled = true;
-        // Insert new user
-        const { data, error } = await supabaseClient
-          .from('users')
-          .insert({ full_name: fullName, role: role })
-          .select();
-        if (error) {
-          console.error('خطأ في إضافة المستخدم:', error);
-          showMessage('حدث خطأ أثناء إضافة المستخدم: ' + error.message, 'error');
-          submitButton.innerHTML = originalText;
-          submitButton.disabled = false;
-          return;
-        }
-        // Add to local data
-        if (data && data[0]) {
-          allUsers.unshift(data[0]); // Add to beginning for most recent first
-          updateStats();
-          filterAndDisplayUsers();
-          showMessage('تم إضافة المستخدم بنجاح', 'success');
-          // Reset form
-          addUserForm.reset();
-        }
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-      } catch (error) {
-        console.error('خطأ في إضافة المستخدم:', error);
-        showMessage('حدث خطأ أثناء إضافة المستخدم: ' + error.message, 'error');
-        const submitButton = addUserForm.querySelector('button[type="submit"]');
-        submitButton.innerHTML = '<i class="fas fa-plus"></i> إضافة';
-        submitButton.disabled = false;
-      }
-    }
     // Update statistics
     function updateStats() {
       const totalUsers = allUsers.length;
@@ -913,19 +908,6 @@
       document.getElementById('restaurant-count').textContent = allUsers.filter(u => u.role === 'restaurant').length;
       document.getElementById('captain-count').textContent = allUsers.filter(u => u.role === 'captain').length;
       document.getElementById('admin-count').textContent = allUsers.filter(u => u.role === 'admin').length;
-      // Update filter button counts
-      const roleCounts = {
-        all: totalUsers,
-        restaurant: allUsers.filter(u => u.role === 'restaurant').length,
-        captain: allUsers.filter(u => u.role === 'captain').length,
-        admin: allUsers.filter(u => u.role === 'admin').length
-      };
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        const type = btn.dataset.type;
-        const count = roleCounts[type];
-        const icon = btn.querySelector('i').outerHTML;
-        btn.innerHTML = `${icon} <span>${getFilterName(type)} (${count})</span>`;
-      });
     }
     // Get Arabic role name
     function getRoleArabic(role) {
@@ -954,16 +936,6 @@
       };
       return roleClasses[role] || '';
     }
-    // Get filter name
-    function getFilterName(type) {
-      const filterNames = {
-        'all': 'الكل',
-        'restaurant': 'المطاعم',
-        'captain': 'الكباتن',
-        'admin': 'المديرين'
-      };
-      return filterNames[type] || type;
-    }
     // Show message
     function showMessage(text, type = 'info') {
       // Remove existing messages
@@ -978,7 +950,6 @@
       if (type === 'error') icon = 'exclamation-circle';
       messageElement.innerHTML = `<i class="fas fa-${icon}"></i> ${text}`;
       messageContainer.appendChild(messageElement);
-      document.querySelector('.main-content').insertBefore(messageContainer, document.querySelector('.add-user-form'));
       // Auto remove success messages after 3 seconds
       if (type === 'success' || type === 'info') {
         setTimeout(() => {
@@ -990,22 +961,21 @@
     }
     // تحميل شعار المكتب
     async function loadOfficeLogo() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabaseClient.auth.getUser();
       if (!user) return;
-      const { data: userData } = await supabase
+      const { data: userData, error } = await supabaseClient
         .from("users")
         .select("full_name")
         .eq("id", user.id)
         .single();
+      if (error) {
+        console.error('خطأ في تحميل بيانات المستخدم:', error);
+        return;
+      }
       const logoTitle = document.querySelector('.sidebar-logo h2');
       if (logoTitle) logoTitle.textContent = userData.full_name || "مكتب السريع";
     }
     loadOfficeLogo();
-    // Start the application
-    function initializeApp() {
-      // Not needed, already in DOMContentLoaded
-    }
-    initializeApp();
-  </script>
+  </script>  
 </body>
 </html>

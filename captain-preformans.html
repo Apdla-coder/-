@@ -726,10 +726,10 @@
         <i class="fas fa-history"></i>
         <span>سجل الطلبات</span>
       </a>
-      <button class="logout-btn" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>تسجيل الخروج</span>
-      </button>
+      <a class="nav-link" href="./index.html">
+        <i class="fas fa-history"></i>
+        <span> تسجيل الخروج</span>
+      </a>
     </div>
     
     <!-- Main Content -->
@@ -873,46 +873,37 @@
     <span id="toast-message"></span>
   </div>
   
-  <script type="module">
+
+<script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    
     const supabase = createClient(
       'https://vrngqopmdvdmdayswlos.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZybmdxb3BtZHZkbWRheXN3bG9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4ODYwMDgsImV4cCI6MjA2NzQ2MjAwOH0.bDwUJkyiQfv1egMgYy-hrj8pJMGTHAeQYBdp0z4CMrs'
     );
-    
     // DOM Elements
     const searchInput = document.getElementById('search-input');
     const captainsContainer = document.getElementById('captains-container');
     const paginationElement = document.getElementById('pagination');
-    const withdrawModal = document.getElementById('withdraw-modal');
     const captainDetailsModal = document.getElementById('captain-details-modal');
-    const closeWithdrawModal = document.getElementById('close-withdraw-modal');
     const closeDetailsBtn = document.getElementById('close-details-btn');
-    const cancelWithdraw = document.getElementById('cancel-withdraw');
-    const confirmWithdraw = document.getElementById('confirm-withdraw');
     const toast = document.getElementById('toast');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    
     // State
     let captainsData = [];
     let filteredData = [];
     let selectedCaptain = null;
     let currentPage = 1;
     const itemsPerPage = 8;
-    
     // Load office logo
     async function loadOfficeLogo() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-        
         const { data: userData } = await supabase
           .from("users")
           .select("full_name")
           .eq("id", user.id)
           .single();
-          
         const logoTitle = document.querySelector('.sidebar-logo h2');
         if (logoTitle && userData?.full_name) {
           logoTitle.textContent = userData.full_name;
@@ -921,7 +912,6 @@
         console.warn("Failed to load office logo:", err.message);
       }
     }
-    
     // Debounce
     const debounce = (func, wait) => {
       let timeout;
@@ -934,10 +924,9 @@
         timeout = setTimeout(later, wait);
       };
     };
-    
     // Search
     const handleSearch = debounce(() => {
-      const term = searchInput.value.toLowerCase().trim();
+      const term = searchInput?.value?.toLowerCase().trim() || '';
       filteredData = term
         ? captainsData.filter(c => c.full_name.toLowerCase().includes(term))
         : [...captainsData];
@@ -946,17 +935,17 @@
       renderCaptains();
       renderPagination();
     }, 300);
-    
     // Filter
     let selectedFilter = 'all';
     function applyFilter(filter) {
       selectedFilter = filter;
       filterButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === filter);
+        if (btn) {
+          btn.classList.toggle('active', btn.dataset.filter === filter);
+        }
       });
       currentPage = 1;
       let data = [...captainsData];
-      
       switch (filter) {
         case 'busy':
           data = data.filter(c => c.status === 'مشغول');
@@ -968,26 +957,23 @@
           data = data.filter(c => c.performance_score >= 60);
           break;
       }
-      
-      const term = searchInput.value.toLowerCase().trim();
+      const term = searchInput?.value?.toLowerCase().trim() || '';
       if (term) {
         data = data.filter(c => c.full_name.toLowerCase().includes(term));
       }
-      
       filteredData = data;
       renderCaptains();
       renderPagination();
     }
-    
     // Load Data
     async function loadTodayData() {
       try {
-        captainsContainer.innerHTML = `<div class="loading"><div class="spinner"></div><p>جارٍ التحميل...</p></div>`;
-        
+        if (captainsContainer) {
+          captainsContainer.innerHTML = `<div class="loading"><div class="spinner"></div><p>جارٍ التحميل...</p></div>`;
+        }
         const today = new Date();
         const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
         const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-        
         const [{ data: captains }, { data: orders }] = await Promise.all([
           supabase.from("users").select("id, full_name, phone, created_at, total_withdrawn").eq("role", "captain"),
           supabase.from("orders")
@@ -996,13 +982,10 @@
             .gte('created_at', todayStart)
             .lt('created_at', todayEnd)
         ]);
-        
         if (!captains) throw new Error("فشل تحميل الكباتن");
         if (!orders) throw new Error("فشل تحميل الطلبات");
-        
         const captainStats = new Map();
         const captainOrders = new Map();
-        
         captains.forEach(c => {
           captainStats.set(c.id, {
             id: c.id,
@@ -1017,30 +1000,34 @@
             distributing: 0,
             total_order_price: 0,
             total_service_price: 0,
-            total_commission: 0,
+            office_profit: 0,
+            captain_earning: 0,
             status: "فاضي",
             performance_score: 0,
             recent_orders: []
           });
         });
-        
         orders.forEach(order => {
           const stats = captainStats.get(order.captain_id);
           if (!stats) return;
-          
           stats.total_orders++;
           stats.total_order_price += parseFloat(order.order_price) || 0;
           stats.total_service_price += parseFloat(order.service_price) || 0;
-          
+          const servicePrice = parseFloat(order.service_price) || 0;
+          const commissionPercent = parseFloat(order.commission_percent) || 0;
+          // المكتب يأخذ النسبة المئوية من سعر الخدمة
+          const officeProfit = servicePrice * commissionPercent / 100;
+          // الكابتن يأخذ الباقي من سعر الخدمة
+          const captainEarning = servicePrice - officeProfit;
+          stats.office_profit += officeProfit;
+          stats.captain_earning += captainEarning;
           if (!captainOrders.has(order.captain_id)) {
             captainOrders.set(order.captain_id, []);
           }
           captainOrders.get(order.captain_id).push(order);
-          
           switch (order.status) {
             case 'تم التوصيل':
               stats.delivered++;
-              stats.total_commission += (parseFloat(order.service_price) || 0) * (parseFloat(order.commission_percent) || 0) / 100;
               break;
             case 'جاري التوصيل':
               stats.pending++;
@@ -1054,52 +1041,51 @@
               break;
           }
         });
-        
-        captainsData = Array.from(captainStats.values()).map(captain => {
-          const deliveryRate = captain.total_orders > 0 ? (captain.delivered / captain.total_orders) * 100 : 0;
-          const completionRate = captain.total_orders > 0 ? ((captain.delivered + captain.pending) / captain.total_orders) * 100 : 0;
-          const performanceScore = (deliveryRate * 0.6) + (completionRate * 0.4);
-          
-          return {
-            ...captain,
-            performance_score: Math.round(performanceScore),
-            recent_orders: (captainOrders.get(captain.id) || [])
-              .filter(Boolean)
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              .slice(0, 5),
-            available_commission: captain.total_commission - captain.total_withdrawn
-          };
-        });
-        
+captainsData = Array.from(captainStats.values()).map(captain => {
+  const deliveryRate = captain.total_orders > 0 ? (captain.delivered / captain.total_orders) * 100 : 0;
+  const completionRate = captain.total_orders > 0 ? ((captain.delivered + captain.pending) / captain.total_orders) * 100 : 0;
+  const performanceScore = (deliveryRate * 0.6) + (completionRate * 0.4);
+
+  // هنا بيتحسب الربح المتبقي للمكتب بعد الخصم
+  const netOfficeProfit = captain.office_profit - captain.total_withdrawn;
+
+  return {
+    ...captain,
+    performance_score: Math.round(performanceScore),
+    office_profit: Math.max(0, parseFloat(netOfficeProfit.toFixed(2))), // للتأكد من إنه مش بالسالب
+    recent_orders: (captainOrders.get(captain.id) || [])
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 5)
+  };
+});
         captainsData.sort((a, b) => b.performance_score - a.performance_score);
-        
         updateStats(
           captains.length,
           orders.length,
           orders.filter(o => o.status === 'تم التوصيل').length,
-          captainsData.reduce((sum, c) => sum + c.total_commission, 0)
+          captainsData.reduce((sum, c) => sum + c.office_profit, 0)
         );
-        
         filteredData = [...captainsData];
         applyFilter('all');
         renderCaptains();
         renderPagination();
-        
       } catch (error) {
         console.error('Error:', error);
-        captainsContainer.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>خطأ في التحميل</h3>
-            <p>${error.message || 'تحقق من الاتصال'}</p>
-          </div>`;
+        if (captainsContainer) {
+          captainsContainer.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <h3>خطأ في التحميل</h3>
+              <p>${error.message || 'تحقق من الاتصال'}</p>
+            </div>`;
+        }
       }
     }
-    
     // Render Captains
     function renderCaptains() {
+      if (!captainsContainer) return;
       captainsContainer.innerHTML = "";
-      
       if (filteredData.length === 0) {
         captainsContainer.innerHTML = `
           <div class="empty-state">
@@ -1109,23 +1095,19 @@
           </div>`;
         return;
       }
-      
       const start = (currentPage - 1) * itemsPerPage;
       const end = Math.min(start + itemsPerPage, filteredData.length);
-      
       for (let i = start; i < end; i++) {
         const c = filteredData[i];
         const perf = c.performance_score >= 80 ? "excellent" :
                      c.performance_score >= 60 ? "good" :
                      c.performance_score >= 40 ? "average" : "poor";
-                     
         const perfText = { 
           excellent: "ممتاز", 
           good: "جيد", 
           average: "متوسط", 
           poor: "ضعيف" 
         }[perf];
-        
         const card = document.createElement("div");
         card.className = "captain-card";
         card.innerHTML = `
@@ -1155,12 +1137,12 @@
                 <div class="stat-value">${c.failed}</div>
               </div>
               <div class="stat-item">
-                <div class="stat-label">إجمالي العمولة</div>
-                <div class="stat-value">${c.total_commission.toFixed(2)} جنيه</div>
+                <div class="stat-label">ربح المكتب</div>
+                <div class="stat-value">${c.office_profit.toFixed(2)} جنيه</div>
               </div>
               <div class="stat-item">
-                <div class="stat-label">المتاحة</div>
-                <div class="stat-value">${c.available_commission.toFixed(2)} جنيه</div>
+                <div class="stat-label">ربح الكابتن</div>
+                <div class="stat-value">${c.captain_earning.toFixed(2)} جنيه</div>
               </div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin:1rem 0;">
@@ -1169,50 +1151,48 @@
             </div>
             <div class="captain-actions">
               <button class="btn btn-primary view-details-btn" data-id="${c.id}"><i class="fas fa-eye"></i> تفاصيل</button>
-              <button class="btn btn-danger withdraw-btn" data-id="${c.id}"><i class="fas fa-money-bill-wave"></i> سحب</button>
+              <button class="btn btn-danger clear-btn" data-id="${c.id}"><i class="fas fa-trash"></i> تصفيه</button>
             </div>
           </div>`;
-          
         captainsContainer.appendChild(card);
       }
-      
       attachEventListeners();
     }
-    
     function attachEventListeners() {
-      document.querySelectorAll('.withdraw-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.getAttribute('data-id');
-          selectedCaptain = captainsData.find(c => c.id === id);
-          if (selectedCaptain) {
-            document.getElementById('captain-name').value = selectedCaptain.full_name;
-            document.getElementById('available-commission').value = `${selectedCaptain.available_commission.toFixed(2)} جنيه`;
-            document.getElementById('withdraw-amount').max = selectedCaptain.available_commission;
-            withdrawModal.style.display = 'flex';
-          }
-        };
-      });
-      
-      document.querySelectorAll('.view-details-btn').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.getAttribute('data-id');
-          selectedCaptain = captainsData.find(c => c.id === id);
-          if (selectedCaptain) showCaptainDetails(selectedCaptain);
-        };
-      });
+      const clearButtons = document.querySelectorAll('.clear-btn');
+      if (clearButtons.length > 0) {
+        clearButtons.forEach(btn => {
+          btn.onclick = async () => {
+            const id = btn.getAttribute('data-id');
+            selectedCaptain = captainsData.find(c => c.id === id);
+            if (selectedCaptain) {
+              if (confirm(`هل أنت متأكد من تصفيه ربح المكتب للكابتن ${selectedCaptain.full_name}؟`)) {
+                await handleClear(id);
+              }
+            }
+          };
+        });
+      }
+      const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+      if (viewDetailsButtons.length > 0) {
+        viewDetailsButtons.forEach(btn => {
+          btn.onclick = () => {
+            const id = btn.getAttribute('data-id');
+            selectedCaptain = captainsData.find(c => c.id === id);
+            if (selectedCaptain) showCaptainDetails(selectedCaptain);
+          };
+        });
+      }
     }
-    
     function renderPagination() {
+      if (!paginationElement) return;
       paginationElement.innerHTML = "";
       if (filteredData.length <= itemsPerPage) return;
-      
       const totalPages = Math.ceil(filteredData.length / itemsPerPage);
       const maxVisible = 5;
       let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
       let end = Math.min(totalPages, start + maxVisible - 1);
-      
       if (end - start + 1 < maxVisible) start = Math.max(1, end - maxVisible + 1);
-      
       const prev = document.createElement("button");
       prev.innerHTML = '<i class="fas fa-chevron-right"></i>';
       prev.disabled = currentPage === 1;
@@ -1224,23 +1204,19 @@
         } 
       };
       paginationElement.appendChild(prev);
-      
       if (start > 1) {
         const first = createPageButton(1);
         paginationElement.appendChild(first);
         if (start > 2) addEllipsis();
       }
-      
       for (let i = start; i <= end; i++) {
         paginationElement.appendChild(createPageButton(i, i === currentPage));
       }
-      
       if (end < totalPages) {
         if (end < totalPages - 1) addEllipsis();
         const last = createPageButton(totalPages);
         paginationElement.appendChild(last);
       }
-      
       const next = document.createElement("button");
       next.innerHTML = '<i class="fas fa-chevron-left"></i>';
       next.disabled = currentPage === totalPages;
@@ -1253,7 +1229,6 @@
       };
       paginationElement.appendChild(next);
     }
-    
     function createPageButton(page, active = false) {
       const btn = document.createElement("button");
       btn.textContent = page;
@@ -1261,75 +1236,83 @@
       btn.onclick = () => { currentPage = page; renderCaptains(); renderPagination(); };
       return btn;
     }
-    
     function addEllipsis() {
       const span = document.createElement("span");
       span.textContent = "...";
       span.style.padding = "0.5rem";
       return paginationElement.appendChild(span);
     }
-    
     function updateStats(total, orders, delivered, commission) {
-      document.getElementById("total-captains").textContent = total;
-      document.getElementById("total-orders").textContent = orders;
-      document.getElementById("delivered-orders").textContent = delivered;
-      document.getElementById("total-commission").textContent = `${commission.toFixed(2)} جنيه`;
+      const totalCaptains = document.getElementById("total-captains");
+      const totalOrders = document.getElementById("total-orders");
+      const deliveredOrders = document.getElementById("delivered-orders");
+      const totalCommission = document.getElementById("total-commission");
+      if (totalCaptains) totalCaptains.textContent = total;
+      if (totalOrders) totalOrders.textContent = orders;
+      if (deliveredOrders) deliveredOrders.textContent = delivered;
+      if (totalCommission) totalCommission.textContent = `${commission.toFixed(2)} جنيه`;
     }
-    
     function showCaptainDetails(captain) {
       if (!captain) return showToast("الكابتن غير موجود", "error");
-      
-      document.getElementById('details-captain-name').textContent = captain.full_name;
-      document.getElementById('details-captain-phone').textContent = captain.phone || 'غير متوفر';
-      document.getElementById('details-captain-joined').textContent = new Date(captain.created_at).toLocaleDateString('ar-EG');
-      document.getElementById('details-total-orders').textContent = captain.total_orders;
-      document.getElementById('details-delivered').textContent = captain.delivered;
-      document.getElementById('details-pending').textContent = captain.pending;
-      document.getElementById('details-failed').textContent = captain.failed;
-      document.getElementById('details-total-commission').textContent = `${captain.total_commission.toFixed(2)} جنيه`;
-      document.getElementById('details-withdrawn').textContent = `${captain.total_withdrawn.toFixed(2)} جنيه`;
-      
+      const detailsCaptainName = document.getElementById('details-captain-name');
+      const detailsCaptainPhone = document.getElementById('details-captain-phone');
+      const detailsCaptainJoined = document.getElementById('details-captain-joined');
+      const detailsTotalOrders = document.getElementById('details-total-orders');
+      const detailsDelivered = document.getElementById('details-delivered');
+      const detailsPending = document.getElementById('details-pending');
+      const detailsFailed = document.getElementById('details-failed');
+      const detailsTotalCommission = document.getElementById('details-total-commission');
+      const detailsWithdrawn = document.getElementById('details-withdrawn');
+      if (detailsCaptainName) detailsCaptainName.textContent = captain.full_name;
+      if (detailsCaptainPhone) detailsCaptainPhone.textContent = captain.phone || 'غير متوفر';
+      if (detailsCaptainJoined) detailsCaptainJoined.textContent = new Date(captain.created_at).toLocaleDateString('ar-EG');
+      if (detailsTotalOrders) detailsTotalOrders.textContent = captain.total_orders;
+      if (detailsDelivered) detailsDelivered.textContent = captain.delivered;
+      if (detailsPending) detailsPending.textContent = captain.pending;
+      if (detailsFailed) detailsFailed.textContent = captain.failed;
+      if (detailsTotalCommission) detailsTotalCommission.textContent = `${captain.office_profit.toFixed(2)} جنيه`;
+      if (detailsWithdrawn) detailsWithdrawn.textContent = `${captain.total_withdrawn.toFixed(2)} جنيه`;
       const ordersList = document.getElementById('orders-list');
-      ordersList.innerHTML = '';
-      
-      if (captain.recent_orders.length === 0 || !captain.recent_orders.some(Boolean)) {
-        ordersList.innerHTML = '<p style="text-align:center;color:var(--gray);padding:1rem;">لا توجد طلبات</p>';
-      } else {
-        captain.recent_orders.filter(Boolean).forEach(order => {
-          const statusClass = order.status === 'تم التوصيل' ? 'success' :
-                              order.status === 'جاري التوصيل' ? 'warning' :
-                              order.status === 'فشل التوصيل' ? 'danger' : 'info';
-                              
-          const item = document.createElement('div');
-          item.className = 'order-item';
-          item.innerHTML = `
-            <div class="order-info">
-              <div>${(order.order_price ? parseFloat(order.order_price).toFixed(2) : '0.00')} جنيه</div>
-              <small>${(order.service_price ? parseFloat(order.service_price).toFixed(2) : '0.00')} (الخدمة)</small>
-            </div>
-            <div class="order-status status-${statusClass}">${order.status}</div>
-            <div class="order-actions">
-              <button class="btn btn-sm btn-outline view-order-btn" data-id="${order.id}">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>`;
-          ordersList.appendChild(item);
-        });
-        
-        // Delegate view order click
-        ordersList.querySelectorAll('.view-order-btn').forEach(btn => {
-          btn.onclick = (e) => {
-            e.stopPropagation();
-            const orderId = btn.getAttribute('data-id');
-            window.showOrderDetails(orderId);
-          };
-        });
+      if (ordersList) {
+        ordersList.innerHTML = '';
+        if (captain.recent_orders.length === 0 || !captain.recent_orders.some(Boolean)) {
+          ordersList.innerHTML = '<p style="text-align:center;color:var(--gray);padding:1rem;">لا توجد طلبات</p>';
+        } else {
+          captain.recent_orders.filter(Boolean).forEach(order => {
+            const statusClass = order.status === 'تم التوصيل' ? 'success' :
+                                order.status === 'جاري التوصيل' ? 'warning' :
+                                order.status === 'فشل التوصيل' ? 'danger' : 'info';
+            const item = document.createElement('div');
+            item.className = 'order-item';
+            item.innerHTML = `
+              <div class="order-info">
+                <div>${(order.order_price ? parseFloat(order.order_price).toFixed(2) : '0.00')} جنيه</div>
+                <small>${(order.service_price ? parseFloat(order.service_price).toFixed(2) : '0.00')} (الخدمة)</small>
+              </div>
+              <div class="order-status status-${statusClass}">${order.status}</div>
+              <div class="order-actions">
+                <button class="btn btn-sm btn-outline view-order-btn" data-id="${order.id}">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>`;
+            ordersList.appendChild(item);
+          });
+          // Delegate view order click
+          const viewOrderButtons = ordersList.querySelectorAll('.view-order-btn');
+          if (viewOrderButtons.length > 0) {
+            viewOrderButtons.forEach(btn => {
+              btn.onclick = (e) => {
+                e.stopPropagation();
+                const orderId = btn.getAttribute('data-id');
+                window.showOrderDetails(orderId);
+              };
+            });
+          }
+        }
       }
-      
       fetchWithdrawalsHistory(captain.id);
-      captainDetailsModal.style.display = 'flex';
+      if (captainDetailsModal) captainDetailsModal.style.display = 'flex';
     }
-    
     async function fetchWithdrawalsHistory(captainId) {
       try {
         const { data, error } = await supabase
@@ -1338,12 +1321,10 @@
           .eq('captain_id', captainId)
           .order('created_at', { ascending: false })
           .limit(10);
-          
         if (error) throw error;
-        
         const body = document.getElementById('withdrawals-history');
+        if (!body) return;
         body.innerHTML = '';
-        
         if (data.length === 0) {
           body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--gray);">لا توجد عمليات</td></tr>`;
         } else {
@@ -1359,99 +1340,147 @@
         }
       } catch (err) {
         console.error("Fetch history error:", err);
-        document.getElementById('withdrawals-history').innerHTML = `<tr><td colspan="4" style="color:var(--danger);">خطأ</td></tr>`;
+        const body = document.getElementById('withdrawals-history');
+        if (body) {
+          body.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">خطأ</td></tr>`;
+        }
       }
     }
-    
     function setupTabSwitching() {
-      document.querySelectorAll('.captain-details-tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tab = btn.dataset.tab;
-          document.querySelectorAll('.captain-details-tab').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-          btn.classList.add('active');
-          document.getElementById(`tab-${tab}`).style.display = 'block';
+      const tabButtons = document.querySelectorAll('.captain-details-tab');
+      if (tabButtons.length > 0) {
+        tabButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            tabButtons.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            btn.classList.add('active');
+            const tabContent = document.getElementById(`tab-${tab}`);
+            if (tabContent) tabContent.style.display = 'block';
+          });
         });
-      });
+      }
     }
-    
     function showToast(message, type = 'success') {
       const msg = document.getElementById('toast-message');
-      msg.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 5000);
+      if (msg) {
+        msg.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.classList.add('show');
+        setTimeout(() => {
+          if (toast) toast.classList.remove('show');
+        }, 5000);
+      }
     }
-    
-    async function handleWithdraw() {
-      const amount = parseFloat(document.getElementById('withdraw-amount').value);
-      const notes = document.getElementById('withdraw-notes').value;
-      
-      if (!amount || amount <= 0) return showToast('أدخل مبلغًا صحيحًا', 'error');
-      if (amount > selectedCaptain.available_commission) return showToast('المبلغ أكبر من المتاح', 'error');
-      
+    async function handleClear(captainId) {
       try {
+        // إيجاد الكابتن في البيانات الحالية
+        const captain = captainsData.find(c => c.id === captainId);
+        if (!captain) throw new Error("الكابتن غير موجود");
+        
+        // التحقق من أن هناك ربح للمكتب
+        if (captain.office_profit <= 0) {
+          showToast("لا يوجد ربح للمكتب للتصفيّة", "warning");
+          return;
+        }
+        
+        // إنشاء سجل تصفيّة في جدول السحوبات
         const { error: insertErr } = await supabase.from('captain_withdrawals').insert([{
-          captain_id: selectedCaptain.id,
-          amount,
-          notes,
-          created_at: new Date().toISOString()
+          captain_id: captainId,
+          amount: captain.office_profit,
+          notes: 'تصفيّة ربح المكتب',
+          created_at: new Date().toISOString(),
+          withdrawal_date: new Date().toISOString().split('T')[0]
         }]);
         
         if (insertErr) throw insertErr;
         
-        const { error: updateErr } = await supabase.from('users')
-          .update({ total_withdrawn: selectedCaptain.total_withdrawn + amount })
-          .eq('id', selectedCaptain.id);
-          
+        // تحديث إجمالي السحوبات للكابتن
+const { error: updateErr } = await supabase.from('users')
+  .update({
+    total_withdrawn: captain.total_withdrawn + captain.office_profit,
+  })
+  .eq('id', captainId);
+console.log("تحديث total_withdrawn إلى:", captain.total_withdrawn + captain.office_profit);
+
         if (updateErr) throw updateErr;
         
-        selectedCaptain.total_withdrawn += amount;
-        selectedCaptain.available_commission -= amount;
+        // تحديث بيانات الكابتن في الواجهة مباشرة
+        const captainIndex = captainsData.findIndex(c => c.id === captainId);
+        if (captainIndex !== -1) {
+          // حفظ القيمة القديمة للربح
+          const oldOfficeProfit = captainsData[captainIndex].office_profit;
+          
+          // تحديث بيانات الكابتن
+          captainsData[captainIndex].office_profit = 0;
+          captainsData[captainIndex].total_withdrawn += oldOfficeProfit;
+        }
         
-        withdrawModal.style.display = 'none';
+        // تحديث البيانات المفلترة
+        const filteredIndex = filteredData.findIndex(c => c.id === captainId);
+        if (filteredIndex !== -1) {
+          filteredData[filteredIndex].office_profit = 0;
+          filteredData[filteredIndex].total_withdrawn += captain.total_withdrawn;
+        }
+        
+        // تحديث الإحصائيات
+        const totalCommission = captainsData.reduce((sum, c) => sum + c.office_profit, 0);
+        updateStats(
+          captainsData.length,
+          captainsData.reduce((sum, c) => sum + c.total_orders, 0),
+          captainsData.reduce((sum, c) => sum + c.delivered, 0),
+          totalCommission
+        );
+        
+        // تحديث العرض
         renderCaptains();
-        showToast('تم السحب بنجاح');
+        renderPagination();
         
-        document.getElementById('withdraw-amount').value = '';
-        document.getElementById('withdraw-notes').value = '';
+   // تحديث بيانات الكابتن المختار قبل عرض التفاصيل
+const updatedCaptain = captainsData.find(c => c.id === captainId);
+if (captainDetailsModal && captainDetailsModal.style.display === 'flex') {
+  showCaptainDetails(updatedCaptain); // عرض النسخة الحديثة
+}
+
+        
+        showToast('تم تصفيّة ربح المكتب بنجاح');
         
       } catch (err) {
-        console.error('Withdraw error:', err);
-        showToast('خطأ في السحب', 'error');
+        console.error('Clear error:', err);
+        showToast('خطأ في التصفية', 'error');
       }
     }
-    
     // Events
     document.addEventListener("DOMContentLoaded", async () => {
       await loadOfficeLogo();
       await loadTodayData();
       setupTabSwitching();
     });
-    
-    searchInput.addEventListener('input', handleSearch);
-    
-    filterButtons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.filter)));
-    
-    [closeWithdrawModal, cancelWithdraw, closeDetailsBtn].forEach(el => {
-      el.addEventListener('click', () => {
-        withdrawModal.style.display = 'none';
-        captainDetailsModal.style.display = 'none';
+    if (searchInput) {
+      searchInput.addEventListener('input', handleSearch);
+    }
+    if (filterButtons && filterButtons.length > 0) {
+      filterButtons.forEach(btn => {
+        if (btn) {
+          btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+        }
       });
-    });
-    
-    confirmWithdraw.addEventListener('click', handleWithdraw);
-    
+    }
+    if (closeDetailsBtn) {
+      closeDetailsBtn.addEventListener('click', () => {
+        if (captainDetailsModal) captainDetailsModal.style.display = 'none';
+      });
+    }
     window.addEventListener('click', e => {
-      if (e.target === withdrawModal) withdrawModal.style.display = 'none';
-      if (e.target === captainDetailsModal) captainDetailsModal.style.display = 'none';
+      if (captainDetailsModal && e.target === captainDetailsModal) {
+        captainDetailsModal.style.display = 'none';
+      }
     });
-    
     window.showOrderDetails = (id) => showToast(`عرض الطلب #${id}`);
     window.logout = () => confirm('تسجيل الخروج؟') && showToast('تم الخروج');
-    
     // Auto-refresh
     setInterval(loadTodayData, 5 * 60 * 1000);
   </script>
+  
 </body>
 </html>
