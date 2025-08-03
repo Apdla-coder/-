@@ -950,16 +950,29 @@ const { data: orders, error } = await query;      if (error) return showErrorSta
     window.showOrderDetails = function(order) {
       const restaurant = restaurants.find(r => r.id === order.restaurant_id);
       const captain = captains.find(c => c.id === order.captain_id);
-      document.getElementById("modal-details").innerHTML = `
-        <p><strong>اسم العميل:</strong> ${order.custom_name}</p>
-        <p><strong>الهاتف:</strong> ${order.custom_phone}</p>
-        <p><strong>العنوان:</strong> ${order.custom_address}</p>
-        <p><strong>اسم المطعم:</strong> ${restaurant?.restaurant_name || "غير محدد"}</p>
-        <p><strong>الكابتن:</strong> ${captain?.full_name || "غير محدد"}</p>
-        <p><strong>الحالة:</strong> ${order.status}</p>
-        <p><strong>سعر التوصيل:</strong> ${order.service_price} ج.م</p>
-        <p><strong>نسبة العمولة من خدمة التوصيل:</strong> ${order.commission_percent || 0}%</p>
-      `;
+      
+      // إنشاء عناصر DOM بشكل آمن بدلاً من innerHTML
+      const modalDetails = document.getElementById("modal-details");
+      modalDetails.innerHTML = ''; // مسح المحتوى السابق
+      
+      const createDetailParagraph = (label, value) => {
+        const p = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = label;
+        p.appendChild(strong);
+        p.appendChild(document.createTextNode(' ' + (value || 'غير محدد')));
+        return p;
+      };
+      
+      modalDetails.appendChild(createDetailParagraph('اسم العميل:', order.custom_name));
+      modalDetails.appendChild(createDetailParagraph('الهاتف:', order.custom_phone));
+      modalDetails.appendChild(createDetailParagraph('العنوان:', order.custom_address));
+      modalDetails.appendChild(createDetailParagraph('اسم المطعم:', restaurant?.restaurant_name));
+      modalDetails.appendChild(createDetailParagraph('الكابتن:', captain?.full_name));
+      modalDetails.appendChild(createDetailParagraph('الحالة:', order.status));
+      modalDetails.appendChild(createDetailParagraph('سعر التوصيل:', order.service_price + ' ج.م'));
+      modalDetails.appendChild(createDetailParagraph('نسبة العمولة من خدمة التوصيل:', (order.commission_percent || 0) + '%'));
+      
       document.getElementById("modal").style.display = "flex";
     };
     window.closeModal = () => {
@@ -1023,17 +1036,34 @@ const { data: orders, error } = await query;      if (error) return showErrorSta
         return alert("المطعم المحدد غير متوفر في القائمة الحالية. يرجى تحديث الصفحة.");
       }
 
+      // التحقق من صحة البيانات الرقمية قبل الإدراج
+      if (!isValidNumber(servicePrice) || parseFloat(servicePrice) <= 0) {
+        return alert("يرجى إدخال سعر خدمة صحيح (أكبر من صفر)");
+      }
+      
+      if (!isValidNumber(commissionPercent)) {
+        return alert("يرجى إدخال نسبة عمولة صحيحة");
+      }
+      
+      const validServicePrice = parseFloat(servicePrice);
+      const validCommissionPercent = Math.max(0, Math.min(100, parseFloat(commissionPercent)));
+      
       const { error } = await supabase
         .from("orders")
         .insert([{
           restaurant_id: restaurantId,
           custom_address: address,
           order_price: 0,
-          service_price: parseFloat(servicePrice),
-          commission_percent: parseFloat(commissionPercent),
+          service_price: validServicePrice,
+          commission_percent: validCommissionPercent,
           captain_id: captainId,
           status: "في انتظار التسليم"
         }]);
+        
+      // دالة مساعدة للتحقق من صحة الأرقام
+      function isValidNumber(value) {
+        return value !== null && value !== undefined && value !== '' && !isNaN(value) && !isNaN(parseFloat(value));
+      }
         
       if (error) {
         console.error("Error details:", error);
@@ -1061,11 +1091,32 @@ const { data: orders, error } = await query;      if (error) return showErrorSta
       if (!user) return window.location.href = './index.html';
       await Promise.all([loadCaptains(), loadRestaurants(), loadOfficeLogo()]);
       await Promise.all([loadStatistics(), fetchOrdersByStatus(currentStatusFilter)]);
-      // تحديث تلقائي كل 10 ثواني
-      setInterval(() => {
+      // تحديث تلقائي كل 10 ثواني مع تنظيف مناسب
+      let dashboardUpdateInterval = setInterval(() => {
         loadStatistics();
         fetchOrdersByStatus(currentStatusFilter);
       }, 10000);
+      
+      // تنظيف الـ interval عند مغادرة الصفحة لمنع تسريب الذاكرة
+      window.addEventListener('beforeunload', () => {
+        if (dashboardUpdateInterval) {
+          clearInterval(dashboardUpdateInterval);
+          dashboardUpdateInterval = null;
+        }
+      });
+      
+      // إيقاف التحديثات عند إخفاء الصفحة وإعادة تشغيلها عند العودة
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && dashboardUpdateInterval) {
+          clearInterval(dashboardUpdateInterval);
+          dashboardUpdateInterval = null;
+        } else if (!document.hidden && !dashboardUpdateInterval) {
+          dashboardUpdateInterval = setInterval(() => {
+            loadStatistics();
+            fetchOrdersByStatus(currentStatusFilter);
+          }, 10000);
+        }
+      });
     }
     // إشعارات
     function showSuccess(msg) {

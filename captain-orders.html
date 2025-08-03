@@ -718,8 +718,26 @@
       document.getElementById("status-filter").addEventListener("change", filterOrders);
       document.getElementById("search-input").addEventListener("input", filterOrders);
 
-      // Auto-refresh every 30 seconds
-      setInterval(loadOrders, 30000);
+          // Auto-refresh every 30 seconds مع تنظيف مناسب
+    let ordersRefreshInterval = setInterval(loadOrders, 30000);
+    
+    // تنظيف الـ interval عند مغادرة الصفحة لمنع تسريب الذاكرة
+    window.addEventListener('beforeunload', () => {
+      if (ordersRefreshInterval) {
+        clearInterval(ordersRefreshInterval);
+        ordersRefreshInterval = null;
+      }
+    });
+    
+    // إيقاف التحديثات عند إخفاء الصفحة
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && ordersRefreshInterval) {
+        clearInterval(ordersRefreshInterval);
+        ordersRefreshInterval = null;
+      } else if (!document.hidden && !ordersRefreshInterval) {
+        ordersRefreshInterval = setInterval(loadOrders, 30000);
+      }
+    });
     });
 
     // Handle visibility change to refresh when tab becomes active

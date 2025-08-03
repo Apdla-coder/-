@@ -20,12 +20,30 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // استخدم الإنترنت أولًا، وإذا فشل استخدم الكاش
+  // تحسين استراتيجية الـ fetch مع معالجة أفضل للأخطاء
   event.respondWith(
     fetch(event.request)
-      .catch(() => caches.match(event.request))
       .then(response => {
-        return response || caches.match('./index.html');
+        // إذا نجح الطلب، قم بحفظه في الكاش للمرة القادمة
+        if (response.ok) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+        }
+        return response;
+      })
+      .catch(() => {
+        // في حالة فشل الشبكة، استخدم الكاش
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // إذا لم توجد في الكاش، استخدم الصفحة الرئيسية
+            return caches.match('./index.html');
+          });
       })
   );
 });
