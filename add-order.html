@@ -378,12 +378,25 @@
     }
     // حساب ربح الكابتن (الباقي من سعر الخدمة بعد خصم نسبة العمولة)
     function calculateCaptainEarnings() {
-      const servicePrice = parseFloat(document.getElementById("servicePrice").value) || 0;
-      const commissionPercent = parseInt(document.getElementById("captainCommission")?.value || "20");
+      const servicePriceInput = document.getElementById("servicePrice").value;
+      const commissionInput = document.getElementById("captainCommission")?.value || "20";
+      
+      // التحقق من صحة المدخلات وتحويلها بأمان
+      const servicePrice = isValidNumber(servicePriceInput) ? parseFloat(servicePriceInput) : 0;
+      const commissionPercent = isValidNumber(commissionInput) ? parseInt(commissionInput) : 20;
+      
+      // التأكد من أن النسبة ضمن النطاق المقبول (0-100)
+      const validCommissionPercent = Math.max(0, Math.min(100, commissionPercent));
+      
       // ربح الكابتن = سعر الخدمة - (سعر الخدمة * نسبة العمولة / 100)
-      const commissionAmount = (servicePrice * commissionPercent / 100);
-      const earnings = (servicePrice - commissionAmount).toFixed(2);
+      const commissionAmount = (servicePrice * validCommissionPercent / 100);
+      const earnings = Math.max(0, servicePrice - commissionAmount).toFixed(2);
       document.getElementById("captainEarning").value = earnings;
+    }
+    
+    // دالة مساعدة للتحقق من صحة الأرقام
+    function isValidNumber(value) {
+      return value !== null && value !== undefined && value !== '' && !isNaN(value) && !isNaN(parseFloat(value));
     }
     // تحديث حساب ربح الكابتن عند تغيير القيم
     function setupEarningsCalculation() {
@@ -405,16 +418,28 @@
       const customPhone = document.getElementById("customPhone").value.trim();
       const customAddress = document.getElementById("customAddress").value.trim();
       const serviceType = document.getElementById("serviceType").value.trim();
-      const servicePrice = parseFloat(document.getElementById("servicePrice").value);
+      const servicePriceInput = document.getElementById("servicePrice").value;
       const captainId = document.getElementById("captainSelect").value;
       const notes = document.getElementById("notes").value.trim();
-      // التحقق من صحة البيانات الأساسية
-      if (!customName || !customPhone || !customAddress || !serviceType || isNaN(servicePrice) || !captainId) {
+      
+      // التحقق من صحة البيانات الأساسية مع تحسين التحقق من الأرقام
+      if (!customName || !customPhone || !customAddress || !serviceType || !captainId) {
         showError('يرجى ملء جميع الحقول المطلوبة');
         return;
       }
-      // الحصول على نسبة العمولة
-      const commissionPercent = parseInt(document.getElementById("captainCommission")?.value || "20");
+      
+      // التحقق من صحة سعر الخدمة
+      if (!isValidNumber(servicePriceInput) || parseFloat(servicePriceInput) <= 0) {
+        showError('يرجى إدخال سعر خدمة صحيح (أكبر من صفر)');
+        return;
+      }
+      
+      const servicePrice = parseFloat(servicePriceInput);
+      
+      // الحصول على نسبة العمولة مع التحقق من صحتها
+      const commissionInput = document.getElementById("captainCommission")?.value || "20";
+      const commissionPercent = isValidNumber(commissionInput) ? 
+        Math.max(0, Math.min(100, parseInt(commissionInput))) : 20;
       // إظهار حالة التحميل
       const submitBtn = document.getElementById("submitBtn");
       const submitText = document.getElementById("submitText");

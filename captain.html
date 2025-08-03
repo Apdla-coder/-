@@ -838,9 +838,29 @@
     setupRealTimeUpdates();
     
     // Set up periodic refresh (fallback) for new orders only
-    setInterval(async () => {
+    let newOrdersInterval = setInterval(async () => {
       await checkForNewOrders();
     }, 30000); // Check every 30 seconds
+    
+    // تنظيف الـ interval عند مغادرة الصفحة لمنع تسريب الذاكرة
+    window.addEventListener('beforeunload', () => {
+      if (newOrdersInterval) {
+        clearInterval(newOrdersInterval);
+        newOrdersInterval = null;
+      }
+    });
+    
+    // تنظيف إضافي عند إخفاء الصفحة (مثل تبديل التبويبات)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && newOrdersInterval) {
+        clearInterval(newOrdersInterval);
+        newOrdersInterval = null;
+      } else if (!document.hidden && !newOrdersInterval) {
+        newOrdersInterval = setInterval(async () => {
+          await checkForNewOrders();
+        }, 30000);
+      }
+    });
   });
 
   // Create notification bar
@@ -850,15 +870,29 @@
     const notificationBar = document.createElement('div');
     notificationBar.id = 'notification-bar';
     notificationBar.className = 'notification-bar';
-    notificationBar.innerHTML = `
-      <div class="notification-content">
-        <i class="notification-icon fas fa-bell"></i>
-        <span class="notification-message"></span>
-        <button class="close-btn" onclick="hideNotificationBar()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    `;
+    
+    // إنشاء العناصر بشكل آمن بدلاً من innerHTML
+    const notificationContent = document.createElement('div');
+    notificationContent.className = 'notification-content';
+    
+    const icon = document.createElement('i');
+    icon.className = 'notification-icon fas fa-bell';
+    
+    const message = document.createElement('span');
+    message.className = 'notification-message';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-btn';
+    closeBtn.onclick = hideNotificationBar;
+    
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'fas fa-times';
+    closeBtn.appendChild(closeIcon);
+    
+    notificationContent.appendChild(icon);
+    notificationContent.appendChild(message);
+    notificationContent.appendChild(closeBtn);
+    notificationBar.appendChild(notificationContent);
     
     // Add CSS styles
     const style = document.createElement('style');
@@ -1326,13 +1360,27 @@
   // Handle custody delivery (partial custody payment)
   async function handleCustodyDelivery(e) {
     e.preventDefault();
-    const amount = parseFloat(document.getElementById('custody-amount').value);
+    const amountInput = document.getElementById('custody-amount').value;
     const notes = document.getElementById('custody-notes').value;
     
-    if (!amount || amount <= 0) {
-      // Show error without notification - just console log
-      console.warn('Invalid custody amount entered');
+    // التحقق من صحة المبلغ المدخل
+    if (!isValidNumber(amountInput)) {
+      console.warn('Invalid custody amount format entered:', amountInput);
+      showNotification('يرجى إدخال مبلغ صحيح', 'error');
       return;
+    }
+    
+    const amount = parseFloat(amountInput);
+    
+    if (amount <= 0) {
+      console.warn('Invalid custody amount entered:', amount);
+      showNotification('يجب أن يكون المبلغ أكبر من صفر', 'error');
+      return;
+    }
+    
+    // دالة مساعدة للتحقق من صحة الأرقام (إذا لم تكن موجودة)
+    function isValidNumber(value) {
+      return value !== null && value !== undefined && value !== '' && !isNaN(value) && !isNaN(parseFloat(value));
     }
     
     if (!currentUser) {
